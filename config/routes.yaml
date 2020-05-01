@@ -1,3 +1,7 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+epodsone_backoffice:
+    resource: '../src/Routing/backoffice.yaml'
+    prefix: /dashboard
