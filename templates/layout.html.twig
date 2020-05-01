@@ -45,7 +45,7 @@
          <div class="row no-gutters align-items-md-center justify-content-center">
             <div class="col-lg-11 col-md d-flex flex-column flex-md-row align-items-md-center justify-content-lg-center">
                <div class="mb-3 mb-md-0">Suivez nos signaux seulement en échange de 5% sur vos gains.</div>
-               <a href="" class="je-minscris btn btn-sm btn-success ml-md-3">Je m'inscris !</a>
+               <a href="" class="je-minscris btn btn-sm btn-success ml-md-3">Connexion</a>
             </div>
             <div class="col-auto position-absolute right">
                <button type="button" class="close p-0 position-relative" data-dismiss="alert" aria-label="Close">
@@ -69,158 +69,32 @@
                <img src="https://imgur.com/td4rDwV.png" class="logo default-logo" alt="logo">
              </a>
             <div class="d-flex align-items-center order-lg-3">
-               <a href="https://wa.me/237656645659" target="_blank" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3" style=" background-color: #009b72; border-color: #009b72; color: #ffffff; "><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" style="height: 22px;margin-bottom: 2px;"> 06 85 74 96 12</a>
-               <a href="" data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Je m'inscris !</a>
+              <!--  <a href="https://wa.me/237656645659" target="_blank" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3" style=" background-color: #009b72; border-color: #009b72; color: #ffffff; "><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" style="height: 22px;margin-bottom: 2px;"> 06 85 74 96 12</a> -->
+               <a href="{{ path('app_login') }}" data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Connexion</a>
                <button aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target=".navbar-collapse" data-toggle="collapse" type="button">
                  <img alt="Navbar Toggler Open Icon" class="navbar-toggler-open icon icon-sm" data-inject-svg src="{{ asset('assets/img/icons/interface/icon-menu.svg')}}">
                  <img alt="Navbar Toggler Close Icon" class="navbar-toggler-close icon icon-sm" data-inject-svg src="{{ asset('assets/img/icons/interface/icon-x.svg')}}">
                </button>
             </div>
-            <div class="collapse navbar-collapse order-3 order-lg-2 justify-content-lg-end" id="navigation-menu" style="display: none!important">
-               <ul class="navbar-nav my-3 my-lg-0">
-                 <li class="nav-item">
-                   <div class="dropdown">
-                     <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle nav-link nav-item arrow-bottom" data-toggle="dropdown-grid" href="#" role="button">Demos</a>
-                     <div class="row dropdown-menu">
-                       <div class="col-auto" data-dropdown-content>
-                         <div class="dropdown-grid-menu"><a href="index.html" class="dropdown-item fade-page">Overview</a><a href="landing-1.html" class="dropdown-item fade-page">Landing 1</a><a href="landing-2.html" class="dropdown-item fade-page">Landing 2</a><a href="landing-3.html"
-                           class="dropdown-item fade-page">Landing 3</a><a href="landing-4.html" class="dropdown-item fade-page">Landing 4</a><a href="landing-5.html" class="dropdown-item fade-page">Landing 5</a><a href="landing-6.html" class="dropdown-item fade-page">Landing 6</a>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                 </li>
-                 <li class="nav-item">
-                   <div class="dropdown">
-                     <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle nav-link nav-item arrow-bottom" data-toggle="dropdown-grid" href="#" role="button">Pages</a>
-                     <div class="row dropdown-menu">
-                       <div class="col-auto" data-dropdown-content>
-                         <div class="dropdown-grid-menu">
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Company</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="company-about-1.html" class="dropdown-item fade-page">About 1</a><a href="company-about-2.html" class="dropdown-item fade-page">About 2</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Blog</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="blog-listing-1.html" class="dropdown-item fade-page">Blog Listing 1</a><a href="blog-listing-2.html" class="dropdown-item fade-page">Blog Listing 2</a><a href="blog-listing-3.html" class="dropdown-item fade-page">Blog Listing 3</a>
-                                   <a
-                                   href="blog-article.html" class="dropdown-item fade-page">Blog Article</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Help Center</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="help-center-home.html" class="dropdown-item fade-page">Help Center Home</a><a href="help-center-category.html" class="dropdown-item fade-page">Help Center Category</a><a href="help-center-article.html" class="dropdown-item fade-page">Help Center Article</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Careers</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="careers-1.html" class="dropdown-item fade-page">Careers 1</a><a href="careers-2.html" class="dropdown-item fade-page">Careers 2</a><a href="career-single.html" class="dropdown-item fade-page">Career Single</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Case Studies</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="case-studies.html" class="dropdown-item fade-page">Case Studies</a><a href="case-study-single.html" class="dropdown-item fade-page">Case Study Single</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Pricing</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="pricing-plans.html" class="dropdown-item fade-page">Pricing Plans</a><a href="pricing-table.html" class="dropdown-item fade-page">Pricing Table</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Contact</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="contact.html" class="dropdown-item fade-page">Contact</a><a href="contact-map.html" class="dropdown-item fade-page">Contact Map</a><a href="contact-planner.html" class="dropdown-item fade-page">Contact Planner</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Account</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="account-settings.html" class="dropdown-item fade-page">Account Settings</a><a href="account-invoice.html" class="dropdown-item fade-page">Invoice</a><a href="account-sign-up-cover.html" class="dropdown-item fade-page">Sign Up - Cover</a>
-                                   <a
-                                   href="account-sign-in-cover.html" class="dropdown-item fade-page">Sign In - Cover</a><a href="account-sign-up-simple.html" class="dropdown-item fade-page">Sign Up - Simple</a><a href="account-sign-in-simple.html" class="dropdown-item fade-page">Sign In - Simple</a><a href="account-forgot-password.html"
-                                     class="dropdown-item fade-page">Forgot Password</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-
-                           <div class="dropdown">
-                             <a aria-expanded="false" aria-haspopup="true" class="dropdown-item" data-toggle="dropdown-grid" href="#" role="button">Utility</a>
-                             <div class="row dropdown-menu">
-                               <div class="col-auto" data-dropdown-content>
-                                 <div class="dropdown-grid-menu"><a href="utility-coming-soon-subscribe.html" class="dropdown-item fade-page">Coming Soon Subscribe</a><a href="utility-coming-soon-countdown.html" class="dropdown-item fade-page">Coming Soon Countdown</a><a href="utility-coming-soon-social.html"
-                                   class="dropdown-item fade-page">Coming Soon Social</a><a href="utility-legal-terms.html" class="dropdown-item fade-page">Legal Terms</a><a href="404.html" class="dropdown-item fade-page">404</a>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                 </li>
-                 <li class="nav-item">
-                   <div class="dropdown">
-                     <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle nav-link nav-item arrow-bottom" data-toggle="dropdown-grid" href="#" role="button">Features</a>
-                     <div class="row dropdown-menu">
-                       <div class="col-auto" data-dropdown-content>
-                         <div class="dropdown-grid-menu"><a href="style-guide.html" class="dropdown-item fade-page">Style Guide</a><a href="plugins.html" class="dropdown-item fade-page">Plugins</a><a href="navigation-bars.html" class="dropdown-item fade-page">Navigation Bars</a>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                 </li>
-                 <li class="nav-item">
-                   <div class="dropdown">
-                     <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle nav-link nav-item arrow-bottom" data-toggle="dropdown-grid" href="#" role="button">Support</a>
-                     <div class="row dropdown-menu">
-                       <div class="col-auto" data-dropdown-content>
-                         <div class="dropdown-grid-menu"><a href="documentation/index.html" class="dropdown-item" target="_blank">Documentation</a><a href="documentation/changelog.html" class="dropdown-item" target="_blank">Changelog</a><a href="https://mediumrare.ticksy.com/" class="dropdown-item"
-                           target="_blank">Get Help</a>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                 </li>
-               </ul>
-            </div>
+            <div class="collapse navbar-collapse order-3 order-lg-2 justify-content-lg-end" id="navigation-menu">
+            <ul class="navbar-nav my-3 my-lg-0">
+              <li class="nav-item">
+                <div >
+                  <a aria-haspopup="true" class=" nav-link nav-item " data-toggle="dropdown-grid" href="#" role="button">Boutique</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <div>
+                  <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="#" role="button">Livraison</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <div>
+                  <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="#" role="button">Contact</a>
+                </div>
+              </li>
+            </ul>
+          </div>
          </div>
       </nav>
    </div>
