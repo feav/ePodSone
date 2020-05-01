@@ -7,60 +7,55 @@
 {% block dataStructured %}{% endblock %}
 
 {% block stylesheets %}
-  {{parent()}}
+	{{parent()}}
     <style type="text/css">
-      .bg-success-alt{background: #fff}
-      .container-plan h2, .container-plan h6{
-        color: #fff;
-      }
+    	.bg-success-alt{background: #fff}
+    	.container-plan h2, .container-plan h6{
+    		color: #fff;
+    	}
     </style>
 {% endblock %}
 
 {% block body_web %}
 
-  <div data-overlay class="bg-gradient min-vh-100 bg-light d-flex flex-column justify-content-md-center o-hidden">
+	<div data-overlay class="bg-gradient min-vh-100 bg-light d-flex flex-column justify-content-md-center o-hidden">
       <section class="py-3">
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-xl-4 col-lg-5 col-md-6 mb-5 mb-md-0">
               <div class="card card-body shadow">
-                <h1 class="h5 text-center">Inscription</h1>
-                {% if error is defined %}
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    {{ form_errors(form) }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                {% endif %}
+                <h1 class="h5 text-center">Connexion</h1>
+                {% if error %}
+   				    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+   					  {{ error.messageKey|trans(error.messageData, 'security') }}
+   					  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+   					    <span aria-hidden="true">&times;</span>
+   					  </button>
+   				  	</div>
+   				{% endif %}
                 
-                  {{ form_start(form) }}
+               <form  method="post">
+                  <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
                   <div class="form-group">
-                    {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder':'votre nom'}}) }}
+                    <input type="email" class="form-control" id="username" name="email" placeholder="adresse email" value="{{ last_username }}" required="required" autocomplete="off">
                   </div>
                   <div class="form-group">
-                    {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder':'votre e-mail'}}) }}
-                  </div>
-                  <div class="form-group">
-                    {{ form_widget(form.password.first, {'attr': {'class':
-                  'form-control', 'placeholder':'mot de passe'}}) }}
-                  </div>
-                  <div class="form-group">
-                    {{ form_widget(form.password.second, {'attr': {'class':
-                      'form-control', 'placeholder':'confirmer mot de passe'}}) }}
+                    <input type="password" id="password" name="password" required="required" autocomplete="current-password" class="form-control" placeholder="mot de passe">
+                    <div class="text-right text-small mt-2">
+                      <a href="javascripts:void()" style="display: none;">Mot de passe oublié?</a>
+                    </div>
                   </div>
                   <div class="form-group">
                     <div class="custom-control custom-checkbox text-small">
-                      <input type="checkbox" class="custom-control-input" id="sign-up-agree">
-                      <label class="custom-control-label" for="sign-up-agree">I agree to the <a target="_blank" href="utility-legal-terms.html">Terms &amp; Conditions</a>
-                      </label>
+                      <input type="checkbox" class="custom-control-input" id="sign-in-remember" name="_remember_me" value="on">
+                      <label class="custom-control-label" for="sign-in-remember">Se souvenir de moi</label>
                     </div>
                   </div>
-                  <button class="btn btn-primary btn-block" type="submit" >Inscription</button>
-                  {{ form_end(form) }}
+                  <button class="btn btn-primary btn-block" type="submit" id="_submit" name="_submit">Connexion</button>
+                </form>
               </div>
               <div class="text-center text-small mt-3" style="color:#fff">
-                Vous avez deja un compte? <a href="{{path('app_login')}}" style="color:#fff">Connectez-vous ici</a>
+                Already have an account? <a href="{{path('registration')}}" style="color:#fff">Créer un compte</a>
               </div>
             </div>
             <div class="col-md-6 col-lg-auto ml-lg-5 ">
@@ -122,5 +117,5 @@
 {% endblock body_web %}
 
 {% block javascripts %}
-  {{parent()}}
+	{{parent()}}
 {% endblock %}
