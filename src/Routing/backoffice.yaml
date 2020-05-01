@@ -1,7 +1,7 @@
-bo_commande:
-   path: /commandes
-   controller: App\Controller\CommandeController::home
-
 bo_chat:
-   path: /chat
-   controller: App\Controller\ChatController::home
+    resource: 'chat.yaml'
+    prefix: /chat
+
+bo_commande:
+    resource: 'commande.yaml'
+    prefix: /commandes

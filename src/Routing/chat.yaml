@@ -1,0 +1,4 @@
+
+chat_home:
+   path: /
+   controller: App\Controller\ChatController::home
