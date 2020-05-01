@@ -1,4 +1,43 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="my-custom-class-for-errors">
+        {{ form_errors(form) }}
+    </div>
+
+    <form>
+        <div class="form-row mb-4">
+            <div class="form-group col-md-8">
+                <label for="inputEmail4">Nom du produit</label>
+                 {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder':'Nom du produit'}}) }} 
+            </div>
+            <div class="form-group col-md-4">
+                <label for="inputCity">Image du Produit</label>
+                {{ form_widget(form.image, {'attr': {'class': 'form-control','type': 'decimal','required': false, 'placeholder':'Image du produit'}}) }} 
+            </div>  
+        </div>
+       
+        <div class="form-row mb-4">
+            <div class="form-group col-md-3">
+                <label for="inputCity">Prix Normal</label>
+                {{ form_widget(form.old_price, {'attr': {'class': 'form-control', 'placeholder':'Prix normal produit'}}) }} 
+            </div>
+            <div class="form-group col-md-3">
+                <label for="inputState">Prix Vente</label>
+                 {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder':'Prix de Vente'}}) }}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="inputZip">Quantite</label>
+                 {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'placeholder':'Quantite'}}) }}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="inputZip">Type de Produit</label>
+                 {{ form_widget(form.type, {'attr': {'class': 'form-control', 'placeholder':'type'}}) }}
+            </div>
+        </div>
+        <div class="form-group mb-4">
+            <label for="inputAddress">Description</label>
+             {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder':'Quantite'}}) }}
+        </div>    
+        {{ form_widget(form._token) }}
+        <button type="submit" class="btn btn-primary mt-3">{{ button_label|default('Ajouter le Produit') }}</button>
+    </form>
 {{ form_end(form) }}

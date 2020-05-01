@@ -42,7 +42,7 @@ class Product
     private $description;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $image;
 
@@ -68,24 +68,24 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(?int $price): self
+    public function setPrice(?float $price): self
     {
         $this->price = $price;
 
         return $this;
     }
 
-    public function getOldPrice(): ?int
+    public function getOldPrice(): ?float
     {
         return $this->old_price;
     }
 
-    public function setOldPrice(?int $old_price): self
+    public function setOldPrice(?float $old_price): self
     {
         $this->old_price = $old_price;
 
