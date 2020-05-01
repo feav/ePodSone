@@ -1,0 +1,7 @@
+bo_chat:
+    resource: 'chat.yaml'
+    prefix: /chat
+
+bo_commande:
+    resource: 'commande.yaml'
+    prefix: /commandes

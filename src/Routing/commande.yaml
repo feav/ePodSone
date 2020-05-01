@@ -1,0 +1,3 @@
+commande_home:
+   path: /
+   controller: App\Controller\CommandeController::home
