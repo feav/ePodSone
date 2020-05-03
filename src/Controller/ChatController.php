@@ -26,18 +26,20 @@ class ChatController extends AbstractController
      */
     public function home($id_discussion = null)
     {
+      $discussions = $this->discussionRepository->findAll();
     	if(is_null($id_discussion)){
     		return $this->render('admin/chat/home.html.twig', [
     			'user'=>$this->getUser(),
+          'discussions'=>$discussions,
     		]);
     	}
-        $discussion = $this->discussionRepository->find($id_discussion);
-        $discussions = $this->discussionRepository->findAll();
-        return $this->render('admin/chat/home.html.twig', [
-  		    'ws_url' => 'localhost:3001',
-        	'discussion'=>$discussion,
-        	'discussions'=>$discussions,
-  		    'user'=>$this->getUser(),
+      $discussion = $this->discussionRepository->find($id_discussion);        
+      dd($discussions);
+      return $this->render('admin/chat/home.html.twig', [
+		    'ws_url' => 'localhost:3001',
+      	'discussion'=>$discussion,
+      	'discussions'=>$discussions,
+		    'user'=>$this->getUser(),
   		]);
     }
 
