@@ -10,15 +10,12 @@
         .user-list-box .person-user{
             border-bottom: 1px solid #525671;
         }
-        .chat-system .user-list-box input{margin-right: 0}
         .seach-wrapper{
             display: flex;
             align-items: center;
             justify-content: space-around;
             position: relative;
             overflow: hidden;
-            width: 290px;
-            max-width: 290px;
         }
         .wrapper-search-user{
             position: absolute;
@@ -31,11 +28,23 @@
         }
         .wrapper-search-user .close-search{
             position: absolute;
-            right: 7px;
+            right: 2px;
             font-size: 18px;
-            top: -3px;
+            top: -6px;
             cursor: pointer;
             z-index: 2;
+        }
+        .chat-system .user-list-box input{
+            margin-right: 0;
+            font-size: 12px;
+            padding-left: 32px;
+        }
+        #filter-user{
+            margin: auto 10px;
+        }
+        .chat-system .user-list-box .search svg{
+            top: 22px;
+            left: 15px;
         }
     </style>
 {% endblock %}
@@ -54,12 +63,12 @@
                                     <span class="close-search">x</span>
                                     <div class="search">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65" style="left: 38px"></line></svg>
-                                        <input type="text" class="form-control" placeholder="rechercher utilisateur" style="max-width: 255px;margin: auto;" id="filter-user" />
+                                        <input type="text" class="form-control" placeholder="rechercher utilisateur" id="filter-user" />
                                     </div>
                                 </div>
                                 <div class="search">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                    <input type="text" class="form-control" placeholder="Discuter avec..." id="filter-discussion" />
+                                    <input type="text" class="form-control" placeholder="Discuter avec..." id="filter-discussion" style="margin-left: 10px;" />
                                 </div>
                                 <a title="Nouvelle discussion" class="user-disc-action" href="javascript:void()" style="margin:0 10px">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
@@ -124,7 +133,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                {% endif %}
+                                
                                 <div class="chat-conversation-box">
                                     <div id="chat-conversation-box-scroll" class="chat-conversation-box-scroll">
                                         <div class="chat" data-chat="person6">
@@ -155,6 +164,11 @@
                                         </form>
                                     </div>
                                 </div>
+                                {% else %}
+                                    <style type="text/css">
+                                        .chat-system .chat-box{height: calc(100vh - 126px)!important;}
+                                    </style> 
+                                {% endif %}
                             </div>
                         </div>
                     </div>

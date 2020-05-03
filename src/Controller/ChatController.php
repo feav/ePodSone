@@ -34,7 +34,6 @@ class ChatController extends AbstractController
     		]);
     	}
       $discussion = $this->discussionRepository->find($id_discussion);        
-      dd($discussions);
       return $this->render('admin/chat/home.html.twig', [
 		    'ws_url' => 'localhost:3001',
       	'discussion'=>$discussion,
