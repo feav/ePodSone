@@ -1,10 +1,53 @@
-$('.search > input').on('keyup', function() {
+$('.wrapper-search-user .close-search').click(function(){
+   $('.wrapper-search-user').css('top','-73px');
+})
+$('.seach-wrapper .user-disc-action').click(function(){
+   $('.wrapper-search-user').css('top','0');
+})
+$('.search > input#filter-discussion').on('keyup', function() {
   var rex = new RegExp($(this).val(), 'i');
     $('.people .person').hide();
     $('.people .person').filter(function() {
         return rex.test($(this).text());
     }).show();
 });
+$('.search > input#filter-user').on('keyup', function() {
+  $.ajax({
+      type: "GET",
+      url: $('body').data('base-url')+"user/filter",
+      data: { 
+        key: $(this).val()
+      },
+      success : function(data) { 
+         data = JSON.parse( data );
+        appendPerson(data);
+      },
+      error:function(){
+      }
+  });
+});
+function appendPerson(users){
+   console.log(users);
+   $ELT ="";
+   $.each(users, function( index, value ) {
+      $ELT += '<a href="'+$('body').data('base-url')+'dashboard/discussion/'+value.id+'" class="person" data-chat="person'+value.id+'">'+
+               '<div class="user-info">'+
+                  '<div class="f-head">'+
+                     '<img src="'+$('body').data('base-url')+'assetsBo/assets/img/90x90.jpg" alt="avatar">'+
+                  '</div>'+
+                  '<div class="f-body">'+
+                     '<div class="meta-info">'+
+                        '<span class="user-name" data-name="'+value.name+'">'+value.name+'</span>'+
+                        '<span class="user-meta-time"></span>'+
+                    '</div>'+
+                    '<small class="">'+value.email+'</small>'+
+                  '</div>'+
+               '</div>'+
+           '</a>';
+   });
+   $('.user-list-box .person-user').html($ELT);
+   return 1;
+}
 
 $('.user-list-box .person').on('click', function(event) {
     if ($(this).hasClass('.active')) {
@@ -41,6 +84,9 @@ $('.user-list-box .person').on('click', function(event) {
 
   const getScrollContainer = document.querySelector('.chat-conversation-box');
   getScrollContainer.scrollTop = 0;
+});
+window.addEventListener("load",function(){
+   $( ".person[data-chat = person6]" ).trigger( "click" );
 });
 
 const ps = new PerfectScrollbar('.people', {
@@ -138,7 +184,7 @@ $('.switch-to-phone-call').off('click').on('click', function(event) {
     setTimeout(callOnConnect, 2000);
 })
 
-$('.mail-write-box').on('keydown', function(event) {
+/*$('.mail-write-box').on('keydown', function(event) {
     if(event.key === 'Enter') {
         var chatInput = $(this);
         var chatMessageValue = chatInput.val();
@@ -149,7 +195,7 @@ $('.mail-write-box').on('keydown', function(event) {
         getScrollContainer.scrollTop = getScrollContainer.scrollHeight;
         var clearChatInput = chatInput.val('');
     }
-})
+})*/
 
 $('.hamburger, .chat-system .chat-box .chat-not-selected p').on('click', function(event) {
   $(this).parents('.chat-system').find('.user-list-box').toggleClass('user-list-box-show')

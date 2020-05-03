@@ -1,4 +1,8 @@
 
-chat_home:
-   path: /
-   controller: App\Controller\ChatController::home
+#chat_home:
+#   path: /
+#   controller: App\Controller\ChatController::home
+
+#chat_home:
+#   path: /
+#   controller: App\Controller\ChatController::home

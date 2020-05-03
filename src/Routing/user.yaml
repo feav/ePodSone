@@ -1,0 +1,4 @@
+filter_user:
+   path: /filter
+   controller: App\Controller\UserController::filter
+   

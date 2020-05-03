@@ -20,6 +20,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
 
     /**
@@ -64,4 +65,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
     */
+
+    public function filterUser($key)
+    {
+        $sql = "SELECT id, name, email
+                FROM user
+                WHERE (name LIKE '%$key%')
+                OR (email LIKE '%$key%')";
+        $users = $this->em->prepare($sql);
+        $users->execute();
+        $users = $users->fetchAll();
+
+        return $users;
+    }
 }

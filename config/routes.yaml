@@ -5,3 +5,7 @@
 epodsone_backoffice:
     resource: '../src/Routing/backoffice.yaml'
     prefix: /dashboard
+
+epodsone_website:
+    resource: '../src/Routing/routing.yaml'
+    prefix: /
