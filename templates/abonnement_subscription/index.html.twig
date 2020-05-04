@@ -64,7 +64,7 @@
                                         <td>{{ abonnement_subscription.isResiliate ? 'Oui' : 'Non' }}</td>
                                         <td>{{ abonnement_subscription.datePaid ? abonnement_subscription.datePaid|date('d-m-Y H:i') : '' }}</td>
                                         <td>{{ abonnement_subscription.isPaid ? 'Oui' : 'Non' }}</td>
-                                        <td>{{ abonnement_subscription.amount }}</td>
+                                        <td>{{ abonnement_subscription.amount }} eur</td>
                                         <td>
                                             {{ include('abonnement_subscription/_delete_form.html.twig') }}
                                         </td>
