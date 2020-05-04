@@ -23,16 +23,6 @@ class Abonnement
      */
     private $formule;
 
-    /**
-     * @ORM\Column(type="date")
-     */
-    private $debut;
-
-    /**
-     * @ORM\Column(type="date")
-     */
-    private $fin;
-
     public function __construct()
     {
         $this->formule = new ArrayCollection();
@@ -70,30 +60,6 @@ class Abonnement
                 $formule->setDebut(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getDebut(): ?\DateTimeInterface
-    {
-        return $this->debut;
-    }
-
-    public function setDebut(\DateTimeInterface $debut): self
-    {
-        $this->debut = $debut;
-
-        return $this;
-    }
-
-    public function getFin(): ?\DateTimeInterface
-    {
-        return $this->fin;
-    }
-
-    public function setFin(\DateTimeInterface $fin): self
-    {
-        $this->fin = $fin;
 
         return $this;
     }

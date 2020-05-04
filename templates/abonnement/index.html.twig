@@ -39,8 +39,6 @@
                                 <thead>
                                     <tr>
                                                                                     <th>Id</th>
-                                                                                    <th>Debut</th>
-                                                                                    <th>Fin</th>
                                                                                 <th>actions</th>
                                     </tr>
                                 </thead>
@@ -48,8 +46,6 @@
                     {% for abonnement in abonnements %}
                                     <tr>
                                                             <td>{{ abonnement.id }}</td>
-                                                                                <td>{{ abonnement.debut ? abonnement.debut|date('Y-m-d') : '' }}</td>
-                                                                                <td>{{ abonnement.fin ? abonnement.fin|date('Y-m-d') : '' }}</td>
                                                                                 <td>
                                             <a href="{{ path('abonnement_edit', {'id': abonnement.id}) }}">edit</a>
                                             {{ include('abonnement/_delete_form.html.twig') }}
@@ -57,7 +53,7 @@
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        <td colspan="4">Aucun element trouve</td>
+                                        <td colspan="2">Aucun element trouve</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

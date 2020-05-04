@@ -1,5 +1,5 @@
 {% extends 'admin/layout.html.twig' %}
-{% block title %} {{parent()}} | Produits {% endblock %}
+{% block title %} {{parent()}} | Subscription abonnement{% endblock %}
 
 {% block dataStructured %}{% endblock %}
 
@@ -12,7 +12,7 @@
         .widget-content-area{box-shadow: none;}
     </style>
 {% endblock %}
-{% block title_page %}Produits{% endblock %}
+{% block title_page %}Subscription abonnement{% endblock %}
 {% block body_bo %}
     <div class="layout-px-spacing">
         <div class="row layout-top-spacing">
@@ -20,7 +20,7 @@
                 <div class="widget widget-chart-three">
                     <div class="widget-heading">
                         <div class="">
-                            <h5 class="">List de Produits</h5>
+                            <h5 class="">Liste subscriptions</h5>
                         </div>
 
                         <div class="dropdown  custom-dropdown">
@@ -29,7 +29,7 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="uniqueVisitors">
-                                <a class="dropdown-item" href="{{ path('product_new') }}">Ajouter</a>
+                                <a class="dropdown-item" href="{{ path('abonnement_subscription_new') }}">Ajouter</a>
                             </div>
                         </div>
                     </div>
@@ -38,45 +38,36 @@
                         <div class="table-responsive mb-4 mt-4">
                             <table id="html5-extension" class="table table-hover non-hover" style="width:100%">
                                 <thead>
-                                    <tr>
-                                        <th>Nom</th>
-                                        <th>Prix</th>
-                                        <th>Ancien Prix</th>
-                                        <th>Quantite</th>
-                                        <th>Image</th>
-                                        <th>Type</th>
+                                   <tr>
+                                        <th>Id</th>
+                                        <th>Abonnement</th>
+                                        <th>User</th>
+                                        <th>Date subscription</th>
+                                        <th>Date expiration</th>
+                                        <th>Active</th>
+                                        <th>resilié</th>
+                                        <th>Date débitée</th>
+                                        <th>payé</th>
+                                        <th>Montant</th>
                                         <th>actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {% for product in products %}
+                                {% for abonnement_subscription in abonnement_subscriptions %}
                                     <tr>
-                                        <td><a class="dropdown-item" href="{{ path('product_edit',{id:product.id}) }}">{{ product.name }}</a></td>
-                                        <td>{{ product.price }}</td>
-                                        <td>{{ product.oldPrice }}</td>
-                                        <td>{{ product.quantity }}</td>
+                                        <td><a class="dropdown-item" href="{{ path('abonnement_subscription_edit',{id:abonnement_subscription.id}) }}">{{ abonnement_subscription.id }}</a></td>
+                                        <td>{{ abonnement_subscription.abonnement ? abonnement_subscription.abonnement.name : ''}}</td>
+                                        <td>{{ abonnement_subscription.user ? abonnement_subscription.user.name : '' }}</td>
+                                        <td>{{ abonnement_subscription.dateSub ? abonnement_subscription.dateSub|date('d-m-Y H:i') : '' }}</td>
+                                        <td>{{ abonnement_subscription.dateExpire ? abonnement_subscription.dateExpire|date('d-m-Y H:i') : '' }}</td>
+                                        <td>{{ abonnement_subscription.active ? 'Oui' : 'Non' }}</td>
+                                        <td>{{ abonnement_subscription.isResiliate ? 'Oui' : 'Non' }}</td>
+                                        <td>{{ abonnement_subscription.datePaid ? abonnement_subscription.datePaid|date('d-m-Y H:i') : '' }}</td>
+                                        <td>{{ abonnement_subscription.isPaid ? 'Oui' : 'Non' }}</td>
+                                        <td>{{ abonnement_subscription.amount }} eur</td>
                                         <td>
-                                            <div class="d-flex">
-                                                <div class="usr-img-frame mr-2 rounded-circle">
-                                                    <img alt="avatar" class="img-fluid rounded-circle" src="{{asset('assets/img/products/' ~ product.image)}}">
-                                                </div>
-                                            </div>
+                                            {{ include('abonnement_subscription/_delete_form.html.twig') }}
                                         </td>
-                                        <td> 
-                                            {% if(product.type) %}
-                                            <span class="badge badge-info">Reccurent</span>
-                                            {% else %}
-                                            <span class="badge badge-success">Simple</span>
-                                            {% endif %}
-                                        </td>
-                                        
-                                        <td>
-                                            {{ include('product/_delete_form.html.twig') }}
-                                        </td>
-                                    </tr>
-                                {% else %}
-                                    <tr>
-                                        <td colspan="9">Auncun produit trouve</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -99,7 +90,7 @@
     <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/buttons.html5.min.js')}}"></script>
     <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/buttons.print.min.js')}}"></script>
     <script>
-        $('#sidebar .menu.menu-produit').addClass('active');
+        $('#sidebar .menu.menu-abonnement-sub').addClass('active');
         $('#html5-extension').DataTable( {
             dom: '<"row"<"col-md-12"<"row"<"col-md-6"B><"col-md-6"f> > ><"col-md-12"rt> <"col-md-12"<"row"<"col-md-5"i><"col-md-7"p>>> >',
             buttons: {

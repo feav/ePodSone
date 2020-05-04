@@ -24,6 +24,12 @@
     #sidebar ul.menu-categories li.menu > .dropdown-toggle{color: #fff}
     .sidebar-wrapper ul.menu-categories li.menu.menu-heading > .heading{color: rgb(158, 158, 162)}
     .navbar-expand-sm .navbar-item.group-addon{margin-left: auto;}
+    .widget-header .title-action-row{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
   </style>
 {% endblock %}
 
@@ -170,6 +176,22 @@
                             </div>
                         </a>
                     </li>
+                    <li class="menu menu-abonnement">
+                        <a href="{{path('abonnement_index')}}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                                <span>Abonnements</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="menu menu-abonnement-sub">
+                        <a href="{{path('abonnement_subscription_index')}}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                                <span>Subscription Abonn</span>
+                            </div>
+                        </a>
+                    </li>
                     <li class="menu menu-chat">
                         <a href="{{path('chat_home')}}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -178,6 +200,7 @@
                             </div>
                         </a>
                     </li>
+                    <!--
                     <li class="menu menu-heading">
                         <div class="heading"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg><span>Autres</span></div>
                     </li>
@@ -201,7 +224,7 @@
                                 <a href="javascript:void()"> produits </a>
                             </li>
                         </ul>
-                    </li>
+                    </li>-->
                 </ul>
                 
             </nav>
