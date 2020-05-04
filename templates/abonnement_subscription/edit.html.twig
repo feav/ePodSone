@@ -1,0 +1,61 @@
+
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} | Edition Subscription {% endblock %}
+
+{% block dataStructured %}{% endblock %}
+
+
+{% block stylesheets %}
+    {{parent()}}
+        <!-- BEGIN THEME GLOBAL STYLES -->
+    <link href="{{asset('assetsBo/plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
+    <!-- END THEME GLOBAL STYLES -->
+
+    <!--  BEGIN CUSTOM STYLE FILE  -->
+    <link href="{{asset('assetsBo/plugins/flatpickr/custom-flatpickr.css')}}" rel="stylesheet" type="text/css">
+    <!--  END CUSTOM STYLE FILE  -->
+{% endblock %}
+{% block title_page %}Subscription abonnement{% endblock %}
+{% block body_bo %}
+    <div class="layout-px-spacing">
+        <div class="row layout-top-spacing">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
+                <div class="statbox widget box box-shadow">
+                    <div class="widget-header">                                
+                        <div class="row">
+                            <div class="col-xl-12 col-md-12 col-sm-12 col-12 title-action-row">
+                                <h4>Edition Subscription</h4>
+                                {{ include('abonnement_subscription/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="widget-content widget-content-area" style="height: 571px;">
+                    	{{ include('abonnement_subscription/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js')}}"></script>
+    <!-- BEGIN PAGE LEVEL SCRIPTS -->
+    <script src="{{asset('assetsBo/plugins/flatpickr/flatpickr.js')}}"></script>
+    <script src="{{asset('assetsBo/plugins/flatpickr/custom-flatpickr.js')}}"></script>
+    <!-- END PAGE LEVEL SCRIPTS -->
+    <script type="text/javascript">
+    	$('#sidebar .menu.menu-abonnement').addClass('active');
+        var elements = document.getElementsByClassName("dateTimeFlatpickr");
+        for (var i = 0; i < elements.length; i++) {
+            var f2 = flatpickr(elements[i], {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+            });
+        }
+</script>
+
+{% endblock %}
+
+

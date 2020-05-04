@@ -1,0 +1,38 @@
+
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} | Edition d'un abonnement {% endblock %}
+
+{% block dataStructured %}{% endblock %}
+
+{% block stylesheets %}
+    {{parent()}}
+{% endblock %}
+{% block title_page %}Abonnement{% endblock %}
+{% block body_bo %}
+    <div class="layout-px-spacing">
+        <div class="row layout-top-spacing">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="margin-bottom:24px;">
+                <div class="statbox widget box box-shadow">
+                    <div class="widget-header">                                
+                        <div class="row">
+                            <div class="col-xl-12 col-md-12 col-sm-12 col-12 title-action-row">
+                                <h4>Edition Abonnement</h4>
+                                {{ include('abonnement/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="widget-content widget-content-area" style="height: 571px;">
+                    	{{ include('abonnement/_form.html.twig', {'button_label': 'Mette a jour'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script type="text/javascript">
+    	$('#sidebar .menu.menu-abonnement').addClass('active');
+    </script>
+{% endblock %}

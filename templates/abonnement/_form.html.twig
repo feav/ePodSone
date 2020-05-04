@@ -1,0 +1,39 @@
+<style type="text/css">
+	button[type=submit]{float: right;}
+</style>
+
+{{ form_start(form) }}
+    <div class="my-custom-class-for-errors">
+        {{ form_errors(form) }}
+    </div>
+
+    <form>
+        <div class="form-row mb-4">
+            <div class="form-group col-md-6">
+                <label for="">Nom</label>
+                 {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }} 
+            </div> 
+            <div class="form-group col-md-6">
+                <label for="">Prix abonnement</label>
+                {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }} 
+            </div> 
+        </div>
+       
+        <div class="form-row mb-4">
+            <div class="form-group col-md-6">
+                <label for="">Durée <small><i><b>(en jour)</b></i></small></label>
+                {{ form_widget(form.duree, {'attr': {'class': 'form-control'}}) }} 
+            </div>
+            <div class="form-group col-md-6">
+                <label for="">durée d'essaie <small><i><b>(en jour)</b></i></small></label>
+                 {{ form_widget(form.trial_day, {'attr': {'class': 'form-control', 'placeholder':'Ex: 3'}}) }}
+            </div>
+        </div>
+        <div class="form-group mb-4">
+            <label for="">Description</label>
+            {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+        </div>    
+        {{ form_widget(form._token) }}
+        <button type="submit" class="btn btn-primary mt-3">{{ button_label|default("Ajouter l'abonnement") }}</button>
+    </form>
+{{ form_end(form) }}

@@ -11,6 +11,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface
 {
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\AbonnementSubscription", mappedBy="user")
+     */
+    private $subscriptions;
+
+    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Discussion", mappedBy="users")
      */
     private $discussions;
@@ -52,6 +57,11 @@ class User implements UserInterface
     {
         $this->discussions = new ArrayCollection();
         $this->messages = new ArrayCollection();
+        $this->subscriptions = new ArrayCollection();
+    }
+
+    public function __toString(){
+        return $this->name;
     }
 
     public function getId(): ?int
@@ -192,6 +202,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($message->getDestinateur() === $this) {
                 $message->setDestinateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|AbonnementSubscription[]
+     */
+    public function getSubscriptions(): Collection
+    {
+        return $this->subscriptions;
+    }
+
+    public function addSubscription(AbonnementSubscription $subscription): self
+    {
+        if (!$this->subscriptions->contains($subscription)) {
+            $this->subscriptions[] = $subscription;
+            $subscription->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscription(AbonnementSubscription $subscription): self
+    {
+        if ($this->subscriptions->contains($subscription)) {
+            $this->subscriptions->removeElement($subscription);
+            // set the owning side to null (unless already changed)
+            if ($subscription->getUser() === $this) {
+                $subscription->setUser(null);
             }
         }
 
