@@ -1,0 +1,108 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} | Abonnement {% endblock %}{% block stylesheets %}
+    {{parent()}}
+    <link rel="stylesheet" type="text/css" href="{{asset('assetsBo/plugins/table/datatable/datatables.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assetsBo/plugins/table/datatable/custom_dt_html5.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assetsBo/plugins/table/datatable/dt-global_style.css')}}">
+    <style type="text/css">
+        .widget-content-area{box-shadow: none;}
+    </style>
+{% endblock %}
+
+
+
+{% block body_bo %}
+    <div class="layout-px-spacing">
+        <div class="row layout-top-spacing">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">List de Abonnement</h5>
+                        </div>
+
+                        <div class="dropdown  custom-dropdown">
+                            <a class="dropdown-toggle" href="#" role="button" id="uniqueVisitors" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                            </a>
+                            <div class="dropdown  custom-dropdown">
+                                <a class="btn" href="{{ path('abonnement_new') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Ajouter
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-content widget-content-area br-6">
+                        <div class="table-responsive mb-4 mt-4">
+                            <table id="html5-extension" class="table table-hover non-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                                                                    <th>Id</th>
+                                                                                    <th>Debut</th>
+                                                                                    <th>Fin</th>
+                                                                                <th>actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    {% for abonnement in abonnements %}
+                                    <tr>
+                                                            <td>{{ abonnement.id }}</td>
+                                                                                <td>{{ abonnement.debut ? abonnement.debut|date('Y-m-d') : '' }}</td>
+                                                                                <td>{{ abonnement.fin ? abonnement.fin|date('Y-m-d') : '' }}</td>
+                                                                                <td>
+                                            <a href="{{ path('abonnement_edit', {'id': abonnement.id}) }}">edit</a>
+                                            {{ include('abonnement/_delete_form.html.twig') }}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4">Aucun element trouve</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block javascripts %}
+    {{parent()}}
+
+    <script src="{{asset('assetsBo/plugins/table/datatable/datatables.js')}}"></script>
+    <!-- NOTE TO Use Copy CSV Excel PDF Print Options You Must Include These Files  -->
+    <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/dataTables.buttons.min.js')}}"></script>
+    <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/jszip.min.js')}}"></script>    
+    <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/buttons.html5.min.js')}}"></script>
+    <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/buttons.print.min.js')}}"></script>
+    <script>
+        $('#sidebar .menu.menu-commande').addClass('active');
+        $('#html5-extension').DataTable( {
+            dom: '<"row"<"col-md-12"<"row"<"col-md-6"B><"col-md-6"f> > ><"col-md-12"rt> <"col-md-12"<"row"<"col-md-5"i><"col-md-7"p>>> >',
+            buttons: {
+                buttons: [
+                    { extend: 'copy', className: 'btn' },
+                    { extend: 'csv', className: 'btn' },
+                    { extend: 'excel', className: 'btn' },
+                    { extend: 'print', className: 'btn' }
+                ]
+            },
+            "oLanguage": {
+                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+                "sInfo": "voir page _PAGE_ of _PAGES_",
+                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                "sSearchPlaceholder": "Search...",
+               "sLengthMenu": "Results :  _MENU_",
+            },
+            "stripeClasses": [],
+            "lengthMenu": [7, 10, 20, 50],
+            "pageLength": 7 
+        } );
+    </script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} | Abonnement {% endblock %}
+
+{% block dataStructured %}{% endblock %}
+{% block body %}
+    <h1>Abonnement</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ abonnement.id }}</td>
+            </tr>
+            <tr>
+                <th>Debut</th>
+                <td>{{ abonnement.debut ? abonnement.debut|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Fin</th>
+                <td>{{ abonnement.fin ? abonnement.fin|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('abonnement_index') }}">back to list</a>
+
+    <a href="{{ path('abonnement_edit', {'id': abonnement.id}) }}">edit</a>
+
+    {{ include('abonnement/_delete_form.html.twig') }}
+{% endblock %}

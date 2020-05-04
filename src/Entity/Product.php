@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -50,6 +52,16 @@ class Product
      * @ORM\Column(type="integer", nullable=true)
      */
     private $type;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Panier", mappedBy="product")
+     */
+    private $formules;
+
+    public function __construct()
+    {
+        $this->formules = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -137,6 +149,34 @@ class Product
     public function setType(?int $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Panier[]
+     */
+    public function getFormules(): Collection
+    {
+        return $this->formules;
+    }
+
+    public function addFormule(Panier $formule): self
+    {
+        if (!$this->formules->contains($formule)) {
+            $this->formules[] = $formule;
+            $formule->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormule(Panier $formule): self
+    {
+        if ($this->formules->contains($formule)) {
+            $this->formules->removeElement($formule);
+            $formule->removeProduct($this);
+        }
 
         return $this;
     }

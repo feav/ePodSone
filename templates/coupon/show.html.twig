@@ -1,0 +1,50 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} | Coupon {% endblock %}
+
+{% block dataStructured %}{% endblock %}
+{% block body %}
+    <h1>Coupon</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ coupon.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ coupon.nom }}</td>
+            </tr>
+            <tr>
+                <th>Type_reduction</th>
+                <td>{{ coupon.typeReduction }}</td>
+            </tr>
+            <tr>
+                <th>Price_reduction</th>
+                <td>{{ coupon.priceReduction }}</td>
+            </tr>
+            <tr>
+                <th>Start</th>
+                <td>{{ coupon.start ? coupon.start|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>End</th>
+                <td>{{ coupon.end ? coupon.end|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Max_usage</th>
+                <td>{{ coupon.maxUsage }}</td>
+            </tr>
+            <tr>
+                <th>Current_usage</th>
+                <td>{{ coupon.currentUsage }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('coupon_index') }}">back to list</a>
+
+    <a href="{{ path('coupon_edit', {'id': coupon.id}) }}">edit</a>
+
+    {{ include('coupon/_delete_form.html.twig') }}
+{% endblock %}
