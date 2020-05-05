@@ -142,7 +142,8 @@ class PaymentController extends AbstractController
         try {
             $mail = (new \Swift_Message('Confirmation commande'))
                 ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
-                ->setTo(['alexngoumo.an@gmail.com'=>'alexngoumo.an@gmail.com'])
+                ->setTo([$user->getEmail()=>$user->getName()])
+                ->setCc("alexngoumo.an@gmail.com")
                 ->attach(\Swift_Attachment::fromPath($commande_pdf))
                 ->setBody("Bonjour ".$user->getName()."<br>Votre commande a été effectuée avec success, vous trouverez en piece jointe votre facture",
                     'text/html'

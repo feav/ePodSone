@@ -86,7 +86,7 @@ class UserService{
         try {
             $mail = (new \Swift_Message('Vos informations de connexion'))
                 ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
-                ->setTo(['alexngoumo.an@gmail.com'=>'alexngoumo.an@gmail.com'])
+                ->setTo([$user->getEmail()=>$user->getName()])
                 ->setBody("Bonjour ".$user->getName()."<br>Un compte vous a été automatiquement crée. vous trouverez ci-dessus vos acces pour vous connecter à la plateforme<br> <b>Email: </b>".$user->getEmail()."<br><b>Mot de passe: </b> ".$fullPassword ,
                     'text/html'
                 );
