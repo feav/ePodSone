@@ -364,7 +364,6 @@
       left: 0;
       z-index: 2;
     }
-    .box-error-payment.open{display: block;}
   </style>
 {% endblock %}
 
@@ -482,7 +481,8 @@
             </div>
             {% if is_granted('IS_AUTHENTICATED_FULLY') and (app.user.getStripeCustomId is not null) %}
               <div style="text-align: center;margin-top: 19px;font-size: 16px">
-                  <a href="javascript:void()" style="text-decoration: underline;" title="Vous serez automatiquement debité sur la precedente carte utilisée">Payer en un click</a>
+                  <a href="{{path('direct_paid')}}" class="oneClickPaid" style="text-decoration: underline;" title="Vous serez automatiquement debité sur la precedente carte utilisée">Payer en 1 click</a><br>
+                  <small style="display: block;margin-top: 6px;">Pour le paiement en un click, Vous serez automatiquement debité sur votre precedente carte utilisée</small>
               </div>
             {% endif %}
             
@@ -494,9 +494,8 @@
         <div class="modal-content">
           <div class="alert alert-danger alert-dismissible fade show box-error-payment" role="alert">
             <span class="text"></span>
-            Un utilisateur existe déjà avec l'email alexngoumo.an@gmail.com. s'il s'agit de vous, veuillez vous connecter
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">×</span>
+            <button type="button" class="close close-alert-msg">
+              x
             </button>
           </div>
           <div class="modal-header text-center border-0">
@@ -661,6 +660,9 @@
     $(".open-modal-payment").click(function(){
       $("#modal-payment").modal({backdrop: "static"});
     });
+    $('.close-alert-msg').click(function(){
+      $('#modal-payment .alert-dismissible').css('display','none');
+    })
   </script>
   <script type="text/javascript">
         var stripe = Stripe('pk_test_CtAIy4NNabE9gv280qV4UijC');
@@ -704,6 +706,7 @@
         // Handle form submission.
         var form = document.getElementById('payment-form');
         form.addEventListener('submit', function(event) {
+          $('#stripePaidBox button.submit').css('pointer-events','none');
             event.preventDefault();
             function validate(){
                 try{
@@ -732,6 +735,7 @@
                 if (!validate() || result.error) {
                   var errorElement = document.getElementById('card-errors');
                   errorElement.textContent = result.error.message;
+                  $('#stripePaidBox button.submit').css('pointer-events','auto');
                 } else {
                   stripeSourceHandler(result.source);
                 }
@@ -739,7 +743,6 @@
         });
 
         function stripeSourceHandler(source) {
-            $('#stripePaidBox button.submit').css('pointer-events','none');
             $('.lds-ripple').css('display','inline-block');
             // Insert the source ID into the form so it gets submitted to the server
             var form = document.getElementById('payment-form');
@@ -767,15 +770,50 @@
                     $('#stripePaidBox button.submit').css('pointer-events','auto');
                     $('.lds-ripple').css('display','none');
 
+                    $("#modal-payment .alert-dismissible").show().delay(40000).fadeOut();
+                    $('#modal-payment .alert-dismissible').removeClass('alert-danger');
+                    $('#modal-payment .alert-dismissible').addClass('alert-success');
+                    $('#modal-payment .alert-dismissible .text').text(oReq.response);
+
                 } else {
                     toastr.error(oReq.response);
-                    $('.box-error-payment').addClass('open');
-                    $('.box-error-payment .text').text(oReq.response);
                     $('#stripePaidBox button.submit').css('pointer-events','auto');
                     $('.lds-ripple').css('display','none');
+
+                    $("#modal-payment .alert-dismissible").show().delay(40000).fadeOut();
+                    $('#modal-payment .alert-dismissible').removeClass('alert-success');
+                    $('#modal-payment .alert-dismissible').addClass('alert-danger');
+                    $('#modal-payment .alert-dismissible .text').text(oReq.response);
                 }
             };
             oReq.send(oData);  
-        }   
+        }
+
+        $('.oneClickPaid').click(function(e){
+          $(this).text('paiement en cours...');
+          $(this).css('pointer-events', 'none');
+          var $url = $(this).attr("href");
+          loadForm($url, $(this));
+          e.preventDefault();
+        });
+        function loadForm($url, $that){
+          $.ajax({
+              url: $url,
+              type: "GET",
+              dataType: "json",
+              async: true,
+              data: {},
+              success: function(data, status) {
+                $that.css('pointer-events', 'auto');
+                $that.text("Payer en 1 click");
+                toastr.success("Paiement effectué avec succèss");
+              },
+              error: function(xhr, textStatus, errorThrown) {
+                $that.css('pointer-events', 'auto');
+                $that.text("Payer en 1 click");
+                toastr.error(errorThrown);
+              }
+          });
+        }
 </script>
 {% endblock %}
