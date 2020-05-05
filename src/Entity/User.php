@@ -53,9 +53,20 @@ class User implements UserInterface
      */
     private $paniers;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $stripe_custom_id;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+
     public function __construct()
     {
         $this->discussions = new ArrayCollection();
+        $this->enabled = false;
         $this->messages = new ArrayCollection();
         $this->paniers = new ArrayCollection();
     }
@@ -231,6 +242,30 @@ class User implements UserInterface
                 $panier->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStripeCustomId(): ?string
+    {
+        return $this->stripe_custom_id;
+    }
+
+    public function setStripeCustomId(string $stripe_custom_id): self
+    {
+        $this->stripe_custom_id = $stripe_custom_id;
+
+        return $this;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

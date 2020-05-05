@@ -42,7 +42,7 @@
         height: 100vh;
         width: 290px;
         background: #fff;
-        z-index: 10000;
+        z-index: 1030;
         padding: 45px 20px 10px;
         transition: linear .2s right;
         right: -290px;
@@ -94,6 +94,277 @@
       top: 12px;
       color: #888;
     }
+
+/**
+     * The CSS shown here will not be introduced in the Quickstart guide, but shows
+     * how you can use CSS to style your Element's container.
+     */
+    .StripeElement {
+      box-sizing: border-box;
+
+      height: 40px;
+
+      padding: 10px 12px;
+
+      border: 1px solid transparent;
+      border-radius: 4px;
+      background-color: white;
+
+      -webkit-transition: box-shadow 150ms ease;
+      transition: box-shadow 150ms ease;
+      border:1px solid #f4f4f4;
+    }
+
+    .StripeElement--focus {
+      box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+
+    .StripeElement--invalid {
+      border-color: #fa755a;
+    }
+
+    .StripeElement--webkit-autofill {
+      background-color: #fefde5 !important;
+    }
+    #card-errors{color: #c31b1b}
+    #stripePaidBox button.submit {
+        cursor: pointer;
+        display: inline-block;
+        height: 40px;
+        width: 100%;
+        margin-top: 40px;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 40px;
+        letter-spacing: 0.025em;
+        text-decoration: none;
+        white-space: nowrap;
+        background: #b64645;
+        color: #fff;
+        border: none;
+        outline: none;
+        border-radius: 4px;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
+        -webkit-transition: all 150ms ease;
+        transition: all 150ms ease;
+    }
+    #stripePaidBox .paid-head{
+        text-align: center;
+        color: #b64645;
+        margin-top: 15px;
+    }
+    .lds-ripple {
+        display: none;
+        width: 80px;
+        height: 80px;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        margin: auto;
+        transform: translateY(-50%);
+        z-index: 50;
+    }
+    .lds-ripple div {
+      position: absolute;
+      border: 4px solid green;
+      opacity: 1;
+      border-radius: 50%;
+      animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    .lds-ripple div:nth-child(2) {
+      animation-delay: -0.5s;
+    }
+    @keyframes lds-ripple {
+      0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+      100% {
+        top: 0px;
+        left: 0px;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+      }
+    }
+    .form-group{margin-bottom: 5px;}
+    .modal-dialog{max-width: 400px;}
+    .list-cart{
+      position: absolute;
+    }
+    .list-inline-item:not(:last-child){margin-right: 0}
+    .list-inline-item .fa-2x {
+      color: #009b72!important;
+      font-size: 1.7em;
+    }
+
+    /**
+     * Extracted from: SweetAlert
+     * Modified by: Istiak Tridip
+     */
+    .success-checkmark {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        z-index: 60;
+      width: 80px;
+      height: 115px;
+      margin: 0 auto;
+      display: none;
+    }
+    .success-checkmark .check-icon {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      border-radius: 50%;
+      box-sizing: content-box;
+      border: 4px solid #4CAF50;
+      display: none;
+    }
+    .success-checkmark .check-icon::before {
+      top: 3px;
+      left: -2px;
+      width: 30px;
+      transform-origin: 100% 50%;
+      border-radius: 100px 0 0 100px;
+    }
+    .success-checkmark .check-icon::after {
+      top: 0;
+      left: 30px;
+      width: 60px;
+      transform-origin: 0 50%;
+      border-radius: 0 100px 100px 0;
+      animation: rotate-circle 4.25s ease-in;
+    }
+    .success-checkmark .check-icon::before, .success-checkmark .check-icon::after {
+      content: '';
+      height: 100px;
+      position: absolute;
+      background: #FFFFFF;
+      transform: rotate(-45deg);
+    }
+    .success-checkmark .check-icon .icon-line {
+      height: 5px;
+      background-color: #4CAF50;
+      display: block;
+      border-radius: 2px;
+      position: absolute;
+      z-index: 10;
+    }
+    .success-checkmark .check-icon .icon-line.line-tip {
+      top: 46px;
+      left: 14px;
+      width: 25px;
+      transform: rotate(45deg);
+      animation: icon-line-tip 0.75s;
+    }
+    .success-checkmark .check-icon .icon-line.line-long {
+      top: 38px;
+      right: 8px;
+      width: 47px;
+      transform: rotate(-45deg);
+      animation: icon-line-long 0.75s;
+    }
+    .success-checkmark .check-icon .icon-circle {
+      top: -4px;
+      left: -4px;
+      z-index: 10;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      position: absolute;
+      box-sizing: content-box;
+      border: 4px solid rgba(76, 175, 80, 0.5);
+    }
+    .success-checkmark .check-icon .icon-fix {
+      top: 8px;
+      width: 5px;
+      left: 26px;
+      z-index: 1;
+      height: 85px;
+      position: absolute;
+      transform: rotate(-45deg);
+      background-color: #FFFFFF;
+    }
+
+    @keyframes rotate-circle {
+      0% {
+        transform: rotate(-45deg);
+      }
+      5% {
+        transform: rotate(-45deg);
+      }
+      12% {
+        transform: rotate(-405deg);
+      }
+      100% {
+        transform: rotate(-405deg);
+      }
+    }
+    @keyframes icon-line-tip {
+      0% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+      }
+      54% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+      }
+      70% {
+        width: 50px;
+        left: -8px;
+        top: 37px;
+      }
+      84% {
+        width: 17px;
+        left: 21px;
+        top: 48px;
+      }
+      100% {
+        width: 25px;
+        left: 14px;
+        top: 45px;
+      }
+    }
+    @keyframes icon-line-long {
+      0% {
+        width: 0;
+        right: 46px;
+        top: 54px;
+      }
+      65% {
+        width: 0;
+        right: 46px;
+        top: 54px;
+      }
+      84% {
+        width: 55px;
+        right: 0px;
+        top: 35px;
+      }
+      100% {
+        width: 47px;
+        right: 8px;
+        top: 38px;
+      }
+    }
+    .box-error-payment{
+      display: none;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      left: 0;
+      z-index: 2;
+    }
+    .box-error-payment.open{display: block;}
   </style>
 {% endblock %}
 
@@ -207,11 +478,77 @@
               </li>
             </ul>
             <div>
-              <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Paiement de 50€ <strike>79€</strike></a>
+              <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 open-modal-payment">Paiement de 50€ <strike>79€</strike></a>
             </div>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') and (app.user.getStripeCustomId is not null) %}
+              <div style="text-align: center;margin-top: 19px;font-size: 16px">
+                  <a href="javascript:void()" style="text-decoration: underline;" title="Vous serez automatiquement debité sur la precedente carte utilisée">Payer en un click</a>
+              </div>
+            {% endif %}
+            
         </div>
       </div>
    </div>
+   <div class="modal fade" id="modal-payment" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="alert alert-danger alert-dismissible fade show box-error-payment" role="alert">
+            <span class="text"></span>
+            Un utilisateur existe déjà avec l'email alexngoumo.an@gmail.com. s'il s'agit de vous, veuillez vous connecter
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-header text-center border-0">
+            <ul class="list-inline list-cart">
+                <li class="list-inline-item"><i class="text-muted fa fa-cc-visa fa-2x"></i></li>
+                <li class="list-inline-item"><i class="fa fa-cc-mastercard fa-2x"></i></li>
+                <li class="list-inline-item"><i class="fa fa-cc-amex fa-2x"></i></li>
+                <li class="list-inline-item"><i class="fa fa-cc-discover fa-2x"></i></li>
+            </ul>
+            <div class="w-100 pt-4">
+              <h5 class="h4" style="margin: 1.5rem; color: green">Paiement securisé <i class="fa fa-key"></i></h5>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">
+                <img src="assets/img/icons/interface/icon-x.svg" alt="Icon">
+              </span>
+            </button>
+          </div>
+          <div class="modal-body px-md-4 px-lg-5 pb-4 pb-lg-5" style="padding-top: 0;">
+            <form id="payment-form" name="payment-form" action="{{path('checkout_product')}}" style="position: relative;">
+              <div class="form-group">
+                <input type="text" class="form-control" name="name" placeholder="nom" value="{{ app.user ? app.user.name : '' }}">
+              </div>
+              <div class="form-group">
+                <input type="email" class="form-control" name="email" placeholder="adresse email" value="{{ app.user ? app.user.email : '' }}">
+              </div>
+              <div class="form-group">
+                  <div id="card-element">
+                    <!-- A Stripe Element will be inserted here. -->
+                  </div>
+
+                  <!-- Used to display form errors. -->
+                  <div id="card-errors" role="alert"></div>
+                </div>
+              <button class="btn btn-primary btn-block" type="submit" style="margin-top: 20px;">Valider</button>
+              <div class="lds-ripple"><div></div><div></div></div>
+              <div class="success-checkmark">
+                <div class="check-icon">
+                  <span class="icon-line line-tip"></span>
+                  <span class="icon-line line-long"></span>
+                  <div class="icon-circle"></div>
+                  <div class="icon-fix"></div>
+                </div>
+              </div>
+            </form>
+            <div class="text-center text-small mt-3">
+              Vous avez déjà un compte? <a href="{{path('app_login')}}">Connectez-vous</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
    <footer class="bg-primary-3 text-white links-white pb-4 footer-1">
       <div class="container">
          <div class="row">
@@ -313,13 +650,132 @@
   <!-- Required theme scripts (Do not remove) -->
   <script type="text/javascript" src="{{ asset('assets/js/theme.js')}}"></script>
   <!-- Removes page load animation when window is finished loading -->
-
+  <script src="https://js.stripe.com/v3/"></script>
   <script type="text/javascript">
     window.addEventListener("load",function(){
       document.querySelector('body').classList.add('loaded');
-   });
+    });
     $('.toggle-cart').click(function(){
       $('.cart-wrapper').toggleClass('open');
     })
+    $(".open-modal-payment").click(function(){
+      $("#modal-payment").modal({backdrop: "static"});
+    });
   </script>
+  <script type="text/javascript">
+        var stripe = Stripe('pk_test_CtAIy4NNabE9gv280qV4UijC');
+
+        var elements = stripe.elements();
+        var style = {
+          base: {
+            color: '#32325d',
+            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            '::placeholder': {
+              color: '#aab7c4'
+            }
+          },
+          invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+          }
+        };
+
+        // Create an instance of the card Element.
+        var card = elements.create('card', {
+            style: style,
+            hidePostalCode : true
+        });
+
+        // Add an instance of the card Element into the `card-element` <div>.
+        card.mount('#card-element');
+
+        // Handle real-time validation errors from the card Element.
+        card.addEventListener('change', function(event) {
+          var displayError = document.getElementById('card-errors');
+          if (event.error) {
+            displayError.textContent = event.error.message;
+          } else {
+            displayError.textContent = '';
+          }
+        });
+
+        // Handle form submission.
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            function validate(){
+                try{
+                    var validator = $('#payment-form').validate({
+                        rules:{
+                            name:{
+                                required:true
+                            },
+                            email:{
+                                required:true,
+                                email:true
+                            },
+                        }
+                    });
+                    
+                    var $validated = $('#payment-form').valid();
+                    return $validated;
+                }catch(error){
+                    console.log(error)
+                }
+            }
+            var ownerInfo = {
+                owner: {},
+            };
+            stripe.createSource(card, ownerInfo).then(function(result) {
+                if (!validate() || result.error) {
+                  var errorElement = document.getElementById('card-errors');
+                  errorElement.textContent = result.error.message;
+                } else {
+                  stripeSourceHandler(result.source);
+                }
+            });
+        });
+
+        function stripeSourceHandler(source) {
+            $('#stripePaidBox button.submit').css('pointer-events','none');
+            $('.lds-ripple').css('display','inline-block');
+            // Insert the source ID into the form so it gets submitted to the server
+            var form = document.getElementById('payment-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeSource');
+            hiddenInput.setAttribute('value', source.id);
+            form.appendChild(hiddenInput);
+
+            // Submit the form
+            //form.submit();
+            proceedPayment();
+        }
+        function proceedPayment(){
+            var form = document.getElementById('payment-form');
+            oData = new FormData(form);
+            var oReq = new XMLHttpRequest();
+            oReq.open("POST", $('#payment-form').attr('action'), true);
+            oReq.onload = function(oEvent) {
+                if (oReq.status == 200) {
+                    $(".success-checkmark").show().delay(3000).fadeOut();
+                    $(".check-icon").show().show().delay(3000).fadeOut();
+                    toastr.success(oReq.response);
+                    card.clear();
+                    $('#stripePaidBox button.submit').css('pointer-events','auto');
+                    $('.lds-ripple').css('display','none');
+
+                } else {
+                    toastr.error(oReq.response);
+                    $('.box-error-payment').addClass('open');
+                    $('.box-error-payment .text').text(oReq.response);
+                    $('#stripePaidBox button.submit').css('pointer-events','auto');
+                    $('.lds-ripple').css('display','none');
+                }
+            };
+            oReq.send(oData);  
+        }   
+</script>
 {% endblock %}
