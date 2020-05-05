@@ -22,9 +22,6 @@
                         </div>
 
                         <div class="dropdown  custom-dropdown">
-                            <a class="dropdown-toggle" href="#" role="button" id="uniqueVisitors" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                            </a>
                             <div class="dropdown  custom-dropdown">
                                 <a class="btn" href="{{ path('formule_new') }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Ajouter
@@ -40,6 +37,9 @@
                                     <tr>
                                                                                     <th>Id</th>
                                                                                     <th>Message</th>
+                                                                                    <th>Price</th>
+                                                                                    <th>Month</th>
+                                                                                    <th>Name</th>
                                                                                 <th>actions</th>
                                     </tr>
                                 </thead>
@@ -48,6 +48,9 @@
                                     <tr>
                                                             <td>{{ formule.id }}</td>
                                                                                 <td>{{ formule.message }}</td>
+                                                                                <td>{{ formule.price }}</td>
+                                                                                <td>{{ formule.month }}</td>
+                                                                                <td>{{ formule.name }}</td>
                                                                                 <td>
                                             <a href="{{ path('formule_edit', {'id': formule.id}) }}">edit</a>
                                             {{ include('formule/_delete_form.html.twig') }}
@@ -55,7 +58,7 @@
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        <td colspan="3">Aucun element trouve</td>
+                                        <td colspan="6">Aucun element trouve</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

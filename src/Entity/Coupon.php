@@ -58,6 +58,11 @@ class Coupon
      */
     private $paniers;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $code;
+
     public function __construct()
     {
         $this->paniers = new ArrayCollection();
@@ -176,6 +181,18 @@ class Coupon
             $this->paniers->removeElement($panier);
             $panier->removeCoupon($this);
         }
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): self
+    {
+        $this->code = $code;
 
         return $this;
     }

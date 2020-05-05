@@ -23,20 +23,30 @@ class Formule
      */
     private $message;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Abonnement", inversedBy="formule")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $debut;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Panier", mappedBy="formules")
+     * @ORM\Column(type="float")
      */
-    private $paniers;
+    private $price;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $month;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Abonnement", mappedBy="formule")
+     */
+    private $abonnements;
 
     public function __construct()
     {
-        $this->paniers = new ArrayCollection();
+        $this->abonnements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,41 +66,81 @@ class Formule
         return $this;
     }
 
-    public function getDebut(): ?Abonnement
+    public function getAbonnement(): ?Abonnement
     {
-        return $this->debut;
+        return $this->abonnement;
     }
 
-    public function setDebut(?Abonnement $debut): self
+    public function setAbonnement(?Abonnement $abonnement): self
     {
-        $this->debut = $debut;
+        $this->abonnement = $abonnement;
+
+        return $this;
+    }
+
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): self
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getMonth(): ?int
+    {
+        return $this->month;
+    }
+
+    public function setMonth(int $month): self
+    {
+        $this->month = $month;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * @return Collection|Panier[]
+     * @return Collection|Abonnement[]
      */
-    public function getPaniers(): Collection
+    public function getAbonnements(): Collection
     {
-        return $this->paniers;
+        return $this->abonnements;
     }
 
-    public function addPanier(Panier $panier): self
+    public function addAbonnement(Abonnement $abonnement): self
     {
-        if (!$this->paniers->contains($panier)) {
-            $this->paniers[] = $panier;
-            $panier->addFormule($this);
+        if (!$this->abonnements->contains($abonnement)) {
+            $this->abonnements[] = $abonnement;
+            $abonnement->setFormule($this);
         }
 
         return $this;
     }
 
-    public function removePanier(Panier $panier): self
+    public function removeAbonnement(Abonnement $abonnement): self
     {
-        if ($this->paniers->contains($panier)) {
-            $this->paniers->removeElement($panier);
-            $panier->removeFormule($this);
+        if ($this->abonnements->contains($abonnement)) {
+            $this->abonnements->removeElement($abonnement);
+            // set the owning side to null (unless already changed)
+            if ($abonnement->getFormule() === $this) {
+                $abonnement->setFormule(null);
+            }
         }
 
         return $this;

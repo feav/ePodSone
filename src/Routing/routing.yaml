@@ -1,3 +1,6 @@
 user:
   resource: 'user.yaml'
   prefix: /user
+api:
+  resource: 'api.yaml'
+  prefix: /api

@@ -19,6 +19,8 @@ class CouponType extends AbstractType
             ->add('end')
             ->add('max_usage')
             ->add('current_usage')
+            ->add('code')
+            ->add('paniers')
         ;
     }
 

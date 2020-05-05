@@ -20,7 +20,7 @@ class ProductType extends AbstractType
             ->add('price')
             ->add('old_price')
             ->add('quantity')
-            ->add('description',TextareaType::class)
+            ->add('description',TextareaType::class, array('attr' => array('class' => 'ckeditor')))
             ->add('image', FileType::class, [
                 'required'=> false,
                 'attr' => [
