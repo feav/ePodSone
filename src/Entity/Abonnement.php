@@ -43,10 +43,16 @@ class Abonnement
      */
     private $formule;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $is_paid;
+
 
     public function __construct()
     {
         $this->paniers = new ArrayCollection();
+        $this->is_paid = 0;
     }
 
     public function getId(): ?int
@@ -124,6 +130,18 @@ class Abonnement
     public function setFormule(?Formule $formule): self
     {
         $this->formule = $formule;
+
+        return $this;
+    }
+
+    public function getIsPaid(): ?int
+    {
+        return $this->is_paid;
+    }
+
+    public function setIsPaid(int $is_paid): self
+    {
+        $this->is_paid = $is_paid;
 
         return $this;
     }

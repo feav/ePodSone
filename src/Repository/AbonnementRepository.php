@@ -17,6 +17,7 @@ class AbonnementRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Abonnement::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
 
     // /**
@@ -47,4 +48,14 @@ class AbonnementRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function updateAbonnement(){
+        $sql = "SELECT abonnement.id, abonnement.end, abonnement.state, abonnement.is_paid, formule.price, user.stripe_custom_id  FROM abonnement inner join formule inner join user 
+        WHERE abonnement.formule = formule.id AND abonnement.user = user.id AND (abonnement.end >= :today AND abonnement.state = 0) OR (abonnement.end <= :today AND abonnement.is_paid = 0)";
+
+        $abonnement = $this->em->prepare($sql);
+        $abonnement->execute(['today'=>new \Datetime()]);
+        $abonnement = $abonnement->fetchAll();
+        return $abonnement;
+    }
 }

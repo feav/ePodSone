@@ -8,11 +8,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\UserRepository;
+use App\Repository\AbonnementRepository;
 use App\Service\StripeService;
 use App\Service\UserService;
 use App\Entity\User;
 use App\Entity\Abonnement;
-use App\Entity\AbonnementSubscription;
 
 use Stripe\Stripe;
 use \Stripe\Charge;
@@ -23,12 +23,14 @@ class PaymentController extends AbstractController
     private $stripe_s;
     private $user_s;
     private $userRepository;
+    private $abonnementRepository;
 
-    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s){
+    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository){
         $this->params_dir = $params_dir;
         $this->stripe_s = $stripe_s;
         $this->user_s = $user_s;
         $this->userRepository = $userRepository;
+        $this->abonnementRepository = $abonnementRepository;
     }
     /**
      * @Route("/checkout", name="checkout_product")
@@ -125,4 +127,26 @@ class PaymentController extends AbstractController
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
+
+    /**
+     * @Route("/abonnement/update-abonnement", name="update_abonnement")
+     */
+    public function updateAbonnements(Request $request){
+        $abonnements = $this->abonnementRepository->updateAbonnement();
+        foreach ($abonnements as $key => $value) {
+            $result = $this->stripe_s->proceedPayment($value['stripe_custom_id'], $value['price']);
+            if($result == ""){
+                if(!$value['is_paid'])
+                    $value->setIsPaid(1);
+                else
+                    $value->setState(1);
+                
+                $this->createNewAbonnement($value);
+            }
+        }
+    }
+    public function createNewAbonnement(){
+        return 1;
+    }
+
 }
