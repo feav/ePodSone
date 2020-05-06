@@ -15,8 +15,9 @@ class AbonnementType extends AbstractType
             ->add('start')
             ->add('end')
             ->add('state')
-            ->add('paniers')
             ->add('formule')
+            ->add('panier')
+            ->add('user')
         ;
     }
 

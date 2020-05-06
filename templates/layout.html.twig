@@ -454,23 +454,16 @@
           <div class="card-list-formule">
           </div>
           <div class="form-group form-coupon">
-              <input type="text" name="code-promo" class="form-control" placeholder="Code promo..." style="border-radius:0">
-              <a href="javascript:void()" class="valide-coupon">je valide!</a>
+              <input type="text" name="code-promo" id="code-promo-input" class="form-control" placeholder="Code promo..." style="border-radius:0">
+              <a href="javascript:void()" onclick ="addCouponToCard('#code-promo-input',1)" class="valide-coupon">je valide!</a>
             </div>
             <ul class="totaux card-list-coupon">
             </ul>
             <ul class="totaux card-list-details">
-              <li class="item">
-                <span>Livraison:</span>
-                <span>Offerte</span>
-              </li>
-              <li class="item">
-                <span>Total:</span>
-                <span>50€ <strike>79€</strike></span>
-              </li>
             </ul>
             <div>
               <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 open-modal-payment">Paiement de 50€ <strike>79€</strike></a>
+              <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Paiement de <b class="cart-total-pay">o</b>€ <strike><i class="cart-total-reduction">0</i>€ </strike></a>
             </div>
             {% if is_granted('IS_AUTHENTICATED_FULLY') and (app.user.getStripeCustomId is not null) %}
               <div style="text-align: center;margin-top: 19px;font-size: 16px">

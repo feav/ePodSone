@@ -16,6 +16,8 @@ class FormuleType extends AbstractType
             ->add('price')
             ->add('month')
             ->add('name')
+            ->add('price_shipping')
+            ->add('try_days')
         ;
     }
 

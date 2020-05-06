@@ -4,17 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Panier;
 use App\Entity\Commande;
+use App\Entity\Abonnement;
 use App\Form\PanierType;
 use App\Service\ProductService;
 use App\Repository\PanierRepository;
 use App\Repository\CommandeRepository;
 use App\Repository\FormuleRepository;
 use App\Repository\CouponRepository;
+use App\Repository\AbonnementRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 /**
  * @Route("/api/panier")
  */
@@ -24,16 +26,19 @@ class ApiPanierController extends AbstractController
     private $panierRepository;
     private $commandeRepository;
     private $couponRepository;
+    private $userRepository;
     private $entityManager;
     private $money_unit;
-    public function __construct(FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService)
+    public function __construct(UserRepository $userRepository,AbonnementRepository $abonnementRepository,FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService)
     {
         $this->money_unit = "$";
         $this->productService = $productService;
         $this->panierRepository = $panierRepository;
         $this->commandeRepository = $commandeRepository;
+        $this->abonnementRepository = $abonnementRepository;
         $this->couponRepository = $couponRepository;
         $this->formuleRepository = $formuleRepository;
+        $this->UserRepository = $userRepository;
         
     }
     public function getCurrentCard(): Response
@@ -48,6 +53,7 @@ class ApiPanierController extends AbstractController
             $formules = array();
             $livraison = 0;
             $total = 0;
+            $reduction = 0;
 
             /**
             ** if commande do not exist create one
@@ -61,7 +67,8 @@ class ApiPanierController extends AbstractController
                     if($commande->getQuantity()>0)
                         $produis[] = array(
                             'name' => $commande->getProduct()->getName(),
-                            'price' => $commande->getPrice(),
+                            'product_price' => $commande->getPrice(),
+                            'price' => $commande->getTotalPrice(),
                             'quantity' => $commande->getQuantity(),
                             'id_product' => $commande->getProduct()->getId(),
                             'oldprice' => $commande->getQuantity(),
@@ -70,7 +77,7 @@ class ApiPanierController extends AbstractController
                 }
 
                 $formules_ = $panier->getAbonnements();
-                foreach ($formules_ as $key => $formule) {
+                foreach ($formules_ as $formule) {
                     $formules[] = array(
                         'name' => $formule->getFormule()->getName(),
                         'price' => $formule->getFormule()->getPrice(),
@@ -91,6 +98,7 @@ class ApiPanierController extends AbstractController
 
                 $livraison = $panier->getPriceShipping();
                 $total = $panier->getTotalPrice();
+                $reduction = $panier->getTotalReduction();
             }
             return new Response( json_encode(
                 array(
@@ -102,7 +110,9 @@ class ApiPanierController extends AbstractController
                         'formules' => $formules,
                         'livraison' => $livraison,
                         'total' => $total,
-                        'livraison' => $livraison
+                        'total' => $total,
+                        'livraison' => $livraison,
+                        'reduction' => $reduction
 
                     )
                 )
@@ -111,14 +121,21 @@ class ApiPanierController extends AbstractController
         }
         return new Response( json_encode(array('status' => 300, 'message' => "Utilisateur non connecte" )) );
     }
-
     public function addItemToCard(): Response
     {
-       $type = $_GET['type'];
-       
 
+       $type = $_GET['type'];
+       $quantity = $_GET['quantity'];
+
+       
         $this->entityManager = $this->getDoctrine()->getManager();
         $user = $this->getUser();
+        if(!$user){
+            if(isset($_GET['user'])){
+                $user_id = $_GET['user'];
+                $user = $userRepository->findOneById($user_id);
+            }
+        }
         if($user){
 
             $paniers = $this->panierRepository->findBy(array('user' =>  $user->getId(), 'status'=>0 ));
@@ -143,7 +160,6 @@ class ApiPanierController extends AbstractController
             **/
             if($type == 'product'){
                 $product = $_GET['product']; 
-                $quantity = $_GET['quantity'];
 
                 $product = $this->productService->findById($product);
                 if($product){
@@ -175,38 +191,84 @@ class ApiPanierController extends AbstractController
                 if($coupon){
 
                     $exist = $panier->getCoupons()->contains($coupon);
-                    if($exist){
-                        $message = "Le coupon est deja dans votre panier";
+                    if($coupon->getCurrentUsage() < $coupon->getMaxUsage() ){
+                        if($exist){
+                            if($quantity){
+                                $message = "Le coupon est deja dans votre panier";
+                            }else{
+                                $panier->removeCoupon($coupon);
+                                $message = "Le coupon a ete retire de votre panier";
+                                $coupon->setCurrentUsage( $coupon->getCurrentUsage() - 1);
+                            }
+                        }else{
+                            if($quantity){
+                                $panier->addCoupon($coupon);
+                                $message = "Le coupon a ete a ajoute a votre panier";
+                                $coupon->setCurrentUsage( $coupon->getCurrentUsage() + 1);
+                            }else{
+                                $message = "Le coupon n'est pas dans votre panier";
+                            }
+                        }
+                        $this->entityManager->persist($coupon);
+                        $this->entityManager->flush();
                     }else{
-                        $panier->addCoupon($coupon);
-                        $message = "Le coupon a ete a ajoute a votre panier";
+                        return new Response( json_encode(array('status' => 300, 'message' => "Ce coupon a atteint son nombre maximal d'utilisation" )) );
                     }
-
+                    
                 }else{
                     return new Response( json_encode(array('status' => 300, 'message' => "Ce coupon n'existe pas dans notre boutique" )) );
                 }
 
             }
-
+            /**
+            ** update formule into card
+            **/
             if($type == 'formule'){
                 $formule_id = $_GET['product']; 
+
                 $formule = $this->formuleRepository->findOneById($formule_id);
                 if($formule){
 
-                    $exist = $panier->getFormules()->contains($formule);
-                    if($exist){
-                        $message = "La formule est deja dans votre panier";
+                    $abonnement = $this->abonnementRepository->findOneBy(array('formule' =>  $formule, 'panier'=>$panier ));
+                    if($abonnement){
+
+                        if($quantity){
+                            $message = "La formule est deja dans votre panier";
+                        }else{
+                            $panier->removeAbonnement($abonnement);
+                            $message = "La formule a ete retiree de votre panier";
+                        }
                     }else{
-                        $panier->addFormule($formule);
-                        $message = "La formule a ete a ajoute a votre panier";
+
+                        if($quantity){
+                            $date = new \DateTime('2000-01-01');
+                            $date_start = new \DateTime('2000-01-01');
+                            $month = $formule->getMonth();
+                            $date->add(new \DateInterval('P0Y'.$month.'M0DT0H0M0S'));
+
+                            $abonnement = new Abonnement();
+                            $abonnement->setPanier($panier);
+                            $abonnement->setFormule($formule);
+                            $abonnement->setStart($date_start);
+                            $abonnement->setEnd($date);
+                            $abonnement->setUser($user);
+                            $abonnement->setState(0);
+
+                            $this->entityManager->persist($abonnement);
+                            $this->entityManager->flush();
+                            $message = "La formule a ete a ajoutee a votre panier";
+                        }else{
+                            $message = "La formule n'etait pas dans votre panier";
+                        }
+
                     }
 
-
                 }else{
-                    return new Response( json_encode(array('status' => 300, 'message' => "Cette Formule n'existe pas dans notre boutique" )) );
+                    return new Response( json_encode(array('status' => 300, 'message' => "Ce produit n'existe pas dans notre boutique" )) );
                 }
 
             }
+            $panier->refresh_price();
             $this->entityManager->persist($panier);
             $this->entityManager->flush();
 

@@ -45,11 +45,6 @@ class Panier
     private $price_shipping;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Commande", mappedBy="panier",cascade={"persist"})
-     */
-    private $commandes;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $token;
@@ -70,11 +65,14 @@ class Panier
     private $total_reduction;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Abonnement", mappedBy="paniers")
+     * @ORM\OneToMany(targetEntity="App\Entity\Abonnement", mappedBy="panier",cascade={"persist"})
      */
     private $abonnements;
 
-
+    /**
+     ** @ORM\OneToMany(targetEntity="App\Entity\Commande", mappedBy="panier",cascade={"persist"})
+     */    
+    private $commandes;
 
     public function __construct()
     {
@@ -94,8 +92,8 @@ class Panier
         foreach ($this->commandes as $key => $commande) {
             $sommes +=  $commande->getTotalPrice();
         }
-        foreach ($this->formules as $key => $formule) {
-            $sommes +=  $formule->getPrice();
+        foreach ($this->abonnements as $key => $abonnement) {
+            $sommes +=  $abonnement->getFormule()->getPrice();
         }
         $reduction = 0;
         foreach ($this->coupons as $key => $coupon) {
@@ -225,6 +223,42 @@ class Panier
         return $this;
     }
 
+
+    /**
+     * @return Collection|Abonnement[]
+     */
+    public function getAbonnements(): Collection
+    {
+        return $this->abonnements;
+    }
+
+    public function addAbonnement(Abonnement $abonnements): self
+    {
+        if (!$this->abonnements->contains($abonnements)) {
+            $this->abonnements[] = $abonnements;
+            $abonnements->setPanier($this);
+        }
+        $this->refresh_price();
+
+        return $this;
+    }
+
+    public function removeAbonnement(Abonnement $abonnements): self
+    {
+        if ($this->abonnements->contains($abonnements)) {
+            $this->abonnements->removeElement($abonnements);
+            // set the owning side to null (unless already changed)
+            if ($abonnements->getPanier() === $this) {
+                $abonnements->setPanier(null);
+            }
+        }
+        $this->refresh_price();
+
+        return $this;
+    }
+
+
+
     public function getToken(): ?string
     {
         return $this->token;
@@ -281,34 +315,6 @@ class Panier
 
     public function __toString (  ) : string{
         return $this->getToken();
-    }
-
-    /**
-     * @return Collection|Abonnement[]
-     */
-    public function getAbonnements(): Collection
-    {
-        return $this->abonnements;
-    }
-
-    public function addAbonnement(Abonnement $abonnement): self
-    {
-        if (!$this->abonnements->contains($abonnement)) {
-            $this->abonnements[] = $abonnement;
-            $abonnement->addPanier($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAbonnement(Abonnement $abonnement): self
-    {
-        if ($this->abonnements->contains($abonnement)) {
-            $this->abonnements->removeElement($abonnement);
-            $abonnement->removePanier($this);
-        }
-
-        return $this;
     }
 
 
