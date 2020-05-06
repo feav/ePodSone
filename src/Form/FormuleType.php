@@ -13,8 +13,9 @@ class FormuleType extends AbstractType
     {
         $builder
             ->add('message')
-            ->add('debut')
-            ->add('paniers')
+            ->add('price')
+            ->add('month')
+            ->add('name')
         ;
     }
 

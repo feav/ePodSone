@@ -18,15 +18,6 @@ class Panier
      */
     private $id;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Product", inversedBy="formules")
-     */
-    private $product;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Formule", inversedBy="paniers")
-     */
-    private $formules;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Coupon", inversedBy="paniers")
@@ -53,68 +44,74 @@ class Panier
      */
     private $price_shipping;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Commande", mappedBy="panier",cascade={"persist"})
+     */
+    private $commandes;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $token;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $paiement_date;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $total_reduction;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Abonnement", mappedBy="paniers")
+     */
+    private $abonnements;
+
+
+
     public function __construct()
     {
-        $this->product = new ArrayCollection();
-        $this->formules = new ArrayCollection();
+        $this->price_shipping = 0;
+        $this->total_reduction = 0;
+        $this->total_price = 0;
+        $this->status = 0;
+        $this->token = 0;
+        $this->emmission = new \DateTime();
         $this->coupons = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
+        $this->abonnements = new ArrayCollection();
+    }
+
+    public function refresh_price(){
+        $sommes = 0;
+        foreach ($this->commandes as $key => $commande) {
+            $sommes +=  $commande->getTotalPrice();
+        }
+        foreach ($this->formules as $key => $formule) {
+            $sommes +=  $formule->getPrice();
+        }
+        $reduction = 0;
+        foreach ($this->coupons as $key => $coupon) {
+            if($coupon->getTypeReduction()){
+                $reduction +=  $sommes*$coupon->getPriceReduction()/100;
+            }else{
+                $reduction +=  $coupon->getPriceReduction();
+            }
+        }
+        $this->total_price =  $sommes;
+        $this->total_reduction = $reduction;
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection|Product[]
-     */
-    public function getProduct(): Collection
-    {
-        return $this->product;
-    }
-
-    public function addProduct(Product $product): self
-    {
-        if (!$this->product->contains($product)) {
-            $this->product[] = $product;
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): self
-    {
-        if ($this->product->contains($product)) {
-            $this->product->removeElement($product);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Formule[]
-     */
-    public function getFormules(): Collection
-    {
-        return $this->formules;
-    }
-
-    public function addFormule(Formule $formule): self
-    {
-        if (!$this->formules->contains($formule)) {
-            $this->formules[] = $formule;
-        }
-
-        return $this;
-    }
-
-    public function removeFormule(Formule $formule): self
-    {
-        if ($this->formules->contains($formule)) {
-            $this->formules->removeElement($formule);
-        }
-
-        return $this;
     }
 
     /**
@@ -130,6 +127,7 @@ class Panier
         if (!$this->coupons->contains($coupon)) {
             $this->coupons[] = $coupon;
         }
+        $this->refresh_price();
 
         return $this;
     }
@@ -139,6 +137,7 @@ class Panier
         if ($this->coupons->contains($coupon)) {
             $this->coupons->removeElement($coupon);
         }
+        $this->refresh_price();
 
         return $this;
     }
@@ -187,7 +186,130 @@ class Panier
     public function setPriceShipping(float $price_shipping): self
     {
         $this->price_shipping = $price_shipping;
+        
+        $this->refresh_price();
 
         return $this;
     }
+
+    /**
+     * @return Collection|Commande[]
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): self
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->setPanier($this);
+        }
+        $this->refresh_price();
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): self
+    {
+        if ($this->commandes->contains($commande)) {
+            $this->commandes->removeElement($commande);
+            // set the owning side to null (unless already changed)
+            if ($commande->getPanier() === $this) {
+                $commande->setPanier(null);
+            }
+        }
+        $this->refresh_price();
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+    public function initToken(): self
+    {
+        $this->token = md5($this->getId());
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getPaiementDate(): ?\DateTimeInterface
+    {
+        return $this->paiement_date;
+    }
+
+    public function setPaiementDate(\DateTimeInterface $paiement_date): self
+    {
+        $this->paiement_date = $paiement_date;
+
+        return $this;
+    }
+
+    public function getTotalReduction(): ?float
+    {
+        return $this->total_reduction;
+    }
+
+    public function setTotalReduction(float $total_reduction): self
+    {
+        $this->total_reduction = $total_reduction;
+
+        return $this;
+    }
+
+    public function __toString (  ) : string{
+        return $this->getToken();
+    }
+
+    /**
+     * @return Collection|Abonnement[]
+     */
+    public function getAbonnements(): Collection
+    {
+        return $this->abonnements;
+    }
+
+    public function addAbonnement(Abonnement $abonnement): self
+    {
+        if (!$this->abonnements->contains($abonnement)) {
+            $this->abonnements[] = $abonnement;
+            $abonnement->addPanier($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAbonnement(Abonnement $abonnement): self
+    {
+        if ($this->abonnements->contains($abonnement)) {
+            $this->abonnements->removeElement($abonnement);
+            $abonnement->removePanier($this);
+        }
+
+        return $this;
+    }
+
+
 }

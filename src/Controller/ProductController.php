@@ -48,13 +48,14 @@ class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $uploadedFile = $form['image']->getData();
-            
-            $newFilename = $this->saveImage($uploadedFile,'/public/assets/img/products/');
+            $newFilename = "avatar.png";
+            if($uploadedFile)
+                $newFilename = $this->saveImage($uploadedFile,'/public/assets/img/products/');
 
             $product->setImage($newFilename);
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
             $entityManager->persist($product);
+            $entityManager->flush();
             return $this->redirectToRoute('product_index');
         }
 

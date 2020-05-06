@@ -18,6 +18,7 @@
   <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
   <link href="{{asset('assetsBo/plugins/apex/apexcharts.css')}}" rel="stylesheet" type="text/css">
   <link href="{{asset('assetsBo/assets/css/dashboard/dash_1.css')}}" rel="stylesheet" type="text/css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
   <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
   <style type="text/css">
     #sidebar ul.menu-categories li.menu > .dropdown-toggle svg, 
@@ -266,6 +267,15 @@
     <script src="{{asset('assetsBo/plugins/apex/apexcharts.min.js')}}"></script>
     <script src="{{asset('assetsBo/assets/js/dashboard/dash_1.js')}}"></script>
     <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <script src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('textarea.ckeditor').ckeditor();
+            $('.js-datepicker').datepicker({format: 'yyyy-mm-dd'});
+        });
+    </script>
+
 <style type="text/css">
 #sidebar ul.menu-categories li.menu > .dropdown-toggle {
     color: #ffffff;

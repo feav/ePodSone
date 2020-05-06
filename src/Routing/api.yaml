@@ -1,0 +1,11 @@
+commande:
+   path: /panier
+   controller: App\Controller\ApiPanierController::index
+commande_add_to_card:
+   path: /panier/add/
+   controller: App\Controller\ApiPanierController::addItemToCard
+   
+
+commande_get_card:
+   path: /panier/card
+   controller: App\Controller\ApiPanierController::getCurrentCard

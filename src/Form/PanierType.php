@@ -15,7 +15,7 @@ class PanierType extends AbstractType
             ->add('total_price')
             ->add('emmission')
             ->add('price_shipping')
-            ->add('product')
+            ->add('token')
             ->add('formules')
             ->add('coupons')
             ->add('user')

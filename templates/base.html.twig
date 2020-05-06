@@ -17,9 +17,12 @@
         </style>
     </head>
     <body data-base-url="{{url('home')}}" class="{% block class %}{% endblock %}">
-
+    
       {% block body %}{% endblock %}
-
+    <div class="toast__container">
+      <div class="toast__cell">
+      </div>
+    </div>
         {% block javascripts %}{% endblock %}
         <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/jqueryvalidation/jquery.validate.min.js') }}"></script>

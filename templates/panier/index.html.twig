@@ -42,6 +42,7 @@
                                                                                     <th>Total_price</th>
                                                                                     <th>Emmission</th>
                                                                                     <th>Price_shipping</th>
+                                                                                    <th>Token</th>
                                                                                 <th>actions</th>
                                     </tr>
                                 </thead>
@@ -52,6 +53,7 @@
                                                                                 <td>{{ panier.totalPrice }}</td>
                                                                                 <td>{{ panier.emmission ? panier.emmission|date('Y-m-d') : '' }}</td>
                                                                                 <td>{{ panier.priceShipping }}</td>
+                                                                                <td>{{ panier.token }}</td>
                                                                                 <td>
                                             <a href="{{ path('panier_edit', {'id': panier.id}) }}">edit</a>
                                             {{ include('panier/_delete_form.html.twig') }}
@@ -59,7 +61,7 @@
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        <td colspan="5">Aucun element trouve</td>
+                                        <td colspan="6">Aucun element trouve</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

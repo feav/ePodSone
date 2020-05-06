@@ -15,4 +15,8 @@ class ProductService{
         $products = $this->doctrine->getRepository(Product::class)->findAll();
         return $products;
     }
+    public function findById(int $id){
+        $product = $this->doctrine->getRepository(Product::class)->findOneById($id);
+        return $product;
+    }
 }

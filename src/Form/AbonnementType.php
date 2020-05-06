@@ -12,6 +12,11 @@ class AbonnementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('start')
+            ->add('end')
+            ->add('state')
+            ->add('paniers')
+            ->add('formule')
         ;
     }
 

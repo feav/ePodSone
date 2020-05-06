@@ -39,7 +39,7 @@ class Product
     private $quantity;
 
     /**
-     * @ORM\Column(type="string", length=1000)
+     * @ORM\Column(type="string", length=5000)
      */
     private $description;
 
@@ -58,9 +58,15 @@ class Product
      */
     private $formules;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Commande", mappedBy="product",cascade={"persist"})
+     */
+    private $commandes;
+
     public function __construct()
     {
         $this->formules = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -176,6 +182,37 @@ class Product
         if ($this->formules->contains($formule)) {
             $this->formules->removeElement($formule);
             $formule->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Commande[]
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): self
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): self
+    {
+        if ($this->commandes->contains($commande)) {
+            $this->commandes->removeElement($commande);
+            // set the owning side to null (unless already changed)
+            if ($commande->getProduct() === $this) {
+                $commande->setProduct(null);
+            }
         }
 
         return $this;

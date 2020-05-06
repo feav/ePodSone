@@ -19,13 +19,34 @@ class Abonnement
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Formule", mappedBy="debut", orphanRemoval=true)
+     * @ORM\Column(type="datetime")
+     */
+    private $start;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $end;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $state;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Panier", inversedBy="abonnements")
+     */
+    private $paniers;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Formule", inversedBy="abonnements")
      */
     private $formule;
 
+
     public function __construct()
     {
-        $this->formule = new ArrayCollection();
+        $this->paniers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -33,34 +54,78 @@ class Abonnement
         return $this->id;
     }
 
+    public function getStart(): ?\DateTimeInterface
+    {
+        return $this->start;
+    }
+
+    public function setStart(\DateTimeInterface $start): self
+    {
+        $this->start = $start;
+
+        return $this;
+    }
+
+    public function getEnd(): ?\DateTimeInterface
+    {
+        return $this->end;
+    }
+
+    public function setEnd(\DateTimeInterface $end): self
+    {
+        $this->end = $end;
+
+        return $this;
+    }
+
+    public function getState(): ?int
+    {
+        return $this->state;
+    }
+
+    public function setState(int $state): self
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
     /**
-     * @return Collection|Formule[]
+     * @return Collection|Panier[]
      */
-    public function getFormule(): Collection
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
+    }
+
+    public function addPanier(Panier $panier): self
+    {
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers[] = $panier;
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): self
+    {
+        if ($this->paniers->contains($panier)) {
+            $this->paniers->removeElement($panier);
+        }
+
+        return $this;
+    }
+
+    public function getFormule(): ?Formule
     {
         return $this->formule;
     }
 
-    public function addFormule(Formule $formule): self
+    public function setFormule(?Formule $formule): self
     {
-        if (!$this->formule->contains($formule)) {
-            $this->formule[] = $formule;
-            $formule->setDebut($this);
-        }
+        $this->formule = $formule;
 
         return $this;
     }
 
-    public function removeFormule(Formule $formule): self
-    {
-        if ($this->formule->contains($formule)) {
-            $this->formule->removeElement($formule);
-            // set the owning side to null (unless already changed)
-            if ($formule->getDebut() === $this) {
-                $formule->setDebut(null);
-            }
-        }
-
-        return $this;
-    }
 }
