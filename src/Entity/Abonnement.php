@@ -44,6 +44,11 @@ class Abonnement
      */
     private $panier;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="abonnements")
+     */
+    private $user;
+
 
     public function __construct()
     {
@@ -115,6 +120,18 @@ class Abonnement
     public function setPanier(?Panier $panier): self
     {
         $this->panier = $panier;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

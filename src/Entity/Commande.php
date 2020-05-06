@@ -47,6 +47,7 @@ class Commande
         $this->price = 0;
         $this->quantity = 0;
     }
+
     public function getId(): ?int
     {
         return $this->id;

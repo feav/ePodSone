@@ -16,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 /**
  * @Route("/api/panier")
  */
@@ -51,6 +50,7 @@ class ApiPanierController extends AbstractController
             $formules = array();
             $livraison = 0;
             $total = 0;
+            $reduction = 0;
 
             /**
             ** if commande do not exist create one
@@ -64,7 +64,8 @@ class ApiPanierController extends AbstractController
                     if($commande->getQuantity()>0)
                         $produis[] = array(
                             'name' => $commande->getProduct()->getName(),
-                            'price' => $commande->getPrice(),
+                            'product_price' => $commande->getPrice(),
+                            'price' => $commande->getTotalPrice(),
                             'quantity' => $commande->getQuantity(),
                             'id_product' => $commande->getProduct()->getId(),
                             'oldprice' => $commande->getQuantity(),
@@ -73,7 +74,7 @@ class ApiPanierController extends AbstractController
                 }
 
                 $formules_ = $panier->getAbonnements();
-                foreach ($formules_ as $key => $formule) {
+                foreach ($formules_ as $formule) {
                     $formules[] = array(
                         'name' => $formule->getFormule()->getName(),
                         'price' => $formule->getFormule()->getPrice(),
@@ -94,6 +95,7 @@ class ApiPanierController extends AbstractController
 
                 $livraison = $panier->getPriceShipping();
                 $total = $panier->getTotalPrice();
+                $reduction = $panier->getTotalReduction();
             }
             return new Response( json_encode(
                 array(
@@ -105,7 +107,9 @@ class ApiPanierController extends AbstractController
                         'formules' => $formules,
                         'livraison' => $livraison,
                         'total' => $total,
-                        'livraison' => $livraison
+                        'total' => $total,
+                        'livraison' => $livraison,
+                        'reduction' => $reduction
 
                     )
                 )
@@ -119,8 +123,8 @@ class ApiPanierController extends AbstractController
     {
 
        $type = $_GET['type'];
+       $quantity = $_GET['quantity'];
        
-
         $this->entityManager = $this->getDoctrine()->getManager();
         $user = $this->getUser();
         if($user){
@@ -147,7 +151,6 @@ class ApiPanierController extends AbstractController
             **/
             if($type == 'product'){
                 $product = $_GET['product']; 
-                $quantity = $_GET['quantity'];
 
                 $product = $this->productService->findById($product);
                 if($product){
@@ -179,16 +182,26 @@ class ApiPanierController extends AbstractController
                 if($coupon){
 
                     $exist = $panier->getCoupons()->contains($coupon);
-                    if($coupon->getCurrentUsage() < $coupon->getCurrentUsage() ){
+                    if($coupon->getCurrentUsage() < $coupon->getMaxUsage() ){
                         if($exist){
-                            $message = "Le coupon est deja dans votre panier";
+                            if($quantity){
+                                $message = "Le coupon est deja dans votre panier";
+                            }else{
+                                $panier->removeCoupon($coupon);
+                                $message = "Le coupon a ete retire de votre panier";
+                                $coupon->setCurrentUsage( $coupon->getCurrentUsage() - 1);
+                            }
                         }else{
-                            $panier->addCoupon($coupon);
-                            $message = "Le coupon a ete a ajoute a votre panier";
-                            $coupon->setCurrentUsage( $coupon->getCurrentUsage() + 1);
-                            $this->entityManager->persist($coupon);
-                            $this->entityManager->flush();
+                            if($quantity){
+                                $panier->addCoupon($coupon);
+                                $message = "Le coupon a ete a ajoute a votre panier";
+                                $coupon->setCurrentUsage( $coupon->getCurrentUsage() + 1);
+                            }else{
+                                $message = "Le coupon n'est pas dans votre panier";
+                            }
                         }
+                        $this->entityManager->persist($coupon);
+                        $this->entityManager->flush();
                     }else{
                         return new Response( json_encode(array('status' => 300, 'message' => "Ce coupon a atteint son nombre maximal d'utilisation" )) );
                     }
@@ -209,23 +222,36 @@ class ApiPanierController extends AbstractController
 
                     $abonnement = $this->abonnementRepository->findOneBy(array('formule' =>  $formule, 'panier'=>$panier ));
                     if($abonnement){
-                        $message = "La formule est deja dans votre panier";
+
+                        if($quantity){
+                            $message = "La formule est deja dans votre panier";
+                        }else{
+                            $panier->removeAbonnement($abonnement);
+                            $message = "La formule a ete retiree de votre panier";
+                        }
                     }else{
-                        $date = date("d/m/Y h:i:s");
-                        $date = strtotime(date("d/m/Y h:i:s", strtotime($date)) . "+2 months");
-                        $date_end = date("d/m/Y h:i:s",$date);
 
-                        $abonnement = new Abonnement();
-                        $abonnement->setPanier($panier);
-                        $abonnement->setFormule($formule);
-                        $abonnement->setStart($date);
-                        $abonnement->setEnd($date_end);
-                        $abonnement->setState(0);
+                        if($quantity){
+                            $date = new \DateTime('2000-01-01');
+                            $date_start = new \DateTime('2000-01-01');
+                            $month = $formule->getMonth();
+                            $date->add(new \DateInterval('P0Y'.$month.'M0DT0H0M0S'));
 
-                        $this->entityManager->persist($abonnement);
-                        $this->entityManager->flush();
+                            $abonnement = new Abonnement();
+                            $abonnement->setPanier($panier);
+                            $abonnement->setFormule($formule);
+                            $abonnement->setStart($date_start);
+                            $abonnement->setEnd($date);
+                            $abonnement->setUser($user);
+                            $abonnement->setState(0);
 
-                        $message = "La formule a ete a ajoutee a votre panier";
+                            $this->entityManager->persist($abonnement);
+                            $this->entityManager->flush();
+                            $message = "La formule a ete a ajoutee a votre panier";
+                        }else{
+                            $message = "La formule n'etait pas dans votre panier";
+                        }
+
                     }
 
                 }else{
@@ -233,6 +259,7 @@ class ApiPanierController extends AbstractController
                 }
 
             }
+            $panier->refresh_price();
             $this->entityManager->persist($panier);
             $this->entityManager->flush();
 

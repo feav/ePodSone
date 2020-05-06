@@ -63,7 +63,7 @@
       $("#add-product-modal .product-price-input").html(id);
       $("#add-product-modal .product-quantity-input").val(1);
    }
-  function addToCard(id=-1,qty=-1){
+  function addToCard(id=-1,qty=-1,type="product"){
    if(id == -1){
       id = $("#add-product-modal .product-id-input").val();
    }
@@ -76,7 +76,7 @@
         data:{
             product:id,
             quantity:qty,
-            type:'product'
+            type:type
         },
         url: "{{ path('commande_add_to_card') }}",
         beforeSend: function( xhr ) {
@@ -93,6 +93,13 @@
          }
         });
 
+  }
+   function addCouponToCard(target,qty=1){
+      var code = $(target).val();
+      addToCard(code,qty,"coupon");
+  }
+   function addFormuleToCard(id,qty=1){
+      addToCard(id,qty,"formule");
   }
   function itemCoupon(id,name, value){
       return '<li class="item coupon-'+id+'">'+
@@ -127,7 +134,7 @@
                +price+'€ valables <span>'+quantity+' mois</span>'+
               '</li>'+
               '<li class="detail-item product-etat">'+
-                '<a href="javascript:void">supprimé</a>'+
+                '<a href="javascript:void" onclick=" addFormuleToCard('+id+',0)">supprimé</a>'+
               '</li>'+
             '</ul>'+
           '</div>';
@@ -143,20 +150,25 @@
       })
       .done(function( data ) {
          if(data.status==200){
-         $(".card-list-product").html("");
-          data.panier.products.forEach(function(item, index){
-            $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
-          }); 
+            var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+            $(".cart-total-pay").html(total);
 
-         $(".card-list-coupon").html("");
-          data.panier.coupons.forEach(function(item, index){
-            $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
-          });
+            $(".cart-total-reduction").html(data.panier.total);
 
-         $(".card-list-formule").html("");
-          data.panier.formules.forEach(function(item, index){
-            $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
-          });
+            $(".card-list-product").html("");
+             data.panier.products.forEach(function(item, index){
+               $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+             }); 
+
+            $(".card-list-coupon").html("");
+             data.panier.coupons.forEach(function(item, index){
+               $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+             });
+
+            $(".card-list-formule").html("");
+             data.panier.formules.forEach(function(item, index){
+               $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+             });
          }else{
             console.log(data.message);
          }
@@ -235,9 +247,9 @@
             </div>
             <div class="modal-body p-4 p-md-5 text-center flex-fill d-flex flex-column justify-content-center">
               <div>
-                <h5 class="h3 product-name">Subscribe Now</h5>
+                <h5 class="h3 product-name"></h5>
                 <h4 class="product-price"></h4>
-                <p>Vous voulez commander combien d'unites.</p>
+                <p>.</p>
                 <div >
                   <div class="d-flex flex-column flex-sm-row form-group">
                     <input class="form-control mr-sm-2 mb-2 mb-sm-0 product-quantity-input" name="quantity" placeholder="Quantite" type="number" min="0" required>
@@ -292,7 +304,7 @@
                      </div>
                   </li>
                </ul>
-               <a href="#" class="btn btn-lg btn-block btn-outline-primary">Souscrire </a>
+               <a href="javascript:void()"  onclick="addFormuleToCard({{formule.id}})"class="btn btn-lg btn-block btn-outline-primary">Souscrire </a>
             </div>
          </div>
 

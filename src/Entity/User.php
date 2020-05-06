@@ -53,11 +53,17 @@ class User implements UserInterface
      */
     private $paniers;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Abonnement", mappedBy="user")
+     */
+    private $abonnements;
+
     public function __construct()
     {
         $this->discussions = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->paniers = new ArrayCollection();
+        $this->abonnements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -236,5 +242,36 @@ class User implements UserInterface
     }
     public function __toString (  ) : string{
         return $this->getUsername()." -  ".$this->getEmail();
+    }
+
+    /**
+     * @return Collection|Abonnement[]
+     */
+    public function getAbonnements(): Collection
+    {
+        return $this->abonnements;
+    }
+
+    public function addAbonnement(Abonnement $abonnement): self
+    {
+        if (!$this->abonnements->contains($abonnement)) {
+            $this->abonnements[] = $abonnement;
+            $abonnement->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAbonnement(Abonnement $abonnement): self
+    {
+        if ($this->abonnements->contains($abonnement)) {
+            $this->abonnements->removeElement($abonnement);
+            // set the owning side to null (unless already changed)
+            if ($abonnement->getUser() === $this) {
+                $abonnement->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
