@@ -153,9 +153,9 @@
       .done(function( data ) {
          if(data.status==200){
             var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
-            $(".cart-total-pay").html(total);
+            $(".cart-total-pay").html(total.toFixed(2));
 
-            $(".cart-total-reduction").html(data.panier.total);
+            $(".cart-total-reduction").html(data.panier.total.toFixed(2));
 
             $(".card-list-product").html("");
              data.panier.products.forEach(function(item, index){
@@ -216,8 +216,8 @@
          </div>
          <div class="col-md-6 col-xs-12" style="text-align: center;">
             <div style="background: #fff;border-radius: 10px;padding: 35px 20px;margin: auto;box-shadow: 0px 5px 25px -5px rgba(0, 0, 0, 0.1);">
-               <h1 style="font-size: 32px;margin-bottom: 5px;font-weight: 600;"><span style="color: #1671f5;">{{ product.name}}</span></h1>
-               <h1 style="font-weight: 700;font-size: 44px;color: #1671f5;">{{ product.price}}€ <span style="font-size: 28px;font-weight: 400;text-decoration: line-through;">{{ product.getOldPrice()}}€</span></h1>
+               <h1 style="font-size: 32px;margin-bottom: 5px;font-weight: 600;"><span style="color: #229b72;">{{ product.name}}</span></h1>
+               <h1 style="font-weight: 700;font-size: 44px;color: #229b72;">{{ product.price}}€ <span style="font-size: 28px;font-weight: 400;text-decoration: line-through;">{{ product.getOldPrice()}}€</span></h1>
                 <div style="font-size: 13px;width: 85%;margin: auto;margin-bottom: 5px;color: #111;">
                {{ product.description | raw }}
                 </div>
@@ -314,44 +314,51 @@
       </div>
    </div>
 </section>
-<section class="features-more section-spacing section-bg-b">
-   <div class="ui-shape ui-shape-s1"></div>
-   <div class="container">
-      <div id="pourquoi" class="row justify-content-center">
-         <div class="col-lg-9" style="text-align: center;margin-bottom: 50px;">
-            <h2>Pourquoi <span style=" color: #1671f5; ">4,99€</span> ?</h2>
-            <p style="font-size: 17px;">Ce produit n'est pas encore commercialisé au grand public. Nous vous offrons une réduction dans le but d'obtenir un maximum d'avis clients en vue d’améliorer le produit pour sa commercialisation au grand public en juin 2020.</p>
-         </div>
-      </div>
-      <div class="row justify-content-center">
-         <div class="col-lg-4 col-md-6 col-xs-12">
-            <div style="text-align: center;margin-bottom: 20px;">
-               <p style=" font-weight: 700; font-size: 32px; color: #1671f5; margin-bottom: 0px; ">Étape 1</p>
-               <p style=" font-weight: 500; font-size: 23px; color: #111; margin-bottom: 20px; ">Commandez vos Ecouteurs.</p>
-               <img alt="miniature" style=" margin: -20px 0px;width: 100px; height: 100px; " src="https://cdn0.iconfinder.com/data/icons/kameleon-free-pack/110/Cashier-2-256.png">
-               <p style="font-size: 15px;font-weight: 400;margin-bottom: 20px;margin-top: 20px;">Commandez vos Epods One à 4,99€ au lieu de 79€ en rejoignant le Club Privé Goodys qui vous permet d'obtenir cette réduction.</p>
+<section class="features-more section-spacing">
+    
+    <div class="container">
+        <div id="" class="row justify-content-center">
+            <div class="col-lg-9" style="text-align: center;margin-bottom: 50px;">
+                <h2>Ce que vous <span style=" color: #229b72; ">recevrez</span>...</h2>
+                
             </div>
-         </div>
-         <div class="col-lg-4 col-md-6 col-xs-12">
-            <div class="blocetape" style="text-align: center;margin-bottom: 20px;">
-               <p style=" font-weight: 700; font-size: 32px; color: #1671f5; margin-bottom: 0px; ">Étape 2</p>
-               <p style=" font-weight: 500; font-size: 23px; color: #111; margin-bottom: 20px; ">Recevez-le et essayez...</p>
-               <img alt="miniature" style=" margin: -20px 0px;width: 100px; height: 100px; " src="https://cdn0.iconfinder.com/data/icons/kameleon-free-pack/110/Conveyor-Belt-256.png">
-               <p style="font-size: 15px;font-weight: 400;margin-bottom: 20px;margin-top: 20px;">Une fois votre produit reçu, vous aurez 1 mois pour vous faire un avis détaillé avant de répondre à notre questionnaire en ligne.</p>
+        </div>
+        <div class="row justify-content-center">
+            
+<div class="col-lg-5 col-md-6 col-xs-12" style="text-align: center;">
+                <img alt="miniature" src="https://imgur.com/g0Yg0mR.png" style="
+    width: 100%;
+    height: auto;
+">
             </div>
-         </div>
-         <div class="col-lg-4 col-md-6 col-xs-12">
-            <div style="text-align: center;margin-bottom: 20px;">
-               <p style=" font-weight: 700; font-size: 32px; color: #1671f5; margin-bottom: 0px; ">Étape 3</p>
-               <p style=" font-weight: 500; font-size: 23px; color: #111; margin-bottom: 20px; ">Répondez au questionnaire !</p>
-               <img alt="miniature" style=" margin: -20px 0px;width: 100px; height: 100px; " src="https://cdn0.iconfinder.com/data/icons/kameleon-free-pack/110/Checklist-256.png">
-               <p style="font-size: 15px;font-weight: 400;margin-bottom: 20px;margin-top: 20px;">1 mois d'essai plus tard vous devrez répondre à notre questionnaire en ligne reçu lors de votre commande (3 minutes chrono) !</p>
-            </div>
-         </div>
-      </div>
-   </div>
+            
+            
+        </div>
+        
+    </div>
 </section>
+<div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8" style="text-align: center;margin-bottom: 50px;">
+                <p style="text-transform: uppercase;font-size: 11px;margin-top: 10px;color: #ffbe5d;margin-bottom: 0px;"><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><!-- <i class="fas fa-star"></i> --><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><!-- <i class="fas fa-star"></i> --><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><!-- <i class="fas fa-star"></i> --><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><!-- <i class="fas fa-star"></i> --><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="far" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM388.6 312.3l23.7 138.4L288 385.4l-124.3 65.3 23.7-138.4-100.6-98 139-20.2 62.2-126 62.2 126 139 20.2-100.6 98z"></path></svg><!-- <i class="far fa-star"></i> --> <span style=" font-weight: 600; color: #7f7f7f; ">4.2/5 (12 684 votes)</span></p>
+                <h2>Les <span style=" color: #229b72; ">avis</span> de vos stars préférées !</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-12 row">
+               {% for temoignage   in temoignages %}
+                <div class="col-md-4" style="text-align: center;background: #ffffff;border-radius: 6px;padding: 30px 30px;margin-bottom: 20px;box-shadow: 0px 5px 25px -5px rgba(0, 0, 0, 0.1);">
+                    <iframe width="100%" height="auto" src="{{temoignage.video}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" style="border-radius: 6px;height: 250px;margin-bottom: 15px;"></iframe>
+                    <div style="text-align: center;">
+                        <p style="font-size: 16px;font-weight: 700;margin-bottom: 0px;color: #229b72;">{{temoignage.name}}</p>
+                        <p style="font-size: 13px;font-weight: 400;margin-bottom: -10px;color: #111;">{{temoignage.location}}</p>
+                    </div>
+                </div>
+               {% endfor %}
 
+            </div>
+        </div>
+    </div>
 {% endblock body_web %}
 {% block javascripts %}
 {{parent()}}
