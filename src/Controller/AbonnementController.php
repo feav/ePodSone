@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Abonnement;
-use App\Form\AbonnementType;
+use App\Form\Abonnement1Type;
 use App\Repository\AbonnementRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/dashboard/abonnement")
+ * @Route("/abonnement")
  */
 class AbonnementController extends AbstractController
 {
@@ -31,7 +31,7 @@ class AbonnementController extends AbstractController
     public function new(Request $request): Response
     {
         $abonnement = new Abonnement();
-        $form = $this->createForm(AbonnementType::class, $abonnement);
+        $form = $this->createForm(Abonnement1Type::class, $abonnement);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -63,7 +63,7 @@ class AbonnementController extends AbstractController
      */
     public function edit(Request $request, Abonnement $abonnement): Response
     {
-        $form = $this->createForm(AbonnementType::class, $abonnement);
+        $form = $this->createForm(Abonnement1Type::class, $abonnement);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

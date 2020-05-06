@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\ProductService;
+use App\Repository\FormuleRepository;
 
 class HomeController extends AbstractController
 {   
@@ -15,14 +16,15 @@ class HomeController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function index()
+    public function index(FormuleRepository $formuleRepository)
     {
 
         $products = $this->prodService->findAll();
-       
+        $formule = $formuleRepository->findAll();
         return $this->render('home/index.html.twig', [
             'controller_name' => 'ePodSone',
-            'products' => $products
+            'products' => $products,
+            'formules' => $formule
         ]);
     }
 }

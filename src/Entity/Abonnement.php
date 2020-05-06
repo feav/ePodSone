@@ -33,20 +33,24 @@ class Abonnement
      */
     private $state;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Panier", inversedBy="abonnements")
-     */
-    private $paniers;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Formule", inversedBy="abonnements")
      */
     private $formule;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Panier", cascade={"persist", "remove"})
+     */
+    private $panier;
+
 
     public function __construct()
     {
-        $this->paniers = new ArrayCollection();
+        $this->state = 0;
+        $this->start = new \DateTime();
+        $this->end = new \DateTime();
+
     }
 
     public function getId(): ?int
@@ -90,31 +94,6 @@ class Abonnement
         return $this;
     }
 
-    /**
-     * @return Collection|Panier[]
-     */
-    public function getPaniers(): Collection
-    {
-        return $this->paniers;
-    }
-
-    public function addPanier(Panier $panier): self
-    {
-        if (!$this->paniers->contains($panier)) {
-            $this->paniers[] = $panier;
-        }
-
-        return $this;
-    }
-
-    public function removePanier(Panier $panier): self
-    {
-        if ($this->paniers->contains($panier)) {
-            $this->paniers->removeElement($panier);
-        }
-
-        return $this;
-    }
 
     public function getFormule(): ?Formule
     {
@@ -124,6 +103,18 @@ class Abonnement
     public function setFormule(?Formule $formule): self
     {
         $this->formule = $formule;
+
+        return $this;
+    }
+
+    public function getPanier(): ?Panier
+    {
+        return $this->panier;
+    }
+
+    public function setPanier(?Panier $panier): self
+    {
+        $this->panier = $panier;
 
         return $this;
     }

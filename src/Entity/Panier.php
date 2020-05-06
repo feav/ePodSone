@@ -45,11 +45,6 @@ class Panier
     private $price_shipping;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Commande", mappedBy="panier",cascade={"persist"})
-     */
-    private $commandes;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $token;
@@ -86,7 +81,6 @@ class Panier
         $this->emmission = new \DateTime();
         $this->coupons = new ArrayCollection();
         $this->commandes = new ArrayCollection();
-        $this->abonnements = new ArrayCollection();
     }
 
     public function refresh_price(){
@@ -281,34 +275,6 @@ class Panier
 
     public function __toString (  ) : string{
         return $this->getToken();
-    }
-
-    /**
-     * @return Collection|Abonnement[]
-     */
-    public function getAbonnements(): Collection
-    {
-        return $this->abonnements;
-    }
-
-    public function addAbonnement(Abonnement $abonnement): self
-    {
-        if (!$this->abonnements->contains($abonnement)) {
-            $this->abonnements[] = $abonnement;
-            $abonnement->addPanier($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAbonnement(Abonnement $abonnement): self
-    {
-        if ($this->abonnements->contains($abonnement)) {
-            $this->abonnements->removeElement($abonnement);
-            $abonnement->removePanier($this);
-        }
-
-        return $this;
     }
 
 

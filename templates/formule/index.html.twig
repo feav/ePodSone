@@ -40,6 +40,8 @@
                                                                                     <th>Price</th>
                                                                                     <th>Month</th>
                                                                                     <th>Name</th>
+                                                                                    <th>Price_shipping</th>
+                                                                                    <th>Try_days</th>
                                                                                 <th>actions</th>
                                     </tr>
                                 </thead>
@@ -51,6 +53,8 @@
                                                                                 <td>{{ formule.price }}</td>
                                                                                 <td>{{ formule.month }}</td>
                                                                                 <td>{{ formule.name }}</td>
+                                                                                <td>{{ formule.priceShipping }}</td>
+                                                                                <td>{{ formule.tryDays }}</td>
                                                                                 <td>
                                             <a href="{{ path('formule_edit', {'id': formule.id}) }}">edit</a>
                                             {{ include('formule/_delete_form.html.twig') }}
@@ -58,7 +62,7 @@
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        <td colspan="6">Aucun element trouve</td>
+                                        <td colspan="8">Aucun element trouve</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

@@ -44,6 +44,16 @@ class Formule
      */
     private $abonnements;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $price_shipping;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $try_days;
+
     public function __construct()
     {
         $this->abonnements = new ArrayCollection();
@@ -142,6 +152,30 @@ class Formule
                 $abonnement->setFormule(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPriceShipping(): ?float
+    {
+        return $this->price_shipping;
+    }
+
+    public function setPriceShipping(float $price_shipping): self
+    {
+        $this->price_shipping = $price_shipping;
+
+        return $this;
+    }
+
+    public function getTryDays(): ?int
+    {
+        return $this->try_days;
+    }
+
+    public function setTryDays(int $try_days): self
+    {
+        $this->try_days = $try_days;
 
         return $this;
     }
