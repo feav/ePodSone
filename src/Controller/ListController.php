@@ -15,6 +15,7 @@ class ListController extends AbstractController
      */
     public function index(Request $request)
     {
+        return $this->redirectToRoute('formule_index');
         $companies = [
             'Apple' => '$1.16 trillion USD',
             'Samsung' => '$298.68 billion USD',
