@@ -404,9 +404,9 @@
                
                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                   <!-- <p>Email: {{ app.user.email }}</p> -->
-                  <a href="{{ path('app_login') }}" data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Connexion</a>
+                  <a href="javascript:void()"  data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 toggle-cart"><i class="fa fa-shopping-cart" style="color:#fff"></i></a>
               {% else %}   
-                  <a href="{{ path('app_login') }}" data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Deconnexion</a>
+                  <a href="{{ path('app_login') }}" data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Connexion</a>
 
               {% endif %}
                <button aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target=".navbar-collapse" data-toggle="collapse" type="button">
@@ -429,11 +429,6 @@
               <li class="nav-item">
                 <div>
                   <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="#" role="button">Contact</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <div>
-                  <a href="javascript:void()" class="nav-link nav-item toggle-cart"role="button"><i class="fa fa-shopping-cart" style="color:#009b72"></i></a>
                 </div>
               </li>
             </ul>
@@ -462,8 +457,7 @@
             <ul class="totaux card-list-details">
             </ul>
             <div>
-              <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 open-modal-payment">Paiement de 50€ <strike>79€</strike></a>
-              <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Paiement de <b class="cart-total-pay">o</b>€ <strike><i class="cart-total-reduction">0</i>€ </strike></a>
+              <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 open-modal-payment">Paiement de <b class="cart-total-pay">o</b>€ <strike><i class="cart-total-reduction">0</i>€ </strike></a>
             </div>
             {% if is_granted('IS_AUTHENTICATED_FULLY') and (app.user.getStripeCustomId is not null) %}
               <div style="text-align: center;margin-top: 19px;font-size: 16px">
