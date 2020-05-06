@@ -113,11 +113,9 @@ class ApiPanierController extends AbstractController
                         'total' => $total,
                         'livraison' => $livraison,
                         'reduction' => $reduction
-
                     )
                 )
             ) );
-
         }
         return new Response( json_encode(array('status' => 300, 'message' => "Utilisateur non connecte" )) );
     }

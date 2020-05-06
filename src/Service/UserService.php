@@ -82,7 +82,7 @@ class UserService{
         $user->setName($name);
         $user->setEmail($email);
         $user->setPassword($this->passwordEncoder->encodePassword($user, $fullPassword));
-        $user->setRoles(['ROLE_USER']);
+        //$user->setRoles(['ROLE_USER']);
         try {
             $mail = (new \Swift_Message('Vos informations de connexion'))
                 ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))

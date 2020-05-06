@@ -138,10 +138,10 @@ class PaymentController extends AbstractController
             if($result == ""){
                 if(!$value['is_paid'])
                     $value->setIsPaid(1);
-                else
+                else{
                     $value->setState(1);
-                
-                $this->createNewAbonnement($value);
+                    $this->createNewAbonnement();    
+                }
             }
         }
     }
