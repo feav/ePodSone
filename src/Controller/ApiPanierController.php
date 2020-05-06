@@ -12,6 +12,7 @@ use App\Repository\CommandeRepository;
 use App\Repository\FormuleRepository;
 use App\Repository\CouponRepository;
 use App\Repository\AbonnementRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,9 +26,10 @@ class ApiPanierController extends AbstractController
     private $panierRepository;
     private $commandeRepository;
     private $couponRepository;
+    private $userRepository;
     private $entityManager;
     private $money_unit;
-    public function __construct(AbonnementRepository $abonnementRepository,FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService)
+    public function __construct(UserRepository $userRepository,AbonnementRepository $abonnementRepository,FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService)
     {
         $this->money_unit = "$";
         $this->productService = $productService;
@@ -36,6 +38,7 @@ class ApiPanierController extends AbstractController
         $this->abonnementRepository = $abonnementRepository;
         $this->couponRepository = $couponRepository;
         $this->formuleRepository = $formuleRepository;
+        $this->UserRepository = $userRepository;
         
     }
     public function getCurrentCard(): Response
@@ -118,15 +121,21 @@ class ApiPanierController extends AbstractController
         }
         return new Response( json_encode(array('status' => 300, 'message' => "Utilisateur non connecte" )) );
     }
-
     public function addItemToCard(): Response
     {
 
        $type = $_GET['type'];
        $quantity = $_GET['quantity'];
+
        
         $this->entityManager = $this->getDoctrine()->getManager();
         $user = $this->getUser();
+        if(!$user){
+            if(isset($_GET['user'])){
+                $user_id = $_GET['user'];
+                $user = $userRepository->findOneById($user_id);
+            }
+        }
         if($user){
 
             $paniers = $this->panierRepository->findBy(array('user' =>  $user->getId(), 'status'=>0 ));
