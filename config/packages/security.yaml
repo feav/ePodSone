@@ -1,5 +1,9 @@
 security:
+  role_hierarchy:
+    ROLE_ADMIN:       ROLE_USER
+    ROLE_SUPER_ADMIN: ROLE_ADMIN
   encoders:
+
     App\Entity\User:
       algorithm: auto
   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
@@ -22,3 +26,10 @@ security:
       logout:
         path: app_logout
         target: /
+
+  access_control:
+        # require ROLE_ADMIN for /admin*
+        - { path: '^/dashboard', roles: ROLE_ADMIN }
+
+        # or require ROLE_ADMIN or IS_AUTHENTICATED_FULLY for /admin*
+        - { path: '^/dashboard', roles: [IS_AUTHENTICATED_FULLY, ROLE_ADMIN] }

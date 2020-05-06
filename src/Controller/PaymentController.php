@@ -90,8 +90,8 @@ class PaymentController extends AbstractController
                 ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
                 ->setTo([$user->getEmail()=>$user->getName()])
                 ->setCc("alexngoumo.an@gmail.com")
-                ->attach(\Swift_Attachment::fromPath($commande_pdf))
-                ->setBody("Bonjour ".$user->getName()."<br>Votre commande a été effectuée avec success, vous trouverez en piece jointe votre facture",
+                //->attach(\Swift_Attachment::fromPath($commande_pdf))
+                ->setBody("Bonjour ".$user->getName()."<br>Votre commande a été effectuée avec success",
                     'text/html'
                 );
             $mailer->send($mail);

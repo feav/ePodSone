@@ -20,6 +20,7 @@ class AbonnementController extends AbstractController
      */
     public function index(AbonnementRepository $abonnementRepository): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, "Vous n'etes pas autorisé à acceder à cette interface");
         return $this->render('abonnement/index.html.twig', [
             'abonnements' => $abonnementRepository->findAll(),
         ]);

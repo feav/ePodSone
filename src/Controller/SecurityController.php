@@ -38,8 +38,10 @@ class SecurityController extends AbstractController
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
         }
-
-        return new RedirectResponse($this->urlGenerator->generate('home'));
+        if(strtoupper($this->getUser()->getRole()) == "ROLE_ADMIN")
+            return new RedirectResponse($this->urlGenerator->generate('product_index'));
+        else
+            return new RedirectResponse($this->urlGenerator->generate('home'));
     }
 }
 
