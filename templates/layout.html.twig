@@ -126,7 +126,7 @@
       background-color: #fefde5 !important;
     }
     #card-errors{color: #c31b1b}
-    #modal-payment button.submit {
+    /*#modal-payment button.submit {
         cursor: pointer;
         display: inline-block;
         height: 40px;
@@ -146,7 +146,7 @@
         box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
         -webkit-transition: all 150ms ease;
         transition: all 150ms ease;
-    }
+    }*/
     #modal-payment .paid-head{
         text-align: center;
         color: #b64645;
@@ -509,7 +509,7 @@
                   <!-- Used to display form errors. -->
                   <div id="card-errors" role="alert"></div>
                 </div>
-              <button class="btn btn-primary btn-block" type="submit" style="margin-top: 20px;">Valider</button>
+              <button class="btn btn-primary btn-block submit" type="submit" style="margin-top: 20px;">Valider</button>
               <div class="lds-ripple"><div></div><div></div></div>
               <div class="success-checkmark">
                 <div class="check-icon">
@@ -564,7 +564,7 @@
                   <label class="custom-control-label" for="sign-in-remember">Remember me next time</label>
                 </div>
               </div>
-              <button class="btn btn-primary btn-block" type="submit">Sign In</button>
+              <button class="btn btn-primary btn-block submit" type="submit">Sign In</button>
               <div class="lds-ripple"><div></div><div></div></div>
                 <div class="success-checkmark">
                   <div class="check-icon">
@@ -706,7 +706,7 @@
     });
   </script>
 <script type="text/javascript">
-        var stripe = Stripe('pk_test_CtAIy4NNabE9gv280qV4UijC');
+        var stripe = Stripe('pk_test_UDk94FpMwYG43JaCOfGjNDCY00YqA5l9DY');
 
         var elements = stripe.elements();
         var style = {
@@ -892,11 +892,10 @@
             return false;
         }
 
-      $('#AjaxLogin button[type=submit]').text('Inscription...');
         $('.lds-ripple').css('display','inline-block');
         $('#AjaxLogin button[type=submit]').css('pointer-events','none');
-      $.ajax({
-            url:"#",
+       $.ajax({
+            url:"{{path('login_ajax')}}",
             type:"POST",
             data: new FormData(this),
               dataType: 'json',
@@ -905,21 +904,18 @@
               processData:false,
             //data:$('#formTournoi').serialize(),
             success:function(response) {
-              toastr.success("inscription réussite. Consulter vos mail afin de valider votre compte");
-            $('#AjaxLogin button[type=submit]').button('reset');
-            $('#AjaxLogin button[type=submit]').text("Je m'inscris !");
-            $('.lds-ripple').css('display','none');
-            $('#AjaxLogin button[type=submit]').css('pointer-events','auto');
-            $(".success-checkmark").show().delay(3000).fadeOut();
-            $(".check-icon").show().show().delay(3000).fadeOut();
-
+              notification("Connexion","Vous etes connecté maintenant","success");
+              $('.lds-ripple').css('display','none');
+              $('#AjaxLogin button[type=submit]').css('pointer-events','auto');
+              $(".success-checkmark").show().delay(3000).fadeOut();
+              $(".check-icon").show().show().delay(3000).fadeOut();
+              $( "#sign-in-modal button.close" ).trigger( "click" );
             },
             error:function(response){
-              toastr.error(response.responseJSON);
-            $('#AjaxLogin button[type=submit]').button('reset');
-            $('#AjaxLogin button[type=submit]').text("Je m'inscris !");
-            $('.lds-ripple').css('display','none');
-            $('#AjaxLogin button[type=submit]').css('pointer-events','auto');
+              notification("Connexion","Identifiant incorrect","error");
+              $('#AjaxLogin button[type=submit]').button('reset');
+              $('.lds-ripple').css('display','none');
+              $('#AjaxLogin button[type=submit]').css('pointer-events','auto');
           }
         });
         

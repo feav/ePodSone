@@ -5,6 +5,11 @@ namespace App\Service;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 use App\Repository\UserRepository;
 use App\Entity\User;
@@ -12,10 +17,12 @@ use App\Entity\User;
 class UserService{
     private $passwordEncoder;
     private $userRepository;
+    private $encoderFactory;
     
-    public function __construct(EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository){
+    public function __construct(EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder, UserRepository $userRepository, EncoderFactoryInterface $encoderFactory){
     	$this->userRepository = $userRepository;
         $this->passwordEncoder = $passwordEncoder;
+        $this->encoderFactory = $encoderFactory;
         $this->em = $em;
     }
     public function filterUser($key){
@@ -100,4 +107,45 @@ class UserService{
         $this->em->flush();
         return $user;
     }
+
+    public function login(Request $request)
+    {
+        $email = $request->request->get('email');
+        $password = $request->request->get('password');
+
+        $user = $this->userRepository->findOneBy(['email'=>$email]);
+        if(!$user){
+            return ['message'=>'identifiants incorrect', 'status'=>500];
+        }
+
+        $encoder = $this->encoderFactory->getEncoder($user);
+        $salt = $user->getSalt();
+        if(!$encoder->isPasswordValid($user->getPassword(), $password, $salt)) {
+            return ['message'=>'identifiants incorrect', 'status'=>500];
+        } 
+
+        /*if (!$user->isEnabled()) {
+            return ['message'=>"Votre compte n'est pas activé", 'status'=>500];
+        }*/
+        
+        return $this->authentification($request, $user);
+    }
+
+    public function authentification(Request $request, $user){
+        // The third parameter "main" can change according to the name of your firewall in security.yml
+        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $this->get('security.token_storage')->setToken($token);
+
+        // If the firewall name is not main, then the set value would be instead:
+        // $this->get('session')->set('_security_XXXFIREWALLNAMEXXX', serialize($token));
+        $this->get('session')->set('_security_main', serialize($token));
+        
+        // Fire the login event manually
+        $event = new InteractiveLoginEvent($request, $token);
+        $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+        
+        $request->getSession()->get('_security.main.target_path');
+        return ['message'=>"Vous etes connectés maintenant", 'status'=>200];
+    }
+
 }
