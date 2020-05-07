@@ -759,6 +759,7 @@
                     $('#modal-payment .alert-dismissible').removeClass('alert-danger');
                     $('#modal-payment .alert-dismissible').addClass('alert-success');
                     $('#modal-payment .alert-dismissible .text').text(oReq.response);
+                    window.location.href = $('body').data('base-url');
 
                 } else {
                     notification("Paiement commande",oReq.response,"error");

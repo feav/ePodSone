@@ -54,6 +54,7 @@ class PaymentController extends AbstractController
                 $this->stripe_s->createStripeCustom($request->request->get('stripeSource'), $metadata);
                 $result = $this->stripe_s->proceedPayment($user, $amount);
             }
+            $this->addFlash('success', 'Paiement effectué avec success');
         }
         else{
             $metadata = ['name'=>$user->getName(), 'email'=>$user->getEmail()];

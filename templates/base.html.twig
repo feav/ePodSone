@@ -32,13 +32,13 @@
       <script>
         jQuery(document).ready(function() { 
             {% for message in app.flashes('success') %}
-              toastr.success("{{ message }}");
+                notification("Notification","{{ message }}","success");
             {% endfor %}
             {% for message in app.flashes('error') %}
-                toastr.error("{{ message }}");
+                notification("Notification","{{ message }}","error");
             {% endfor %}
             {% for message in app.flashes('warning') %}
-                toastr.warning("{{ message }}");
+            notification("Notification","{{ message }}","warning");
             {% endfor %}
         });
 
