@@ -14,39 +14,40 @@
   <link href="{{ asset('assets/css/theme.css')}}" rel="stylesheet" type="text/css" media="all" />
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,400i,600,700&display=swap" rel="stylesheet">
   <style type="text/css">
-      .navbar img.logo{width: 140px}
-      .navbar img.logo.scrolled-logo {display: none;}
-      .navbar.scrolled img.logo.default-logo {display: none;}
-      .navbar.scrolled img.logo.scrolled-logo {display: block;}
-      .floating-wpp{
-        bottom: 20px;
-        z-index: 9999;
-      }
-      .floating-wpp .floating-wpp-button{
-        width: 55px!important;
-        height: 55px!important;
-      }
-      .floating-wpp .floating-wpp-popup.active{
-        bottom: 60px;
-      }
-      .floating-wpp:hover{bottom: 21px;}
-      html {
-        scroll-behavior: smooth;
-      }
-      ul{list-style: none;}
-      .cart-wrapper {
-        position: fixed;
-        top: 0;
-        height: 100vh;
-        width: 290px;
-        background: #fff;
-        z-index: 1030;
-        padding: 45px 20px 10px;
-        transition: linear .2s right;
-        right: -290px;
-        overflow-y: auto;
-        box-shadow: 0px 5px 25px -5px rgba(0, 0, 0, 0.1);
-        font-size: 14px;
+    .toast__container{z-index: 9999!important}
+    .navbar img.logo{width: 140px}
+    .navbar img.logo.scrolled-logo {display: none;}
+    .navbar.scrolled img.logo.default-logo {display: none;}
+    .navbar.scrolled img.logo.scrolled-logo {display: block;}
+    .floating-wpp{
+      bottom: 20px;
+      z-index: 9999;
+    }
+    .floating-wpp .floating-wpp-button{
+      width: 55px!important;
+      height: 55px!important;
+    }
+    .floating-wpp .floating-wpp-popup.active{
+      bottom: 60px;
+    }
+    .floating-wpp:hover{bottom: 21px;}
+    html {
+      scroll-behavior: smooth;
+    }
+    ul{list-style: none;}
+    .cart-wrapper {
+      position: fixed;
+      top: 0;
+      height: 100vh;
+      width: 290px;
+      background: #fff;
+      z-index: 1030;
+      padding: 45px 20px 10px;
+      transition: linear .2s right;
+      right: -290px;
+      overflow-y: auto;
+      box-shadow: 0px 5px 25px -5px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
     }
     .cart-wrapper.open{right: 0}
     .cart-wrapper .product-item img.product-img {
@@ -93,7 +94,7 @@
       color: #888;
     }
 
-/**
+    /**
      * The CSS shown here will not be introduced in the Quickstart guide, but shows
      * how you can use CSS to style your Element's container.
      */
@@ -125,7 +126,7 @@
       background-color: #fefde5 !important;
     }
     #card-errors{color: #c31b1b}
-    #stripePaidBox button.submit {
+    #modal-payment button.submit {
         cursor: pointer;
         display: inline-block;
         height: 40px;
@@ -146,7 +147,7 @@
         -webkit-transition: all 150ms ease;
         transition: all 150ms ease;
     }
-    #stripePaidBox .paid-head{
+    #modal-payment .paid-head{
         text-align: center;
         color: #b64645;
         margin-top: 15px;
@@ -190,7 +191,7 @@
       }
     }
     .form-group{margin-bottom: 5px;}
-    #modal-payment .modal-dialog{max-width: 400px;}
+    #modal-payment .modal-dialog, #sign-in-modal .modal-dialog{max-width: 400px;}
     .list-cart{
       position: absolute;
     }
@@ -400,9 +401,8 @@
             <div class="d-flex align-items-center order-lg-3">
               <!--  <a href="https://wa.me/237656645659" target="_blank" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3" style=" background-color: #009b72; border-color: #009b72; color: #ffffff; "><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" style="height: 22px;margin-bottom: 2px;"> 06 85 74 96 12</a> -->
                
-               {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                  <!-- <p>Email: {{ app.user.email }}</p> -->
-                  <a href="javascript:void()"  data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 toggle-cart"><i class="fa fa-shopping-cart" style="color:#fff"></i></a>
+              <a href="javascript:void()"  data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 toggle-cart"><i class="fa fa-shopping-cart" style="color:#fff"></i></a>
+              {% if is_granted('IS_AUTHENTICATED_FULLY') %}
               {% else %}   
                   <a href="{{ path('app_login') }}" data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Connexion</a>
 
@@ -467,6 +467,7 @@
         </div>
       </div>
    </div>
+   
    <div class="modal fade" id="modal-payment" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -520,7 +521,62 @@
               </div>
             </form>
             <div class="text-center text-small mt-3">
-              Vous avez déjà un compte? <a href="{{path('app_login')}}">Connectez-vous</a>
+              Vous avez déjà un compte? <a href="javascript:void()" class="open-sign-in-modal">Connectez-vous</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="sign-in-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header text-center border-0">
+            <div class="w-100 pt-4">
+              <h5 class="h3">Connexion</h5>
+              <div>Entrer vos informations de connexion</div>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">
+                <img src="assets/img/icons/interface/icon-x.svg" alt="Icon">
+              </span>
+            </button>
+          </div>
+          <div class="modal-body px-md-4 px-lg-5 pb-4 pb-lg-5">
+            <div class="alert alert-danger alert-dismissible fade show box-error-payment" role="alert">
+              <span class="text"></span>
+              <button type="button" class="close close-alert-msg">
+                x
+              </button>
+          </div>
+            <form name="AjaxLogin" id="AjaxLogin" method="POST" style="position:relative">
+              <div class="form-group">
+                <input type="email" class="form-control" name="email" placeholder="Adresse email">
+              </div>
+              <div class="form-group">
+                <input type="password" class="form-control" name="password" placeholder="mot de passe">
+                <div class="text-right text-small mt-2">
+                  <a href="account-forgot-password.html" style="visibility:hidden">Forgot Password?</a>
+                </div>
+              </div>
+              <div class="form-group" style="visibility:hidden">
+                <div class="custom-control custom-checkbox text-small">
+                  <input type="checkbox" class="custom-control-input" id="sign-in-remember">
+                  <label class="custom-control-label" for="sign-in-remember">Remember me next time</label>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-block" type="submit">Sign In</button>
+              <div class="lds-ripple"><div></div><div></div></div>
+                <div class="success-checkmark">
+                  <div class="check-icon">
+                    <span class="icon-line line-tip"></span>
+                    <span class="icon-line line-long"></span>
+                    <div class="icon-circle"></div>
+                    <div class="icon-fix"></div>
+                  </div>
+                </div>
+            </form>
+            <div class="text-center text-small mt-3" style="visibility:hidden">
+              Don't have an account? <a href="account-sign-up-simple.html">Sign up here</a>
             </div>
           </div>
         </div>
@@ -638,16 +694,18 @@
     });
     $('.toggle-cart').click(function(){
       $('.cart-wrapper').toggleClass('open');
-
     })
     $(".open-modal-payment").click(function(){
       $("#modal-payment").modal({backdrop: "static"});
     });
+    $("#modal-payment").on('click', '.open-sign-in-modal', (function(event){
+      $("#sign-in-modal").modal({backdrop: "static"});
+    }));
     $('.close-alert-msg').click(function(){
       $('#modal-payment .alert-dismissible').css('display','none');
     });
   </script>
-  <script type="text/javascript">
+<script type="text/javascript">
         var stripe = Stripe('pk_test_CtAIy4NNabE9gv280qV4UijC');
 
         var elements = stripe.elements();
@@ -689,7 +747,7 @@
         // Handle form submission.
         var form = document.getElementById('payment-form');
         form.addEventListener('submit', function(event) {
-          $('#stripePaidBox button.submit').css('pointer-events','none');
+          $('#modal-payment button.submit').css('pointer-events','none');
             event.preventDefault();
             function validate(){
                 try{
@@ -718,7 +776,7 @@
                 if (!validate() || result.error) {
                   var errorElement = document.getElementById('card-errors');
                   errorElement.textContent = result.error.message;
-                  $('#stripePaidBox button.submit').css('pointer-events','auto');
+                  $('#modal-payment button.submit').css('pointer-events','auto');
                 } else {
                   stripeSourceHandler(result.source);
                 }
@@ -726,7 +784,7 @@
         });
 
         function stripeSourceHandler(source) {
-          $('#stripePaidBox button.submit').css('pointer-events','none');
+          $('#modal-payment button.submit').css('pointer-events','none');
             $('.lds-ripple').css('display','inline-block');
             // Insert the source ID into the form so it gets submitted to the server
             var form = document.getElementById('payment-form');
@@ -752,7 +810,7 @@
                     $('#modal-payment').modal('hide');
                     notification("Paiement commande",oReq.response,"success");
                     card.clear();
-                    $('#stripePaidBox button.submit').css('pointer-events','auto');
+                    $('#modal-payment button.submit').css('pointer-events','auto');
                     $('.lds-ripple').css('display','none');
 
                     $("#modal-payment .alert-dismissible").show().delay(40000).fadeOut();
@@ -763,13 +821,13 @@
 
                 } else {
                     notification("Paiement commande",oReq.response,"error");
-                    $('#stripePaidBox button.submit').css('pointer-events','auto');
+                    $('#modal-payment button.submit').css('pointer-events','auto');
                     $('.lds-ripple').css('display','none');
 
-                    $("#modal-payment .alert-dismissible").show().delay(40000).fadeOut();
+                    $("#modal-payment .alert-dismissible").show().delay(60000).fadeOut();
                     $('#modal-payment .alert-dismissible').removeClass('alert-success');
                     $('#modal-payment .alert-dismissible').addClass('alert-danger');
-                    $('#modal-payment .alert-dismissible .text').text(oReq.response);
+                    $('#modal-payment .alert-dismissible .text').html(oReq.response);
                 }
             };
             oReq.send(oData);  
@@ -801,5 +859,72 @@
               }
           });
         }
+</script>
+
+<script type="text/javascript">
+  function validateContactForm(){
+    try{
+      var validator = $('#AjaxLogin').validate({
+          rules:{
+              email:{
+                  required:true,
+                  email:true
+              }, 
+              password:{
+                  required:true
+              }            
+          }
+      });
+      
+      var $validated = $('#AjaxLogin').valid();
+      return $validated;
+      }catch(error){
+          console.log(error)
+      }
+    }
+
+    var form = document.forms.namedItem("AjaxLogin");
+    form.addEventListener('submit', function(ev) {
+      if( !validateContactForm()){
+        toastr.error("Veuillez renseigner toutes les informations.");
+          $('#AjaxLogin button[type=submit]').text("Je m'inscris !");
+            ev.preventDefault();
+            return false;
+        }
+
+      $('#AjaxLogin button[type=submit]').text('Inscription...');
+        $('.lds-ripple').css('display','inline-block');
+        $('#AjaxLogin button[type=submit]').css('pointer-events','none');
+      $.ajax({
+            url:"#",
+            type:"POST",
+            data: new FormData(this),
+              dataType: 'json',
+              contentType: false,
+              cache: false,
+              processData:false,
+            //data:$('#formTournoi').serialize(),
+            success:function(response) {
+              toastr.success("inscription réussite. Consulter vos mail afin de valider votre compte");
+            $('#AjaxLogin button[type=submit]').button('reset');
+            $('#AjaxLogin button[type=submit]').text("Je m'inscris !");
+            $('.lds-ripple').css('display','none');
+            $('#AjaxLogin button[type=submit]').css('pointer-events','auto');
+            $(".success-checkmark").show().delay(3000).fadeOut();
+            $(".check-icon").show().show().delay(3000).fadeOut();
+
+            },
+            error:function(response){
+              toastr.error(response.responseJSON);
+            $('#AjaxLogin button[type=submit]').button('reset');
+            $('#AjaxLogin button[type=submit]').text("Je m'inscris !");
+            $('.lds-ripple').css('display','none');
+            $('#AjaxLogin button[type=submit]').css('pointer-events','auto');
+          }
+        });
+        
+      ev.preventDefault();
+    }, false);
+
 </script>
 {% endblock %}

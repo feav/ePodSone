@@ -44,7 +44,7 @@ class PaymentController extends AbstractController
             $email = $request->request->get('email');
             $emailExist = $this->userRepository->findOneBy(['email'=>$email]);
             if(!is_null($emailExist)){
-                return new Response("Un utilisateur existe déjà avec l'email ".$email.". s'il s'agit de vous, veuillez vous connecter avant d'effectuer le paiement", 500);
+                return new Response("Un utilisateur existe déjà avec l'email ".$email.". s'il s'agit de vous, veuillez vous connecter avant d'effectuer le paiement. <a href='javascript:void()' class='open-sign-in-modal'>Connectez-vous</a>", 500);
             }
             $user = $this->user_s->register($mailer, $email, $request->request->get('name'));
             $message = "Un compte vous a été crée, des informations de connexion vous ont été envoyées à l'adresse ".$user->getEmail();
