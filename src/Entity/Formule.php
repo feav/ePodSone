@@ -40,7 +40,7 @@ class Formule
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Abonnement", mappedBy="formule")
+     * @ORM\OneToMany(targetEntity="App\Entity\Abonnement", cascade={"persist", "remove"}, mappedBy="formule")
      */
     private $abonnements;
 

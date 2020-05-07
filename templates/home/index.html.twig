@@ -55,7 +55,8 @@
           }
           var sound = localStorage.getItem('sound');
           localStorage.setItem('sound', !sound);
-      }
+   }
+
    function addToCardForm(id,price,name,img){
       var modal = $("#add-product-modal");
       $("#add-product-modal .product-image").attr('src','{{asset("assets/img/products")}}/'+img);
@@ -65,55 +66,8 @@
       $("#add-product-modal .product-price-input").html(id);
       $("#add-product-modal .product-quantity-input").val(1);
    }
-  function addToCard(id=-1,qty=-1,type="product"){
-   if(id == -1){
-      id = $("#add-product-modal .product-id-input").val();
-   }
-   if(qty == -1){
-      qty = $("#add-product-modal .product-quantity-input").val();
-   }
-   $.ajax({
-        contentType: "application/json",
-        dataType: "json",
-        data:{
-            product:id,
-            quantity:qty,
-            type:type
-        },
-        url: "{{ path('commande_add_to_card') }}",
-        beforeSend: function( xhr ) {
-          $('.btn-add-to-card').css('pointer-events','none');
-          $('.btn-add-to-card').text('Ajout...');
-        }
-      })
-      .done(function( data ) {
-         if(data.status==200){
-            
-            refreshCard(true);
-            notification("Modification du Panier",data.message,"success");
-         }else{
-            notification("Modification du Panier",data.message,"error");
-         }
-         $('.btn-add-to-card').css('pointer-events','auto');
-         $('.btn-add-to-card').text('Ajout au panier');
-         $('#add-product-modal').modal('hide');
-      });
 
-  }
-   function addCouponToCard(target,qty=1){
-      var code = $(target).val();
-      addToCard(code,qty,"coupon");
-  }
-   function addFormuleToCard(id,qty=1){
-      addToCard(id,qty,"formule");
-  }
-  function itemCoupon(id,name, value){
-      return '<li class="item coupon-'+id+'">'+
-                '<span>Réduction:</span>'+
-                '<span>'+name+' (-'+value+')</span>'+
-              '</li>';
-  }
-  function itemProduct(id,img, name, quantity, price, oldprice){
+   function itemProduct(id,img, name, quantity, price, oldprice){
       return '<div class="product-item product-'+id+'">'+
             '<img src="{{asset("assets/img/products")}}/'+img+'" class="product-img">'+
             '<ul class="detail-list">'+
@@ -128,8 +82,8 @@
               '</li>'+
             '</ul>'+
           '</div>';
-  }
-  function itemFormule(id, name, quantity, price){
+   }
+   function itemFormule(id, name, quantity, price){
       return '<div class="product-item formule-'+id+'">'+
             '<img src="{{asset("assets/img/products/avatar.png")}}" class="product-img">'+
             '<ul class="detail-list">'+
@@ -144,44 +98,193 @@
               '</li>'+
             '</ul>'+
           '</div>';
+   }
+
+   function itemCoupon(id,name, value){
+      return '<li class="item coupon-'+id+'">'+
+                '<span>Réduction:</span>'+
+                '<span>'+name+' (-'+value+')</span>'+
+              '</li>';
+   }
+
+
+   function addCouponToCard(target,qty=1){
+      var code = $(target).val();
+      addToCard(code,qty,"coupon");
+   }
+   function addFormuleToCard(id,qty=1){
+      addToCard(id,qty,"formule");
   }
-  function refreshCard(show){
-      $.ajax({
-        contentType: "application/json",
-        dataType: "json",
-        url: "{{ path('commande_get_card') }}",
-        beforeSend: function( xhr ) {
-          
+   {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        function addToCard(id=-1,qty=-1,type="product"){
+            if(id == -1){
+               id = $("#add-product-modal .product-id-input").val();
+            }
+            if(qty == -1){
+               qty = $("#add-product-modal .product-quantity-input").val();
+            }
+            $.ajax({
+                 contentType: "application/json",
+                 dataType: "json",
+                 data:{
+                     product:id,
+                     quantity:qty,
+                     type:type
+                 },
+                 url: "{{ path('commande_add_to_card') }}",
+                 beforeSend: function( xhr ) {
+                   $('.btn-add-to-card').css('pointer-events','none');
+                   $('.btn-add-to-card').text('Ajout...');
+                 }
+               })
+            .done(function( data ) {
+               if(data.status==200){
+                  
+                  refreshCard(true);
+                  notification("Modification du Panier",data.message,"success");
+               }else{
+                  notification("Modification du Panier",data.message,"error");
+               }
+               $('.btn-add-to-card').css('pointer-events','auto');
+               $('.btn-add-to-card').text('Ajout au panier');
+               $('#add-product-modal').modal('hide');
+            });
         }
-      })
-      .done(function( data ) {
-         if(data.status==200){
-            var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
-            $(".cart-total-pay").html(total.toFixed(2));
+        function refreshCard(show){
+            $.ajax({
+              contentType: "application/json",
+              dataType: "json",
+              url: "{{ path('commande_get_card') }}",
+              beforeSend: function( xhr ) {
+                
+              }
+            })
+            .done(function( data ) {
+               if(data.status==200){
+                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+                  $(".cart-total-pay").html(total.toFixed(2));
+                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+                  $(".card-list-product").html("");
+                   data.panier.products.forEach(function(item, index){
+                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+                   }); 
+                  $(".card-list-coupon").html("");
+                   data.panier.coupons.forEach(function(item, index){
+                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+                   });
+                  $(".card-list-formule").html("");
+                   data.panier.formules.forEach(function(item, index){
+                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+                   });
+               }else{
+                  console.log(data.message);
+               }
+               if(show && !$(".cart-wrapper").hasClass("open"))
+                     $(".cart-wrapper").addClass("open");
+              });
+        }
+        function synch_card(){
+            var x = window.localStorage.getItem('panier');
+            var prods = [];
+            if(x){
+               prods = JSON.parse(x);
 
-            $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+               prods.forEach(function(item, index){
+                  console.log("add "+item.type+" : "+item.id);
+                  addToCard(item.id,item.qty,item.type);
+               })
 
-            $(".card-list-product").html("");
-             data.panier.products.forEach(function(item, index){
-               $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
-             }); 
+               window.localStorage.removeItem('panier');
+            }
+        } 
+        
+   {% else %}
+      /**
+      ** USER NOT CONNECTED
+      **/
+        function addToCard(id=-1,qty=-1,type="product"){
+            if(id == -1){
+               id = $("#add-product-modal .product-id-input").val();
+            }
+            if(qty == -1){
+               qty = $("#add-product-modal .product-quantity-input").val();
+            }
 
-            $(".card-list-coupon").html("");
-             data.panier.coupons.forEach(function(item, index){
-               $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
-             });
+            var x = window.localStorage.getItem('panier');
+            var prods = [];
+            if(x){
+               prods = JSON.parse(x);
+            }
+            
 
-            $(".card-list-formule").html("");
-             data.panier.formules.forEach(function(item, index){
-               $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
-             });
-         }else{
-            console.log(data.message);
-         }
-         if(show && !$(".cart-wrapper").hasClass("open"))
-               $(".cart-wrapper").addClass("open");
-        });
-  }
+            $.ajax({
+                 contentType: "application/json",
+                 dataType: "json",
+                 data:{
+                     product:id,
+                     quantity:qty,
+                     type:type,
+                     products:prods
+                 },
+                 url: "{{ path('commande_add_to_card_not_connected') }}",
+                 beforeSend: function( xhr ) {
+                   $('.btn-add-to-card').css('pointer-events','none');
+                   $('.btn-add-to-card').text('Ajout...');
+                 }
+               })
+            .done(function( data ) {
+               if(data.status==200){
+                  window.localStorage.setItem('panier', JSON.stringify(data.panier) );
+                  refreshCard(true);
+                  notification("Modification du Panier",data.message,"success");
+               }else{
+                  notification("Modification du Panier",data.message,"error");
+               }
+               $('.btn-add-to-card').css('pointer-events','auto');
+               $('.btn-add-to-card').text('Ajout au panier');
+               $('#add-product-modal').modal('hide');
+            });
+        }
+        function refreshCard(show){
+            var x = window.localStorage.getItem('panier');
+            var prods = [];
+            if(x){
+               prods = JSON.parse(x);
+            }
+            $.ajax({
+              contentType: "application/json",
+               dataType: "json",
+               data:{ products:prods },
+              url: "{{ path('commande_get_card_not_connected') }}",
+              beforeSend: function( xhr ) {
+                
+              }
+            })
+            .done(function( data ) {
+               if(data.status==200){
+                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+                  $(".cart-total-pay").html(total.toFixed(2));
+                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+                  $(".card-list-product").html("");
+                   data.panier.products.forEach(function(item, index){
+                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+                   }); 
+                  $(".card-list-coupon").html("");
+                   data.panier.coupons.forEach(function(item, index){
+                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+                   });
+                  $(".card-list-formule").html("");
+                   data.panier.formules.forEach(function(item, index){
+                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+                   });
+               }else{
+                  console.log(data.message);
+               }
+               if(show && !$(".cart-wrapper").hasClass("open"))
+                     $(".cart-wrapper").addClass("open");
+              });
+        }
+   {% endif %}
   
 </script>
 <div data-overlay class="bg-primary-3 jarallax text-white" data-jarallax data-speed="0.2">
@@ -368,8 +471,11 @@
 {{parent()}}
 <script type="text/javascript">
   $(document).ready(function() {
+
+     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+         synch_card();
+     {% endif %}
       refreshCard();
    });
-  
 </script>
 {% endblock %}

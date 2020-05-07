@@ -71,7 +71,7 @@ class ApiPanierController extends AbstractController
                             'price' => $commande->getTotalPrice(),
                             'quantity' => $commande->getQuantity(),
                             'id_product' => $commande->getProduct()->getId(),
-                            'oldprice' => $commande->getQuantity(),
+                            'oldprice' => $commande->getProduct()->getOldPrice(),
                             'img' => $commande->getProduct()->getImage(),
                         );
                 }
@@ -228,6 +228,7 @@ class ApiPanierController extends AbstractController
                 if($formule){
 
                     $abonnement = $this->abonnementRepository->findOneBy(array('formule' =>  $formule, 'panier'=>$panier ));
+
                     if($abonnement){
 
                         if($quantity){
@@ -275,6 +276,277 @@ class ApiPanierController extends AbstractController
         }
         return new Response( json_encode(array('status' => 300, 'message' => "Utilisateur non connecte" )) );
     }
+
+
+
+
+
+    public function getCurrentCardNotConnected(): Response
+    {
+        $this->entityManager = $this->getDoctrine()->getManager();
+        
+        $products = [];
+        if(isset($_GET['products']) && $_GET['products'] !== ''){
+            $products = $_GET['products'];
+        }
+        if(count($products)){
+
+            $produis = array();
+            $coupons = array();
+            $formules = array();
+            $livraison = 10;
+            $total = 0;
+            $reduction = 0;
+
+            /**
+            ** if commande do not exist create one
+            **/
+            if( count($products) ==0){
+               
+            }else{
+                foreach ($products as $key => $value) {
+                    if($value['type'] == 'formule'){
+                        $formule = $this->formuleRepository->findOneById($value['id']);
+                        $total += $formule->getPrice();
+                        $formules[] = array(
+                            'name' => $formule->getName(),
+                            'price' => $formule->getPrice(),
+                            'id' => $formule->getId(),
+                            'month' => $formule->getMonth(),
+                        );
+                    }else if($value['type'] == 'product'){
+                        $product = $this->productService->findById($value['id']);
+                        $total += $product->getPrice()*( (float) $value['qty'] );
+                        $produis[] = array(
+                            'name' => $product->getName(),
+                            'product_price' => $product->getPrice(),
+                            'price' => $product->getPrice()*( (float) $value['qty'] ),
+                            'quantity' => $value['qty'],
+                            'id_product' => $product->getId(),
+                            'oldprice' => $product->getOldPrice(),
+                            'img' => $product->getImage(),
+                        );
+                    }
+                }
+
+                foreach ($products as $key => $value) {
+                    if($value['type'] == 'coupon'){
+                        $coupon = $this->couponRepository->findOneByCode($value['id']);
+                        
+                        /**
+                        ** Gerer la reduction au pourcentage
+                        **/
+                        $reduction += $coupon->getPriceReduction();
+                        $coupons[] = array(
+                            'name' => $coupon->getNom(),
+                            'value' => $coupon->getPriceReduction(),
+                            'id' => $coupon->getId(),
+                            'code' => $coupon->getCode(),
+                            'type' => $coupon->getTypeReduction()
+                        );
+                    }
+                }
+
+            }
+            return new Response( json_encode(
+                array(
+                    'status' => 200, 
+                    'message' => "reccuperer le panier de l'utilisateur connecte", 
+                    'panier'=> array(
+                        'products'=>$produis,
+                        'coupons' => $coupons,
+                        'formules' => $formules,
+                        'livraison' => $livraison,
+                        'total' => $total,
+                        'total' => $total,
+                        'livraison' => $livraison,
+                        'reduction' => $reduction
+                    )
+                )
+            ) );
+        }
+        return new Response( json_encode(array('status' => 300, 'message' => "Utilisateur non connecte" )) );
+    }
+    public function addItemToCardNotConnected(): Response
+    {
+
+        $type = $_GET['type'];
+        $quantity = $_GET['quantity'];
+        $products = array();
+        
+        if(isset($_GET['products']) && $_GET['products'] !== ''){
+            $products = $_GET['products'];
+        }
+
+       
+        $this->entityManager = $this->getDoctrine()->getManager();
+        if($this->entityManager){
+            $message = "Auncun produit importe";
+            /**
+            ** update product into card
+            **/
+            if($type == 'product'){
+                $product = $_GET['product']; 
+
+                $product = $this->productService->findById($product);
+                if($product){
+
+                    $exist = false;;
+                    foreach ($products as $key => $value) {
+                        if($type == $value['type'] && $product->getId() == $value['id'] ){
+                            $exist = true;
+                        }
+                    }
+                    if($exist){
+                                                        
+                        $message = "La quantite du produit a ete mise a jour";
+                        foreach ($products as $key => $value) {
+                            if($type == $value['type'] && $product->getId() == $value['id'] ){
+                                if($quantity == $value['qty'] ){
+                                    $message = "La quantite du produit est la meme";
+                                }else{
+                                    $products[$key]['qty'] = $quantity;
+                                }
+                            }
+                        }
+                    }else{
+                            $products[] = array(
+                                'id' => $product->getId(),
+                                'qty' => $quantity,
+                                'type' => $type,
+                            );
+                            $message = "Le produit a ete a ajoute a votre panier";
+                    }
+
+                }else{
+                    return new Response( json_encode(array('status' => 300, 'message' => "Ce produit n'existe pas dans notre boutique" )) );
+                }
+
+            }
+            if($type == 'coupon'){
+                $coupon_code = $_GET['product']; 
+                $coupon = $this->couponRepository->findOneByCode($coupon_code);
+                if($coupon){
+
+                    $exist = false;;
+                    foreach ($products as $key => $value) {
+                        if($type == $value['type'] && $coupon->getCode() == $value['id'] ){
+                            $exist = true;
+                        }
+                    }
+                    if($coupon->getCurrentUsage() < $coupon->getMaxUsage() ){
+                        if($exist){
+
+                            if($quantity){
+
+                                foreach ($products as $key => $value) {
+                                    if($type == $value['type'] && $coupon->getCode() == $value['id'] ){
+                                        if($quantity == $value['qty'] ){
+                                            $message = "Le coupon est deja dans votre panier";
+                                        }else{
+                                            $message = "Le coupon a ete retire de votre panier";
+                                            $products[$key]['qty'] = $quantity;
+                                        }
+                                    }
+                                }
+
+                            }else{
+
+                                $prod = array();
+
+                                foreach ($products as $key => $value) {
+
+                                    if($type == $value['type'] && $coupon->getId() == $value['id'] ){
+                                    }else{
+                                        $prod[] = $value;
+                                    }
+
+                                }
+
+                                $products = $prod;
+                                
+                            }
+                        }else{
+                            if($quantity){
+                                $products[] = array(
+                                        'id' => $coupon->getCode(),
+                                        'qty' => $quantity,
+                                        'type' => $type,
+                                    );
+                                $message = "Le coupon a ete a ajoute a votre panier";
+                            }else{
+                                $message = "Le coupon n'est pas dans votre panier";
+                            }
+                        }
+                    }else{
+                        return new Response( json_encode(array('status' => 300, 'message' => "Ce coupon a atteint son nombre maximal d'utilisation" )) );
+                    }
+                    
+                }else{
+                    return new Response( json_encode(array('status' => 300, 'message' => "Ce coupon n'existe pas dans notre boutique" )) );
+                }
+
+            }
+            /**
+            ** update formule into card
+            **/
+            if($type == 'formule'){
+                $formule_id = $_GET['product']; 
+
+                $formule = $this->formuleRepository->findOneById($formule_id);
+                if($formule){
+
+                    $exist = false;;
+                    foreach ($products as $key => $value) {
+                        if($type == $value['type'] && $coupon->getId() == $value['id'] ){
+                            $exist = true;
+                        }
+                    }
+                    if($exist){
+
+                        if($quantity){
+                            $message = "La formule est deja dans votre panier";
+                        }else{
+                            $message = "La formule a ete retiree de votre panier";
+
+                            $prod = array();
+
+                            foreach ($products as $key => $value) {
+
+                                if($type == $value['type'] && $formule->getId() == $value['id'] ){}else{
+                                    $prod[] = $value;
+                                }
+                            }
+                            $products = $prod;
+                        }
+                    }else{
+
+                        if($quantity){
+                            $products[] = array(
+                                        'id' => $formule->getId(),
+                                        'qty' => $quantity,
+                                        'type' => $type,
+                                    );
+                            $message = "La formule a ete a ajoutee a votre panier";
+                        }else{
+                            $message = "La formule n'etait pas dans votre panier";
+                        }
+
+                    }
+
+                }else{
+                    return new Response( json_encode(array('status' => 300, 'message' => "Ce produit n'existe pas dans notre boutique" )) );
+                }
+
+            }
+            return new Response( json_encode(array('status' => 200, 'message' => $message, 'panier' => $products )) );
+
+        }
+        return new Response( json_encode(array('status' => 300, 'message' => "Utilisateur non connecte" )) );
+    }
+
+
+
     /**
      * @Route("/", name="panier_index", methods={"GET"})
      */

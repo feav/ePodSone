@@ -45,7 +45,7 @@ class Abonnement
     private $is_paid;
     
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Panier", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Panier", cascade={"persist", "remove"})
      */
     private $panier;
 
@@ -57,7 +57,6 @@ class Abonnement
 
     public function __construct()
     {
-        $this->paniers = new ArrayCollection();
         $this->is_paid = 0;
         $this->state = 0;
         $this->start = new \DateTime();

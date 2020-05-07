@@ -4,8 +4,15 @@ commande:
 commande_add_to_card:
    path: /panier/add/
    controller: App\Controller\ApiPanierController::addItemToCard
-   
-
 commande_get_card:
    path: /panier/card
    controller: App\Controller\ApiPanierController::getCurrentCard
+
+
+
+commande_add_to_card_not_connected:
+   path: /panier/add0/
+   controller: App\Controller\ApiPanierController::addItemToCardNotConnected
+commande_get_card_not_connected:
+   path: /panier/card0
+   controller: App\Controller\ApiPanierController::getCurrentCardNotConnected
