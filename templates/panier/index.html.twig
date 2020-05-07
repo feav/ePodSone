@@ -53,7 +53,7 @@
                         <tr>
                            <td>{{ panier.emmission ? panier.emmission|date('Y-m-d') : '' }}</td>
                            <td>{{ panier.priceShipping }}</td>
-                           <td>{{ panier.token }}</td>
+                           <td><div class="badge badge-warning">{{ panier.token }}</div></td>
                            <td>{{ panier.totalPrice }}</td>
                            <td>
                               <a href="{{ path('panier_edit', {'id': panier.id}) }}">Editer</a>
@@ -105,5 +105,7 @@
        "lengthMenu": [7, 10, 20, 50],
        "pageLength": 7 
    } );
+      $('#sidebar .menu.menu-panier').addClass('active');
+
 </script>
 {% endblock %}

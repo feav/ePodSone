@@ -1,8 +1,40 @@
+<style type="text/css">
+    button[type=submit]{float: right;}
+</style>
+
 {{ form_start(form) }}
     <div class="my-custom-class-for-errors">
         {{ form_errors(form) }}
     </div>
 
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Modifier') }}</button>
+    <form>
+        <div class="form-row mb-4">
+            <div class="form-group col-md-8">
+                <label for="inputEmail4">Nom de la personne</label>
+                 {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder':'Nom'}}) }} 
+            </div>
+            <div class="form-group col-md-4">
+                <label for="inputCity">Lieu</label>
+                {{ form_widget(form.location, {'attr': {'class': 'form-control','type': 'decimal','required': false, 'placeholder':'Lieu'}}) }} 
+            </div>  
+        </div>
+       
+        <div class="form-row mb-4">
+            <div class="form-group col-md-6">
+                <label for="inputEmail4">Date</label>
+                 {{ form_widget(form.creation, {'attr': {'placeholder':'Nom'}}) }} 
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputCity">Video</label>
+                {{ form_widget(form.video, {'attr': {'class': 'form-control','type': 'decimal','required': false, 'placeholder':'Lien de la vide'}}) }} 
+            </div>  
+        </div>
+
+        <div class="form-group mb-4">
+            <label for="inputAddress">Description</label>
+             {{ form_widget(form.text, {'attr': { 'placeholder':'Description'}}) }}
+        </div>    
+        {{ form_widget(form._token) }}
+        <button type="submit" class="btn btn-primary mt-3">{{ button_label|default('Ajout | Modification') }}</button>
+    </form>
 {{ form_end(form) }}
