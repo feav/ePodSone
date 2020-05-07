@@ -82,7 +82,8 @@
         },
         url: "{{ path('commande_add_to_card') }}",
         beforeSend: function( xhr ) {
-          
+          $('.btn-add-to-card').css('pointer-events','none');
+          $('.btn-add-to-card').text('Ajout...');
         }
       })
       .done(function( data ) {
@@ -93,7 +94,10 @@
          }else{
             notification("Modification du Panier",data.message,"error");
          }
-        });
+         $('.btn-add-to-card').css('pointer-events','auto');
+         $('.btn-add-to-card').text('Ajout au panier');
+         $('#add-product-modal').modal('hide');
+      });
 
   }
    function addCouponToCard(target,qty=1){
@@ -268,7 +272,7 @@
                           fill="#000000" fill-rule="nonzero" transform="translate(12.000000, 12.000000) scale(-1, 1) translate(-12.000000, -12.000000) "></path>
                         </g>
                       </svg>
-                      <span onclick="addToCard()">Ajouter au Panier</span>
+                      <span onclick="addToCard()" class="btn-add-to-card">Ajouter au Panier</span>
                     </button>
                   </div>
                   <div class="d-none alert alert-danger w-100" role="alert" data-error-message>

@@ -749,6 +749,7 @@
                 if (oReq.status == 200) {
                     $(".success-checkmark").show().delay(3000).fadeOut();
                     $(".check-icon").show().show().delay(3000).fadeOut();
+                    $('#modal-payment').modal('hide');
                     notification("Paiement commande",oReq.response,"success");
                     card.clear();
                     $('#stripePaidBox button.submit').css('pointer-events','auto');
