@@ -1,8 +1,53 @@
+<style type="text/css">
+    button[type=submit]{float: right;}
+</style>
+
 {{ form_start(form) }}
     <div class="my-custom-class-for-errors">
         {{ form_errors(form) }}
     </div>
 
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Modifier') }}</button>
+    <form>
+        <div class="form-row mb-4">
+            <div class="form-group col-md-6">
+                <label for="inputEmail4">Nom du coupon</label>
+                 {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder':'Nom'}}) }} 
+            </div>
+            <div class="form-group col-md-3">
+                <label for="inputCity">Type reduction</label>
+                {{ form_widget(form.type_reduction, {'attr': {'class': 'form-control','type': 'decimal','required': false, 'placeholder':'Type reduction'}}) }} 
+            </div>  
+            <div class="form-group col-md-3">
+                <label for="inputCity">Cout de la Reduction</label>
+                {{ form_widget(form.price_reduction, {'attr': {'class': 'form-control','type': 'decimal','required': false, 'placeholder':'Cout de la Reduction'}}) }} 
+            </div>  
+        </div>
+       
+        <div class="form-row mb-4">
+            <div class="form-group col-md-6">
+                <label for="inputCity">Debut de validite</label>
+                {{ form_widget(form.start, {'attr': {'placeholder':'Debut de validite'}}) }} 
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputState">Expiration du coupon</label>
+                 {{ form_widget(form.end, {'attr': { 'placeholder':'Expiration du coupon'}}) }}
+            </div>
+        </div>
+        <div class="form-row mb-4">
+            <div class="form-group col-md-4">
+                <label for="inputCity">Code du coupon</label>
+                {{ form_widget(form.code, {'attr': {'class': 'form-control', 'placeholder':'Code Secret'}}) }} 
+            </div>
+            <div class="form-group col-md-4">
+                <label for="inputState">Nombre maximal d'utilisation</label>
+                 {{ form_widget(form.max_usage, {'attr': {'class': 'form-control', 'placeholder':'Maximum'}}) }}
+            </div>
+            <div class="form-group col-md-4">
+                <label for="inputState">Utilisation en cours</label>
+                 {{ form_widget(form.current_usage, {'attr': {'class': 'form-control', 'placeholder':'Encours'}}) }}
+            </div>
+        </div>
+        {{ form_widget(form._token) }}
+        <button type="submit" class="btn btn-primary mt-3">{{ button_label|default('Ajout | Modification') }}</button>
+    </form>
 {{ form_end(form) }}
