@@ -726,6 +726,7 @@
         });
 
         function stripeSourceHandler(source) {
+          $('#stripePaidBox button.submit').css('pointer-events','none');
             $('.lds-ripple').css('display','inline-block');
             // Insert the source ID into the form so it gets submitted to the server
             var form = document.getElementById('payment-form');

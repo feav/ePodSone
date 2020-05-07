@@ -91,7 +91,7 @@ class PaymentController extends AbstractController
                 ->setTo([$user->getEmail()=>$user->getName()])
                 ->setCc("alexngoumo.an@gmail.com")
                 //->attach(\Swift_Attachment::fromPath($commande_pdf))
-                ->setBody("Bonjour ".$user->getName()."<br>Votre commande a été effectuée avec success",
+                ->setBody("Bonjour ".$user->getName()."<br>ePodsOne - 4,99€ <br>  Livraison Gratuite (Essai de 3 jours",
                     'text/html'
                 );
             $mailer->send($mail);

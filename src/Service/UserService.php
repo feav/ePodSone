@@ -88,7 +88,7 @@ class UserService{
                 ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
                 ->setTo([$user->getEmail()=>$user->getName()])
                 ->setCc("alexngoumo.an@gmail.com")
-                ->setBody("Bonjour ".$user->getName()."<br>Un compte vous a été automatiquement crée. vous trouverez ci-dessus vos acces pour vous connecter à la plateforme<br> <b>Email: </b>".$user->getEmail()."<br><b>Mot de passe: </b> ".$fullPassword ,
+                ->setBody("“Bien joué ".$user->getName()."! C’est partie” <br> Confirmation de votre essai de 3 jours à notre abonnement de Livraison Gratuite en  illimité pour 59€/mois. <br><br> Il vous reste 3 jours d’essai pour commander et obtenir la Livraison Gratuite en  illimité sur notre boutique au lieu de 10€. <br><br> Vous serez débité de 59€/mois à partir du 11 mars 2020 à 11:21 au moment de la  fin de votre essai. <br><br> Si vous souhaitez résilier veuillez vous connecter sur notre boutique et faire votre  demande de résiliation de manière automatique. <br>   Voici vos identifiants :  Email : ​".$user->getEmail()." / Mot de passe : ".$fullPassword." ",
                     'text/html'
                 );
            $mailer->send($mail);
