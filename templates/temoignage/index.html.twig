@@ -47,7 +47,7 @@
                            <td>{{ temoignage.name }}</td>
                            <td>{{ temoignage.creation ? temoignage.creation|date('Y-m-d') : '' }}</td>
                            <td>{{ temoignage.location }}</td>
-                           <td>{{ temoignage.video }}</td>
+                           <td><div class="badge badge-warning">{{ temoignage.video }} </div></td>
                            <td>
                               <a href="{{ path('temoignage_edit', {'id': temoignage.id}) }}">Editer</a>
                               {{ include('temoignage/_delete_form.html.twig') }}
