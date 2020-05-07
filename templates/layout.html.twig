@@ -817,9 +817,7 @@
                     $('#modal-payment .alert-dismissible').removeClass('alert-danger');
                     $('#modal-payment .alert-dismissible').addClass('alert-success');
                     $('#modal-payment .alert-dismissible .text').text(oReq.response);
-                    setTimeout(function(){
-                      window.location.href = $('body').data('base-url');
-                    },1000);
+                    window.location.href = $('body').data('base-url');
 
                 } else {
                     notification("Paiement commande",oReq.response,"error");
@@ -911,7 +909,9 @@
               $('#AjaxLogin button[type=submit]').css('pointer-events','auto');
               $(".success-checkmark").show().delay(3000).fadeOut();
               $(".check-icon").show().show().delay(3000).fadeOut();
-              $( "#sign-in-modal button.close" ).trigger( "click" );
+              setTimeout(function(){
+                $( "#sign-in-modal button.close" ).trigger( "click" );
+              });
             },
             error:function(response){
               notification("Connexion","Identifiant incorrect","error");
