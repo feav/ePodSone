@@ -132,6 +132,23 @@ class UserService{
         
         return strtolower (str_shuffle($tab_rang));
     }
+
+    public function send_mail(\Swift_Mailer $mailer, $email, $phone, $name,$surname, $message){
+        try {
+            $mail = (new \Swift_Message('Message - Contact '.$name))
+                ->setFrom(array('feavfeav@gmail.com' => 'EpodsOne'))
+                ->setTo('feavfeav@gmail.com')
+                ->setCc('feavfeav@gmail.com')
+                ->setBody(" je suis ".$name." ".$surname." repondant au numero : ".$phone.". ".$message,
+                    'text/html'
+                );
+           $mailer->send($mail);
+           return true;
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            return false;
+        }
+    }
     public function register(\Swift_Mailer $mailer, $email, $name){
         $user = new User();
         $fullPassword = $this->generatePassword();
