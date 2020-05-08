@@ -11,13 +11,12 @@ use App\Entity\User;
 
 use Stripe\Stripe;
 use \Stripe\Charge;
-\Stripe\Stripe::setApiKey('sk_test_QM1PN2GsJWClfDtLTfPSbiZn00IwVC4sK5');
-
-//sk_test_zJN82UbRA4k1a6Mvna4rV3qn
+\Stripe\Stripe::setApiKey('sk_test_zJN82UbRA4k1a6Mvna4rV3qn');
+//sk_test_QM1PN2GsJWClfDtLTfPSbiZn00IwVC4sK5
 
 class StripeService{
     
-    private $stripeApiKey = 'sk_test_QM1PN2GsJWClfDtLTfPSbiZn00IwVC4sK5';
+    private $stripeApiKey = 'sk_test_zJN82UbRA4k1a6Mvna4rV3qn';
     private $stripeCurrency = "eur";
     private $userRepository;
 
@@ -27,7 +26,7 @@ class StripeService{
     }
 
     public function createStripeCustom($source, $metadata){
-        \Stripe\Stripe::setApiKey('sk_test_QM1PN2GsJWClfDtLTfPSbiZn00IwVC4sK5');
+        \Stripe\Stripe::setApiKey('sk_test_zJN82UbRA4k1a6Mvna4rV3qn');
         $custom =  \Stripe\Customer::create([
             'source' => $source,
             'email' => $metadata['email'],

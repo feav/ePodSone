@@ -44,7 +44,7 @@ class PaymentController extends AbstractController
         $user = $this->getUser();
         $message = $result = "";
 
-        $panier = $this->userRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
+        $panier = $this->panierRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
         if(!is_null($panier))
             $amount = $panier->getTotalPrice();
         else
