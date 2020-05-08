@@ -41,6 +41,17 @@ class ApiPanierController extends AbstractController
         $this->UserRepository = $userRepository;
         
     }
+    public function userIsConnected():Response
+    {
+        $this->entityManager = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        if($user){
+            return new Response( json_encode(array('status' => 200, 'message' => "Utilisateur  connecte" )) );
+        }
+        return new Response( json_encode(array('status' => 300, 'message' => "Utilisateur non connecte" )) );
+
+
+    }
     public function getCurrentCard(): Response
     {
         $this->entityManager = $this->getDoctrine()->getManager();

@@ -16,3 +16,8 @@ commande_add_to_card_not_connected:
 commande_get_card_not_connected:
    path: /panier/card0
    controller: App\Controller\ApiPanierController::getCurrentCardNotConnected
+
+
+api_use_connected:
+   path: /user/connected
+   controller: App\Controller\ApiPanierController::userIsConnected
