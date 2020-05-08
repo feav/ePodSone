@@ -10,14 +10,36 @@ use App\Repository\TemoignageRepository;
 use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Response;
 
+use App\Repository\PanierRepository;
+use App\Repository\CommandeRepository;
+use App\Repository\CouponRepository;
+use App\Repository\AbonnementRepository;
+use App\Repository\UserRepository;
+
 class HomeController extends AbstractController
 {   
     private $prodService;
     private $user_s;
+    private $productService;
+    private $panierRepository;
+    private $commandeRepository;
+    private $couponRepository;
+    private $userRepository;
+    private $entityManager;
+    private $money_unit;
+    public function __construct(UserRepository $userRepository,AbonnementRepository $abonnementRepository,FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService,ProductService $prodService,UserService $user_s){
 
-    public function __construct(ProductService $prodService,UserService $user_s){
         $this->prodService = $prodService;
         $this->user_s = $user_s;
+
+        $this->money_unit = "$";
+        $this->productService = $productService;
+        $this->panierRepository = $panierRepository;
+        $this->commandeRepository = $commandeRepository;
+        $this->abonnementRepository = $abonnementRepository;
+        $this->couponRepository = $couponRepository;
+        $this->formuleRepository = $formuleRepository;
+        $this->UserRepository = $userRepository;
     }
     /**
      * @Route("/", name="home")
@@ -50,6 +72,27 @@ class HomeController extends AbstractController
         return $this->render('home/account.html.twig', [
             'controller_name' => 'ePodSone'
         ]);
+    }
+    /**
+     * @Route("/account/facture/{id}", name="billing")
+     */
+    public function getCurrentCard($id)
+    {
+        $this->entityManager = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        if($user){
+
+            $panier = $this->panierRepository->findOneById($id);
+            /**
+            ** if commande do not exist create one
+            **/
+            if($panier){
+                return $this->render('home/facture.html.twig', array('card' => $panier ));
+            }
+
+        }
+
+        return $this->render('home/account.html.twig');
     }
     /**
      * @Route("/contact", name="contact")
