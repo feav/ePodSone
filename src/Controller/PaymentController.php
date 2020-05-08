@@ -48,7 +48,7 @@ class PaymentController extends AbstractController
         if(!is_null($panier))
             $amount = $panier->getTotalPrice();
         else
-            return new Response("Votre panier est vide", 500);
+            return new Response("Vous n'avez pas de panier en attente de paiement", 500);
         
         if(is_null($user)){
             $email = $request->request->get('email');

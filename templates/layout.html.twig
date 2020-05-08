@@ -552,6 +552,9 @@
           localStorage.setItem('sound', !sound);
    }
 
+   var LENGTH_CARD = 0;
+   var prods = [];
+
    function addToCardForm(id,price,name,img){
       var modal = $("#add-product-modal");
       $("#add-product-modal .product-image").attr('src','{{asset("assets/img/products")}}/'+img);
@@ -610,7 +613,6 @@
   }
   function synch_card(){
     var x = window.localStorage.getItem('panier');
-    var prods = [];
     if(x){
        prods = JSON.parse(x);
 
@@ -679,9 +681,17 @@
                })
             .done(function( data ) {
                if(data.status==200){
-                  
                   refreshCard(true);
                   notification("Modification du Panier",data.message,"success");
+                  
+                  LENGTH_CARD++;
+                  if(prods.length == LENGTH_CARD ){
+                    if($paidLaunch){
+                      $('#modal-payment button.submit').text('Paiement en cours...');
+                      $paidLaunch = false;
+                      proceedPayment();
+                    }
+                  }
                }else{
                   notification("Modification du Panier",data.message,"error");
                }
@@ -763,16 +773,9 @@
                   window.localStorage.setItem('panier', JSON.stringify(data.panier) );
                   refreshCard(true);
 
-                  if($paidLaunch){
-                    notification("Enregistrement du panier","Panier enregistré","success");
-                    proceedPayment();
-                    $paidLaunch = false;
-                  }
-                  else
-                    notification("Modification du Panier",data.message,"success");
+                  notification("Modification du Panier",data.message,"success");
                }else{
                   notification("Modification du Panier",data.message,"error");
-                  $paidLaunch = false;
                   $('#modal-payment button.submit').text('Valider');
                }
                $('.btn-add-to-card').css('pointer-events','auto');
