@@ -9,10 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\UserRepository;
 use App\Repository\AbonnementRepository;
+use App\Repository\PanierRepository;
 use App\Service\StripeService;
 use App\Service\UserService;
 use App\Entity\User;
 use App\Entity\Abonnement;
+use App\Entity\Panier;
 
 use Stripe\Stripe;
 use \Stripe\Charge;
@@ -23,13 +25,15 @@ class PaymentController extends AbstractController
     private $stripe_s;
     private $user_s;
     private $userRepository;
+    private $panierRepository;
     private $abonnementRepository;
 
-    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository){
+    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository, PanierRepository $panierRepository){
         $this->params_dir = $params_dir;
         $this->stripe_s = $stripe_s;
         $this->user_s = $user_s;
         $this->userRepository = $userRepository;
+        $this->panierRepository = $panierRepository;
         $this->abonnementRepository = $abonnementRepository;
     }
     /**
@@ -39,7 +43,13 @@ class PaymentController extends AbstractController
     {   
         $user = $this->getUser();
         $message = $result = "";
-        $amount = 50;
+
+        $panier = $this->userRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
+        if(!is_null($panier))
+            $amount = $panier->getTotalPrice();
+        else
+            return new Response("Votre panier est vide", 500);
+        
         if(is_null($user)){
             $email = $request->request->get('email');
             $emailExist = $this->userRepository->findOneBy(['email'=>$email]);

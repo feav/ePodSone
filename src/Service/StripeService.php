@@ -13,6 +13,8 @@ use Stripe\Stripe;
 use \Stripe\Charge;
 \Stripe\Stripe::setApiKey('sk_test_QM1PN2GsJWClfDtLTfPSbiZn00IwVC4sK5');
 
+//sk_test_zJN82UbRA4k1a6Mvna4rV3qn
+
 class StripeService{
     
     private $stripeApiKey = 'sk_test_QM1PN2GsJWClfDtLTfPSbiZn00IwVC4sK5';

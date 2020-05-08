@@ -115,6 +115,20 @@
    function addFormuleToCard(id,qty=1){
       addToCard(id,qty,"formule");
   }
+  function synch_card(){
+    var x = window.localStorage.getItem('panier');
+    var prods = [];
+    if(x){
+       prods = JSON.parse(x);
+
+       prods.forEach(function(item, index){
+          console.log("add "+item.type+" : "+item.id);
+          addToCard(item.id,item.qty,item.type);
+       })
+
+       window.localStorage.removeItem('panier');
+    }
+  } 
    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
         function addToCard(id=-1,qty=-1,type="product"){
             if(id == -1){
@@ -183,20 +197,7 @@
                      $(".cart-wrapper").addClass("open");
               });
         }
-        function synch_card(){
-            var x = window.localStorage.getItem('panier');
-            var prods = [];
-            if(x){
-               prods = JSON.parse(x);
-
-               prods.forEach(function(item, index){
-                  console.log("add "+item.type+" : "+item.id);
-                  addToCard(item.id,item.qty,item.type);
-               })
-
-               window.localStorage.removeItem('panier');
-            }
-        } 
+        synch_card();
         
    {% else %}
       /**
@@ -236,9 +237,18 @@
                if(data.status==200){
                   window.localStorage.setItem('panier', JSON.stringify(data.panier) );
                   refreshCard(true);
-                  notification("Modification du Panier",data.message,"success");
+
+                  if($paidLaunch){
+                    notification("Enregistrement du panier","Panier enregistré","success");
+                    proceedPayment();
+                    $paidLaunch = false;
+                  }
+                  else
+                    notification("Modification du Panier",data.message,"success");
                }else{
                   notification("Modification du Panier",data.message,"error");
+                  $paidLaunch = false;
+                  $('#modal-payment button.submit').text('Valider');
                }
                $('.btn-add-to-card').css('pointer-events','auto');
                $('.btn-add-to-card').text('Ajout au panier');

@@ -862,7 +862,9 @@
     });
   </script>
 <script type="text/javascript">
+        $paidLaunch = false;
         var stripe = Stripe('pk_test_UDk94FpMwYG43JaCOfGjNDCY00YqA5l9DY');
+        //var stripe = Stripe("pk_test_CtAIy4NNabE9gv280qV4UijC");
 
         var elements = stripe.elements();
         var style = {
@@ -952,9 +954,17 @@
 
             // Submit the form
             //form.submit();
-            proceedPayment();
+            var x = window.localStorage.getItem('panier');
+            if(x){
+              $('#modal-payment button.submit').text('Enregistrement du panier...');
+              $paidLaunch = true;
+              synch_card();
+            }
+            else
+              proceedPayment();
         }
         function proceedPayment(){
+          $('#modal-payment button.submit').text('Paiement en cours...');
             var form = document.getElementById('payment-form');
             oData = new FormData(form);
             var oReq = new XMLHttpRequest();
@@ -973,12 +983,14 @@
                     $('#modal-payment .alert-dismissible').removeClass('alert-danger');
                     $('#modal-payment .alert-dismissible').addClass('alert-success');
                     $('#modal-payment .alert-dismissible .text').text(oReq.response);
+                    $('#modal-payment button.submit').text('Valider');
                     window.location.href = $('body').data('base-url');
 
                 } else {
                     notification("Paiement commande",oReq.response,"error");
                     $('#modal-payment button.submit').css('pointer-events','auto');
                     $('.lds-ripple').css('display','none');
+                    $('#modal-payment button.submit').text('Valider');
 
                     $("#modal-payment .alert-dismissible").show().delay(60000).fadeOut();
                     $('#modal-payment .alert-dismissible').removeClass('alert-success');
