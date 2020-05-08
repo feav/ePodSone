@@ -14,6 +14,16 @@
   <link href="{{ asset('assets/css/theme.css')}}" rel="stylesheet" type="text/css" media="all" />
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,400i,600,700&display=swap" rel="stylesheet">
   <style type="text/css">
+    button, .btn{outline: none!important;}
+    .cart-btn{padding: 1px 13px}
+    .item-elt-foot{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .item-elt-foot .nav{display: block!important }
+    .item-elt-foot .nav .nav-link{display: inline-block;}
+        
     .toast__container{z-index: 9999!important}
     .navbar img.logo{width: 140px}
     .navbar img.logo.scrolled-logo {display: none;}
@@ -363,6 +373,82 @@
       left: 0;
       z-index: 2;
     }
+
+    /* custom nan reponsive */
+    .navbar.navbar-toggled-show img.logo.default-logo{
+      display: block;
+      margin-left: 1rem;
+    }
+    .navbar.navbar-toggled-show img.logo.scrolled-logo{
+      display: none;
+    }
+    .navbar.navbar-toggled-show .right-close{
+      margin-right: 1rem;
+    }
+    .navbar.navbar-toggled-show .navbar-collapse{
+      background: #fff;
+    }
+    .navbar.navbar-toggled-show .navbar-nav{margin: 0!important;}
+    .navbar.navbar-toggled-show{
+      text-align: center;
+      background: rgb(34, 155, 114);
+      padding: 0;
+    }
+    .navbar.navbar-toggled-show > .container{
+      max-width: 100%;
+    }
+    .navbar.navbar-toggled-show li.nav-item:nth-child(2n + 1) {
+      background: #fdf2f5;
+    }
+    .navbar.navbar-toggled-show li.nav-item:nth-child(2n) {
+      background: #f1fdf9;
+    }
+    .navbar.navbar-toggled-show li.nav-item:last-child {
+      background: #fff;
+    }
+    .navbar li.nav-item:last-child{display: none;}
+    .navbar.navbar-toggled-show li.nav-item:last-child{display: block;}
+    .navbar.navbar-toggled-show li.nav-item:last-child > div {
+      display: block;
+      padding: 5rem 0 2rem;
+      max-width: 200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-around;
+    }
+    .navbar.navbar-toggled-show li.nav-item:last-child > div > .fa{
+      font-weight: 600;
+      background-color: #229b72;
+      border-radius: 30px;
+      color: #fff;
+      display: inline-block;
+      height: 25px;
+      line-height: 25px;
+      margin: auto 3px;
+      width: 25px;
+      font-size: 13px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .navbar.navbar-toggled-show.navbar-dark .navbar-nav .nav-link{
+      color: #333;
+      line-height: 2em;
+    }
+    .navbar.navbar-toggled-show.navbar-dark .navbar-toggler svg [stroke]:not([stroke="none"]){stroke: #fff!important;}
+    @media(max-width: 992px){
+      .separe-nav-xs{
+        width: 2px;
+        height: 30px;
+        background: #fff;
+        margin: 0 .5rem 0 1rem;
+      }
+      .cart-btn{
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        padding: 0;
+      }
+    }
   </style>
 {% endblock %}
 
@@ -394,26 +480,18 @@
    <div class="navbar-container">
       <nav class="navbar navbar-expand-lg navbar-dark" data-overlay data-sticky="top">
          <div class="container">
-            <a class="navbar-brand navbar-brand-dynamic-color fade-page" href="">
+            <a class="navbar-brand navbar-brand-dynamic-color" href="">
                <img src="assets/img/logos/logo-noir.png" class="logo scrolled-logo" alt="logo">
                <img src="assets/img/logos/logo-blanc.png" class="logo default-logo" alt="logo">
              </a>
-            <div class="d-flex align-items-center order-lg-3">
+            <div class="d-flex align-items-center order-lg-3 right-close">
               <!--  <a href="https://wa.me/237656645659" target="_blank" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3" style=" background-color: #009b72; border-color: #009b72; color: #ffffff; "><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" style="height: 22px;margin-bottom: 2px;"> 06 85 74 96 12</a> -->
-
-              <a href="javascript:void()"  data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3 toggle-cart"><i class="fa fa-shopping-cart" style="color:#fff"></i></a>
-               {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                  <!-- <p>Email: {{ app.user.email }}</p> -->
-
-                  <a href="{{ path('app_logout') }}" data-id="je_minscris-form" class="je-minscris btn btn-secondary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Deconnexion</a>
-              {% else %}   
-                  <a href="{{ path('app_login') }}" data-id="je_minscris-form" class="je-minscris btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-none d-sm-block order-lg-3">Connexion</a>
-
-              {% endif %}
                <button aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target=".navbar-collapse" data-toggle="collapse" type="button">
                  <img alt="Navbar Toggler Open Icon" class="navbar-toggler-open icon icon-sm" data-inject-svg src="{{ asset('assets/img/icons/interface/icon-menu.svg')}}">
                  <img alt="Navbar Toggler Close Icon" class="navbar-toggler-close icon icon-sm" data-inject-svg src="{{ asset('assets/img/icons/interface/icon-x.svg')}}">
                </button>
+               <span class="separe-nav-xs"></span>
+               <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-lg-0 d-sm-block order-lg-3 toggle-cart cart-btn"><i class="fa fa-shopping-cart" style="color:#fff"></i></a>
             </div>
             <div class="collapse navbar-collapse order-3 order-lg-2 justify-content-lg-end" id="navigation-menu">
             <ul class="navbar-nav my-3 my-lg-0">
@@ -430,6 +508,11 @@
               <li class="nav-item">
                 <div>
                   <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="#" role="button">Contact</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <div>
+                    <i class="fa fa-twitter"></i><i class="fa fa-facebook"></i>
                 </div>
               </li>
             </ul>
@@ -588,19 +671,70 @@
    <footer class="bg-primary-3 text-white links-white pb-4 footer-1">
       <div class="container">
          <div class="row">
-            <div class="col-xl-auto mr-xl-5 col-md-3 mb-4 mb-md-0">
-               <h5>Demos</h5>
+            <div class="col-sm-3 mb-4 mb-md-0 item-elt-foot">
+               <h5>Le site</h5>
                <ul class="nav flex-row flex-md-column">
                   <li class="nav-item mr-3 mr-md-0">
-                     <a href="landing-1.html" class="nav-link fade-page px-0 py-2">Landing 1</a>
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Accueil</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Boutique</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Livraison</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Contact</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <a href="{{ path('app_logout') }}" data-id="je_minscris-form" class="nav-link px-0 py-2">Deconnexion</a>
+                    {% else %}   
+                        <a href="{{ path('app_login') }}" data-id="je_minscris-form" class="nav-link px-0 py-2">Connexion</a>
+
+                    {% endif %}
                   </li>
                </ul>
             </div>
-            <div class="col-xl-auto mr-xl-5 col-md-3">
-               <h5>Pages</h5>
+            <div class="col-sm-3 mb-4 mb-md-0 item-elt-foot">
+               <h5>Nous suivre</h5>
                <ul class="nav flex-row flex-md-column">
                   <li class="nav-item mr-3 mr-md-0">
-                     <a href="company-about-1.html" class="nav-link fade-page px-0 py-2">Company</a>
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Facebook</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Twitter</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Linkedln</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Instagram</a>
+                  </li>
+               </ul>
+            </div>
+            <div class="col-sm-3 mb-4 mb-md-0 item-elt-foot">
+               <h5>Nos services</h5>
+               <ul class="nav flex-row flex-md-column">
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Livraison</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Vente</a>
+                  </li>
+               </ul>
+            </div>
+            <div class="col-sm-3 mb-4 mb-md-0 item-elt-foot">
+               <h5>A propos</h5>
+               <ul class="nav flex-row flex-md-column">
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Mentions légales</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">Cookies</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="javascript:void()" class="nav-link px-0 py-2">A propos de EpodsOne</a>
                   </li>
                </ul>
             </div>
