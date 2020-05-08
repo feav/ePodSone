@@ -7,6 +7,7 @@ security:
     App\Entity\User:
       algorithm: auto
   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+
   providers:
     # used to reload user from session & other features (e.g. switch_user)
     app_user_provider:
@@ -17,6 +18,7 @@ security:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
+    
     main:
       anonymous: lazy
       provider: app_user_provider
@@ -32,4 +34,6 @@ security:
         - { path: '^/dashboard', roles: ROLE_ADMIN }
 
         # or require ROLE_ADMIN or IS_AUTHENTICATED_FULLY for /admin*
-        - { path: '^/dashboard', roles: [IS_AUTHENTICATED_FULLY, ROLE_ADMIN] }
+        - { path: '^/dashboard', roles: [IS_AUTHENTICATED_FULLY] }
+
+        - { path: '^/account', roles: [IS_AUTHENTICATED_FULLY]}

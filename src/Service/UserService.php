@@ -29,7 +29,56 @@ class UserService{
         $users = $this->userRepository->filterUser($key);
         return $users;
     }
+    /**
+    ** - town : Ville
+    ** - country : Pays
+    ** - street : Rue
+    ** - zip_code : Code postal
+    ** - name : Nom 
+    ** - surname : Prenom
+    ** - email : Email
+    ** - phone : Telephone
+    ** - 
+    **/
+    public function updateUser($lists, $user){
+        if($lists && $user){
+            foreach ($lists as $key => $value) {
+                switch ($key) {
+                    case 'town':
+                        $user->setTown($value);
+                        break;
+                    
+                    case 'country':
+                        $user->setCountry($value);
+                        break;
+                    
+                    case 'street':
+                        $user->setStreet($value);
+                        break;
+                    
+                    case 'zip_code':
+                        $user->setZipCode($value);
+                        break;
+                    
+                    case 'name':
+                        $user->setName($value);
+                        break;
+                    
+                    case 'surname':
+                        $user->setSurName($value);
+                        break;
+                    
+                    case 'phone':
+                        $user->setPhone($value);
+                        break;
+                
+                }
+            }
 
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+    }
     public function generateUsername($user){
         do{
 

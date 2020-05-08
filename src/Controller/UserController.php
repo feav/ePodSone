@@ -42,6 +42,29 @@ class UserController extends AbstractController
         return new Response(json_encode($users), 200);
     }
 
+     /**
+     * @Route("/profile/update", name="update_profile")
+     */
+    public function profileUpdate(Request $request)
+    {   
+        $response = new Response(json_encode( array('status'=>300,'message' =>  "aucune donnees fournie", 'format'=> '[town : Ville , country : Pays , street : Rue, zip_code : Code postal, name : Nom, surname : Prenom, phone : Telephone]' )));
+        $user = $this->getUser();
+        if($user){
+            if(isset($_POST['user'])){
+                $user_data = $_POST['user'];
+                $this->user_s->updateUser($user_data,$user);
+            
+                $response = new Response(json_encode( array('status'=>200,'message' =>  "Les informations ont ete mises a jour" )));
+            }
+        }else{
+         $response = new Response(json_encode( array('status'=>300,'message' =>  "Utilisateur non connecte" )));
+        }
+
+        
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+
     /**
      * @Route("/login-ajax", name="login_ajax")
      */
