@@ -1,0 +1,190 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %} {{parent()}} | Accueil {% endblock %}
+
+{% block meta %}
+<meta name="description" content="">
+{% endblock %}
+{% block dataStructured %}{% endblock %}
+{% block stylesheets %}
+{{parent()}}
+<style type="text/css">
+   .navbar-light .navbar-nav .nav-link{
+   color: white;
+   }
+   .position-fixed.navbar-light .navbar-nav .nav-link{
+   color: rgba(0, 0, 0, 0.5);
+   }
+   .logo-head{
+   width: 100px;
+   margin: 0;
+   padding: 0;
+   height: 40px;
+   }
+   .navbar-light .logo-head.black{
+   display: none;
+   }
+   .position-fixed.navbar-light .logo-head{
+   display: none;
+   }
+   .position-fixed.navbar-light .logo-head.black{
+   display: block;
+   }
+   .toast {
+      backdrop-filter: none !important;
+  }
+   .container.pb-5 {
+   min-height: 300px;
+   }
+   .toast{
+      opacity: 1;
+   }
+</style>
+{% endblock %}
+{% block body_web %}
+
+
+
+    <section class="bg-light">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-xl-9 col-lg-10">
+            <div class="card card-body shadow-lg">
+              <div class="d-flex justify-content-between align-items-start pb-4 pb-md-5 mb-4 mb-md-5 border-bottom">
+                <div>
+                  <h6>EpodsOne</h6>
+                  <address>
+                    <p>Paris France</p>
+
+                  </address>
+                  <a href="#">contact@ipodsone.com</a>
+                </div>
+                <img src="{{asset('assets/img/logos/logo-blanc.png')}}" alt="EpodsOne" style="width: 100px;">
+              </div>
+              <div class="mb-4">
+                <h1>Facture Client 
+                  {% if card.status == 0 %}
+                  <span class="badge badge-info">ENCOURS</span>
+                  {% elseif card.status == 1 %}
+                  <span class="badge badge-success">PAYEE</span>
+                  {% elseif card.status == -1 %}
+                  <span class="badge badge-danger">EXPIREE</span>
+                  {% endif %}
+                  
+
+                </h1>
+              </div>
+              <div class="row justify-content-between mb-4 mb-md-5">
+                <div class="col-sm">
+                  <h6>Adresse a :</h6>
+                  <div>
+                    <div>{{card.user.surname}} {{card.user.name}}</div>
+                    <div>{{card.user.email}}</div>
+                    <address>
+                      {{card.user.town}},{{card.user.country}}
+                      <br />{{card.user.street}}
+                    </address>
+                  </div>
+                </div>
+                <div class="col-sm col-lg-4">
+                  <dl class="row text-sm-right">
+                    <dt class="col-6"><strong>Facture No.</strong>
+                    </dt>
+                    <dd class="col-6">#{{card.id}}</dd>
+                    <dt class="col-6"><strong>Date Emission:</strong>
+                    </dt>
+                    <dd class="col-6">{{card.emmission|date('d/m/y')}}</dd>
+                    <dt class="col-6"><strong>Date Due:</strong>
+                    </dt>
+                    <dd class="col-6">{{card.getPriceShipping()|date('d/m/y')}}</dd>
+                  </dl>
+                </div>
+              </div>
+              <div>
+                <table class="table mb-0 text-right">
+                  <thead class="bg-light border-top">
+                    <tr>
+                      <th scope="col" class="border-0 text-left">
+                        Element
+                      </th>
+                      <th scope="col" class="border-0">
+                        Quantite
+                      </th>
+                      <th scope="col" class="border-0">
+                        Prix Unitaire
+                      </th>
+                      <th scope="col" class="border-0">
+                        Total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for abonnements in card.abonnements %}
+                    <tr>
+                      <th scope="row" class="text-left">
+                        Abonnement {{abonnements.formule.name}}
+                      </th>
+                      <td>
+                        1
+                      </td>
+                      <td>
+                        {{abonnements.formule.price}}
+                      </td>
+                      <td>
+                        {{abonnements.formule.price}}
+                      </td>
+                    </tr>
+                    {% endfor %}
+
+                    {% for commande in card.commandes %}
+                    <tr>
+                      <th scope="row" class="text-left">
+                         {{commande.product.name}}
+                      </th>
+                      <td>
+                        {{commande.quantity}}
+                      </td>
+                      <td>
+                        {{commande.price}}
+                      </td>
+                      <td>
+                        {{commande.getTotalPrice()}}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <div class="text-small">
+                  <div>Reduction coupons:</div>
+                  <div><strong>{{card.getTotalReduction()}} EUR</strong>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end text-right mb-4 py-4 border-bottom">
+                  <div>
+                    <div>Net A payer:</div>
+                    <div class="h4 mb-0 mt-2">
+                      {% if card.getTotalPrice() - card.getTotalReduction() <= 0 %}
+                      0 EUR
+                      {% else %}
+                      {{card.getTotalPrice() - card.getTotalReduction()}} EUR
+                      {% endif %}
+                      <strike> {{card.getTotalPrice()}}EUR</strike></div>
+                  </div>
+                </div>
+                <div class="text-small">
+                  <div>Payer a :</div>
+                  <div><strong>contact@epodsone.com</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+{% endblock body_web %}
+{% block javascripts %}
+{{parent()}}
+{% endblock %}
