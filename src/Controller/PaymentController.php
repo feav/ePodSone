@@ -26,6 +26,7 @@ class PaymentController extends AbstractController
     private $user_s;
     private $userRepository;
     private $panierRepository;
+    private $entityManager;
     private $abonnementRepository;
 
     public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository, PanierRepository $panierRepository){
@@ -41,12 +42,17 @@ class PaymentController extends AbstractController
      */
     public function checkout(Request $request, \Swift_Mailer $mailer)
     {   
+        $this->entityManager = $this->getDoctrine()->getManager();
         $user = $this->getUser();
         $message = $result = "";
 
         $panier = $this->panierRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
-        if(!is_null($panier))
+        if(!is_null($panier)){
             $amount = $panier->getTotalPrice();
+            $panier->setStatus(1);
+            $panier->setPaiementDate(new \Datetime());
+            $this->entityManager->flush();
+        }
         else
             return new Response("Vous n'avez pas de panier en attente de paiement", 500);
         
