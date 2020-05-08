@@ -434,7 +434,11 @@
       color: #333;
       line-height: 2em;
     }
+
     .navbar.navbar-toggled-show.navbar-dark .navbar-toggler svg [stroke]:not([stroke="none"]){stroke: #fff!important;}
+    .navbar .shopping-cart{
+      color: #fff;
+    }
     @media(max-width: 992px){
       .separe-nav-xs{
         width: 2px;
@@ -447,6 +451,18 @@
         border: none;
         font-size: 20px;
         padding: 0;
+      }
+      .navbar.scrolled .shopping-cart{
+        color: #2C3038;
+      }
+      .navbar.navbar-toggled-show.scrolled .shopping-cart{
+        color: #fff;
+      }
+      .navbar.scrolled .separe-nav-xs{
+        background: #2C3038;
+      }
+      .navbar.navbar-toggled-show.scrolled .separe-nav-xs{
+        background: #fff;
       }
     }
   </style>
@@ -491,7 +507,7 @@
                  <img alt="Navbar Toggler Close Icon" class="navbar-toggler-close icon icon-sm" data-inject-svg src="{{ asset('assets/img/icons/interface/icon-x.svg')}}">
                </button>
                <span class="separe-nav-xs"></span>
-               <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-lg-0 d-sm-block order-lg-3 toggle-cart cart-btn"><i class="fa fa-shopping-cart" style="color:#fff"></i></a>
+               <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-lg-0 d-sm-block order-lg-3 toggle-cart cart-btn"><i class="fa fa-shopping-cart shopping-cart"></i></a>
             </div>
             <div class="collapse navbar-collapse order-3 order-lg-2 justify-content-lg-end" id="navigation-menu">
             <ul class="navbar-nav my-3 my-lg-0">
