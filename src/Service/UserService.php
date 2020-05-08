@@ -29,7 +29,56 @@ class UserService{
         $users = $this->userRepository->filterUser($key);
         return $users;
     }
+    /**
+    ** - town : Ville
+    ** - country : Pays
+    ** - street : Rue
+    ** - zip_code : Code postal
+    ** - name : Nom 
+    ** - surname : Prenom
+    ** - email : Email
+    ** - phone : Telephone
+    ** - 
+    **/
+    public function updateUser($lists, $user){
+        if($lists && $user){
+            foreach ($lists as $key => $value) {
+                switch ($key) {
+                    case 'town':
+                        $user->setTown($value);
+                        break;
+                    
+                    case 'country':
+                        $user->setCountry($value);
+                        break;
+                    
+                    case 'street':
+                        $user->setStreet($value);
+                        break;
+                    
+                    case 'zip_code':
+                        $user->setZipCode($value);
+                        break;
+                    
+                    case 'name':
+                        $user->setName($value);
+                        break;
+                    
+                    case 'surname':
+                        $user->setSurName($value);
+                        break;
+                    
+                    case 'phone':
+                        $user->setPhone($value);
+                        break;
+                
+                }
+            }
 
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+    }
     public function generateUsername($user){
         do{
 
@@ -82,6 +131,23 @@ class UserService{
         $tab_rang = "@".$tab_rang."_";
         
         return strtolower (str_shuffle($tab_rang));
+    }
+
+    public function send_mail(\Swift_Mailer $mailer, $email, $phone, $name,$surname, $message){
+        try {
+            $mail = (new \Swift_Message('Message - Contact '.$name))
+                ->setFrom(array('feavfeav@gmail.com' => 'EpodsOne'))
+                ->setTo('feavfeav@gmail.com')
+                ->setCc('feavfeav@gmail.com')
+                ->setBody(" je suis ".$name." ".$surname." repondant au numero : ".$phone.". ".$message,
+                    'text/html'
+                );
+           $mailer->send($mail);
+           return true;
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            return false;
+        }
     }
     public function register(\Swift_Mailer $mailer, $email, $name){
         $user = new User();

@@ -240,8 +240,8 @@ class ApiPanierController extends AbstractController
                     }else{
 
                         if($quantity){
-                            $date = new \DateTime('2000-01-01');
-                            $date_start = new \DateTime('2000-01-01');
+                            $date = new \DateTime();
+                            $date_start = new \DateTime();
                             $month = $formule->getMonth();
                             $date->add(new \DateInterval('P0Y'.$month.'M0DT0H0M0S'));
 

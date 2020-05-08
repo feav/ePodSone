@@ -1,0 +1,289 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %} {{parent()}} | Accueil {% endblock %}
+
+{% block meta %}
+<meta name="description" content="">
+{% endblock %}
+{% block dataStructured %}{% endblock %}
+{% block stylesheets %}
+{{parent()}}
+<style type="text/css">
+   .navbar-light .navbar-nav .nav-link{
+   color: white;
+   }
+   .position-fixed.navbar-light .navbar-nav .nav-link{
+   color: rgba(0, 0, 0, 0.5);
+   }
+   .logo-head{
+   width: 100px;
+   margin: 0;
+   padding: 0;
+   height: 40px;
+   }
+   .navbar-light .logo-head.black{
+   display: none;
+   }
+   .position-fixed.navbar-light .logo-head{
+   display: none;
+   }
+   .position-fixed.navbar-light .logo-head.black{
+   display: block;
+   }
+   .toast {
+      backdrop-filter: none !important;
+  }
+   .container.pb-5 {
+   min-height: 300px;
+   }
+   .toast{
+      opacity: 1;
+   }
+</style>
+{% endblock %}
+{% block body_web %}
+
+    <section class="pb-5">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col d-flex align-items-center">
+            <div class="d-inline-block p-3 p-md-4 rounded-circle bg-primary-alt">
+              <img src="assets/img/icons/theme/general/settings-1.svg" alt="Confirmation Icon" class="icon bg-primary" data-inject-svg="data-inject-svg">
+            </div>
+            <div class="ml-4">
+              <h1 class="mb-2">Mon Compte</h1>
+              <div class="lead">Mettez a jour vos informations personnelles, et de livraison.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="bg-white">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <ul class="nav nav-tabs border-0" id="myTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="billing-tab" data-toggle="tab" href="#billing" role="tab" aria-controls="billing" aria-selected="false">Abonnements</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="notifications-tab" data-toggle="tab" href="#notifications" role="tab" aria-controls="notifications" aria-selected="false">Mes Achats</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="livraison-tab" data-toggle="tab" href="#livraison" role="tab" aria-controls="notifications" aria-selected="false">Livraison</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="bg-light tab-content pt-5">
+      <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+        <div class="container">
+          <div class="row mb-4 mb-md-5 align-items-start">
+            <div class="col-lg-4 order-lg-2 mb-4 mb-lg-0 sticky-lg-top pl-lg-5">
+              <div class="alert alert-primary">Vos informations ne sont utilises que dans le cadre du site afin de mieux repondre a vos attentes.
+                <a href="#">Politique de confidentialite</a>
+              </div>
+            </div>
+            <div class="col-lg-8 border-lg-right pr-lg-5">
+              <div class="row mb-lg-5">
+                <div class="col">
+                  <h3>Informations Personnelles</h3>
+                </div>
+              </div>
+              <form  method="POST">
+                <div class="row form-row">
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label for="first-name">Nom</label>
+                      <input type="text" class="form-control" name="user[name]" id="first-name" value="{{ app.user.name }}">
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label for="last-name">Prenom</label>
+                      <input type="text" class="form-control" name="user[surname]" id="last-name" value="{{ app.user.surname }}">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Numero de Telephone</label>
+                  <input type="text" id="phone" name="user[phone]" class="form-control" value="{{ app.user.phone }}">
+                  <small>Ceci sera le nom visible sur votre profil.</small>
+                </div>
+                <div class="form-group">
+                  <label for="email">Adresse Email</label>
+                  <input type="email" id="email" class="form-control" name="user[email]" value=" {{ app.user.email }}" disabled="disabled">
+                  <small>Cette email vous permettra de vous logger a votre espace personnel</small>
+                </div>
+                <button class="btn btn-primary"  type="submit">Modifier</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="tab-pane fade" id="billing" role="tabpanel" aria-labelledby="billing-tab">
+        <div class="container">
+          <div class="row justify-content-between align-items-center mb-4 mb-md-5">
+            <div class="col-auto">
+              <h3 class="mb-sm-0">Abonnements</h3>
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-success btn-sm">Soucrire a un abonnement</button>
+            </div>
+          </div>
+        </div>
+        <form class="container">
+          <div class="row">
+             {% for abonnements in app.user.abonnements %}
+            <div class="col-sm-6 col-lg-4 mb-3 mb-md-4">
+              <div class="border rounded bg-white px-4 pb-4 pt-2">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <img src="assets/img/logos/payment/mastercard.svg" alt="Mastercard">
+                  
+                  {% if abonnements.state and (date(abonnements.start) < date() and date(abonnements.end) > date()) %}
+
+                  <div>
+                    <button class="btn btn-sm btn-primary" type="button" >Revoquer</button>
+                  </div>
+
+                  {% endif %}
+
+                </div>
+                <div class="d-flex justify-content-between align-items-end">
+                  <div>
+                    <div class="h6 mb-2">{{abonnements.formule.name}}</div>
+                    <div class="text-muted">{{abonnements.formule.price}}€ / {{abonnements.formule.month}} mois</div>
+                    <div class="text-muted">Livraison : {{abonnements.formule.getPriceShipping()}}€</div>
+                     <div>
+                         {% if abonnements.state %}
+
+                           {% if (date(abonnements.start) < date() and date(abonnements.start)|date_modify("+3 day") > date()) %}
+                              <span class="badge badge-info badge-pill">Periode d'Essaie encours</span>
+                           {% endif %}
+
+                           {% if (date(abonnements.start)|date_modify("+3 day") < date() and date(abonnements.end) > date()) %}
+                              <span class="badge badge-success badge-pill">encours</span>
+
+                           {% else %}
+                              <span class="badge badge-info badge-pill">Abonnement expire</span>
+                           {% endif %}
+                        {% else %}
+                           <span class="badge badge-danger badge-pill">Impayee</span>
+                        {% endif %}
+                     </div>
+                    <div class="text-muted">Validite : <a class="badge badge-info badge-pill">{{abonnements.start|date('d/m/Y')}}</a> - <a class="badge badge-danger badge-pill">{{abonnements.end|date('d/m/Y')}}</a> </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </form>
+      </div>
+      <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+        <div class="container">
+          <div class="row mb-4 mb-md-5">
+            <div class="col-auto">
+              <h3>Preferences</h3>
+              <div>When would you like to receive notification emails?</div>
+            </div>
+          </div>
+           <div class="row">
+             {% for panier  in app.user.paniers %}
+            <div class="col-sm-6 col-lg-4 mb-3 mb-md-4">
+              <div class="border rounded bg-white px-4 pb-4 pt-2">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <img src="assets/img/logos/payment/visa.svg" alt="Mastercard">
+                  
+                  {% if panier.status == 0 %}
+                     <div>
+                       <button class="btn btn-sm btn-primary" type="button" >Payer</button>
+                     </div>
+                  {% endif %}
+
+                </div>
+                <div class="d-flex justify-content-between align-items-end">
+                  <div>
+                    <div class="h6 mb-2">Total : {{panier.getTotalPrice()}}€</div>
+                    <div class="text-muted">Livraison : {{panier.getPriceShipping()}}€ </div>
+                    <div class="text-muted">Reduction : {{panier.getTotalReduction()}}€</div>
+                     <div>
+                        {% if panier.status == 1 %}
+                           <span class="badge badge-success badge-pill">Paiement Effectue</span>
+                        {% elseif panier.status == -1  %}
+                              <span class="badge badge-info badge-pill">Commande Expiree </span>
+                        {% else  %}
+                           <span class="badge badge-info badge-pill">Commande Encours </span>
+                        {% endif %}
+                     </div>
+                    <div class="text-muted">Emission : <a class="badge badge-info badge-pill">{{panier.emmission|date('d/m/Y')}}</a>  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="livraison" role="tabpanel" aria-labelledby="notifications-tab">
+        
+        <div class="container">
+          <div class="row mb-4 mb-md-5 align-items-start">
+            <div class="col-lg-4 order-lg-2 mb-4 mb-lg-0 sticky-lg-top pl-lg-5">
+              <div class="alert alert-primary">Vos informations seront utilisees pour aider le service de livraison a vous faire parvenir votre produit dans les meilleurs delais.
+                <a href="#">Politique de confidentialite</a>
+              </div>
+            </div>
+            <div class="col-lg-8 border-lg-right pr-lg-5">
+              <div class="row mb-lg-5">
+                <div class="col">
+                  <h3>Informations de Livraison</h3>
+                </div>
+              </div>
+              <form method="POST">
+                <div class="row form-row">
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label for="country">Pays</label>
+                      <input type="text" class="form-control" name="user[country]" id="country" value="{{ app.user.country }}">
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label for="town">Ville</label>
+                      <input type="text" class="form-control" id="town" name="user[town]" value="{{ app.user.town }}">
+                    </div>
+                  </div>
+                </div>
+                <div class="row form-row">
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label for="street">Rue</label>
+                      <input type="text" class="form-control" id="street" name="user[street]" value="{{ app.user.street }}">
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label for="zip_code">Code Postal</label>
+                      <input type="text" class="form-control" id="zip_code" name="user[zip_code]" value="{{ app.user.getZipCode() }}">
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-primary"  type="submit">Modifier</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+{% endblock body_web %}
+{% block javascripts %}
+{{parent()}}
+{% endblock %}
