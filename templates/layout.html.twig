@@ -1303,7 +1303,7 @@
                     $('#modal-payment .alert-dismissible .text').text(oReq.response);
                     $('#modal-payment button.submit').text('Valider');
                     window.localStorage.removeItem('panier');
-                    //window.location.href = $('body').data('base-url');
+                    window.location.href = $('body').data('base-url');
 
                 }else {
                     notification("Paiement commande",oReq.response,"error");

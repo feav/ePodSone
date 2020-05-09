@@ -132,11 +132,12 @@ class HomeController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $abonnement = $this->abonnementRepository->find($id);
         if($abonnement->getStart() >= new \DateTime()){
-            //$flashBag = $this->get('session')->getFlashBag()->clear();
+            $flashBag = $this->get('session')->getFlashBag()->clear();
             $this->addFlash('warning', "La periode d'essaie de cet abonnement est passée, vous ne pouvez plus le resilier");
             return $this->redirectToRoute('account');
         }
         if(!$abonnement->getActive()){
+            $flashBag = $this->get('session')->getFlashBag()->clear();
             $this->addFlash('warning', "cet abonnement n'est pas actif");
             return $this->redirectToRoute('account');
         }
@@ -161,6 +162,7 @@ class HomeController extends AbstractController
         } catch (Exception $e) {
             print_r($e->getMessage());
         }            
+        $flashBag = $this->get('session')->getFlashBag()->clear();
         $this->addFlash('success', "Abonnement resilié");
         return $this->redirectToRoute('account');
     }
