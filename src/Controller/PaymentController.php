@@ -49,12 +49,9 @@ class PaymentController extends AbstractController
         $panier = $this->panierRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
         if(!is_null($panier)){
             $amount = $panier->getTotalPrice();
-            $panier->setStatus(1);
-            $panier->setPaiementDate(new \Datetime());
-            $this->entityManager->flush();
         }
         else
-            return new Response("Vous n'avez pas de panier en attente de paiement", 500);
+            return new Response("Vous n'avez aucun panier en attente de paiement", 500);
         
         if(is_null($user)){
             $email = $request->request->get('email');
@@ -87,6 +84,9 @@ class PaymentController extends AbstractController
         }
 
         if($result == ""){
+            $panier->setStatus(1);
+            $panier->setPaiementDate(new \Datetime());
+            $this->entityManager->flush();
             //$factureInfos = $this->createFacture($request, $postMeta_s, $post_s, $global_s, $user, $pack);
             $assetFile = $this->params_dir->get('file_upload_dir');
             $ouput_name = 'facture.pdf';

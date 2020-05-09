@@ -156,62 +156,10 @@ class UserService{
         $user->setEmail($email);
         $user->setPassword($this->passwordEncoder->encodePassword($user, $fullPassword));
         $user->setRoles(['ROLE_USER']);
-        try {
-            $mail = (new \Swift_Message('Vos informations de connexion'))
-                ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
-                ->setTo([$user->getEmail()=>$user->getName()])
-                ->setCc("alexngoumo.an@gmail.com")
-                ->setBody("“Bien joué ".$user->getName()."! C’est partie” <br> Confirmation de votre essai de 3 jours à notre abonnement de Livraison Gratuite en  illimité pour 59€/mois. <br><br> Il vous reste 3 jours d’essai pour commander et obtenir la Livraison Gratuite en  illimité sur notre boutique au lieu de 10€. <br><br> Vous serez débité de 59€/mois à partir du 11 mars 2020 à 11:21 au moment de la  fin de votre essai. <br><br> Si vous souhaitez résilier veuillez vous connecter sur notre boutique et faire votre  demande de résiliation de manière automatique. <br>   Voici vos identifiants :  Email : ​".$user->getEmail()." / Mot de passe : ".$fullPassword." ",
-                    'text/html'
-                );
-           $mailer->send($mail);
-        } catch (Exception $e) {
-            print_r($e->getMessage());
-        }
 
         $this->em->persist($user);
         $this->em->flush();
         return $user;
-    }
-
-    public function login(Request $request)
-    {
-        $email = $request->request->get('email');
-        $password = $request->request->get('password');
-
-        $user = $this->userRepository->findOneBy(['email'=>$email]);
-        if(!$user){
-            return ['message'=>'identifiants incorrect', 'status'=>500];
-        }
-
-        $encoder = $this->encoderFactory->getEncoder($user);
-        $salt = $user->getSalt();
-        if(!$encoder->isPasswordValid($user->getPassword(), $password, $salt)) {
-            return ['message'=>'identifiants incorrect', 'status'=>500];
-        } 
-
-        /*if (!$user->isEnabled()) {
-            return ['message'=>"Votre compte n'est pas activé", 'status'=>500];
-        }*/
-        
-        return $this->authentification($request, $user);
-    }
-
-    public function authentification(Request $request, $user){
-        // The third parameter "main" can change according to the name of your firewall in security.yml
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
-        $this->get('security.token_storage')->setToken($token);
-
-        // If the firewall name is not main, then the set value would be instead:
-        // $this->get('session')->set('_security_XXXFIREWALLNAMEXXX', serialize($token));
-        $this->get('session')->set('_security_main', serialize($token));
-        
-        // Fire the login event manually
-        $event = new InteractiveLoginEvent($request, $token);
-        $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
-        
-        $request->getSession()->get('_security.main.target_path');
-        return ['message'=>"Vous etes connectés maintenant", 'status'=>200];
     }
 
 }

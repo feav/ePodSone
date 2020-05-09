@@ -116,4 +116,31 @@ class UserController extends AbstractController
         return ['message'=>"Vous etes connectés maintenant", 'status'=>200];
     }
 
+    /**
+     * @Route("/user/check-isconnected", name="api_use_connected_or_exist")
+     */
+    public function checkUserIsconnected(Request $request, \Swift_Mailer $mailer){
+        $this->entityManager = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        $email = $request->query->get('email');
+        $existUser = $this->userRepository->findOneBy(['email'=>$email]);
+        if($user){
+            return new Response( json_encode(array('status' => 200, 'message' => "Utilisateur  connecte" )) );
+        }
+        elseif(is_null($existUser))
+            return $this->registerAjax($request, $mailer, $email, $request->query->get('name'));
+        else
+            return new Response(json_encode(array('status' => 500, 'message' => "Un utilisateur existe déjà avec l'email ".$email.". s'il s'agit de vous, veuillez vous connecter avant d'effectuer le paiement. <a href='javascript:void()' class='open-sign-in-modal'>Connectez-vous</a>" )));
+    }
+
+    public function registerAjax($request, $mailer, $email, $name){
+        $user = $this->user_s->register($mailer, $email, $name);
+        if($user){
+            $result = $this->authentification($request, $user);
+            if($result['status'] == 200)
+                return new Response(json_encode(array('status' => 200, 'message' => "Compte crée avec success" )));
+        }
+        else
+            return new Response(json_encode(array('status' => 500, 'message' => "Echec Création de compte" )));
+    }
 }

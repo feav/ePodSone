@@ -539,291 +539,6 @@
          </div>
       </nav>
    </div>
-   <script type="text/javascript">
-   function toggleMute() {
-          var video=document.getElementById("videoHeader");
-          if(video.muted){
-            video.muted = false;
-          } else {
-            debugger;
-            video.muted = true;
-          }
-          var sound = localStorage.getItem('sound');
-          localStorage.setItem('sound', !sound);
-   }
-
-   var LENGTH_CARD = 0;
-   var prods = [];
-
-   function addToCardForm(id,price,name,img){
-      var modal = $("#add-product-modal");
-      $("#add-product-modal .product-image").attr('src','{{asset("assets/img/products")}}/'+img);
-      $("#add-product-modal .product-name").html(name);
-      $("#add-product-modal .product-id-input").val(id);
-      $("#add-product-modal .product-price").html(price+"€");
-      $("#add-product-modal .product-price-input").html(id);
-      $("#add-product-modal .product-quantity-input").val(1);
-   }
-
-   function itemProduct(id,img, name, quantity, price, oldprice){
-      return '<div class="product-item product-'+id+'">'+
-            '<img src="{{asset("assets/img/products")}}/'+img+'" class="product-img">'+
-            '<ul class="detail-list">'+
-              '<li class="detail-item product-name">'+
-                name+
-              '</li>'+
-              '<li class="detail-item product-qte">'+
-               quantity+' x '+price+'€ <strike>'+oldprice+'€</strike>'+
-              '</li>'+
-              '<li class="detail-item product-etat">'+
-                '<span style="color: #009b7 !important; cursor: pointer; font-weight: 700;" onclick="addToCard('+id+',0)">supprimé</span>'+
-              '</li>'+
-            '</ul>'+
-          '</div>';
-   }
-   function itemFormule(id, name, quantity, price){
-      return '<div class="product-item formule-'+id+'">'+
-            '<img src="{{asset("assets/img/products/avatar.png")}}" class="product-img">'+
-            '<ul class="detail-list">'+
-              '<li class="detail-item product-name">Abonnement '+
-                name+
-              '</li>'+
-              '<li class="detail-item product-qte">'+
-               +price+'€ valables <span>'+quantity+' mois</span>'+
-              '</li>'+
-              '<li class="detail-item product-etat">'+
-                '<a href="javascript:void" onclick=" addFormuleToCard('+id+',0)">supprimé</a>'+
-              '</li>'+
-            '</ul>'+
-          '</div>';
-   }
-
-   function itemCoupon(id,name, value){
-      return '<li class="item coupon-'+id+'">'+
-                '<span>Réduction:</span>'+
-                '<span>'+name+' (-'+value+')</span>'+
-              '</li>';
-   }
-   function addCouponToCard(target,qty=1){
-      var code = $(target).val();
-      addToCard(code,qty,"coupon");
-   }
-   function addFormuleToCard(id,qty=1){
-      addToCard(id,qty,"formule");
-  }
-  function synch_card(){
-    var x = window.localStorage.getItem('panier');
-    if(x){
-       prods = JSON.parse(x);
-
-       prods.forEach(function(item, index){
-          console.log("add "+item.type+" : "+item.id);
-          addToCard(item.id,item.qty,item.type);
-       })
-
-       window.localStorage.removeItem('panier');
-    }
-  } 
-  function addToCard(id=-1,qty=-1,type="product"){
-    $.ajax({
-                 contentType: "application/json",
-                 dataType: "json",
-                 url: "{{ path('api_use_connected') }}",
-                 beforeSend: function( xhr ) {
-                 }
-               })
-            .done(function( data ) {
-               if(data.status==200){
-                  addToCard_connected(id,qty,type);
-                  
-               }else{
-                  addToCard_not_connected(id,qty,type);
-               }
-            });
-  }
-  function refreshCard(show){
-    $.ajax({
-                 contentType: "application/json",
-                 dataType: "json",
-                 url: "{{ path('api_use_connected') }}",
-                 beforeSend: function( xhr ) {
-                 }
-               })
-            .done(function( data ) {
-               if(data.status==200){
-                  refreshCard_connected(show);
-                  
-               }else{
-                  refreshCard_not_connected(show);
-               }
-            });
-  }
-        function addToCard_connected(id=-1,qty=-1,type="product"){
-            if(id == -1){
-               id = $("#add-product-modal .product-id-input").val();
-            }
-            if(qty == -1){
-               qty = $("#add-product-modal .product-quantity-input").val();
-            }
-            $.ajax({
-                 contentType: "application/json",
-                 dataType: "json",
-                 data:{
-                     product:id,
-                     quantity:qty,
-                     type:type
-                 },
-                 url: "{{ path('commande_add_to_card') }}",
-                 beforeSend: function( xhr ) {
-                   $('.btn-add-to-card').css('pointer-events','none');
-                   $('.btn-add-to-card').text('Ajout...');
-                 }
-               })
-            .done(function( data ) {
-               if(data.status==200){
-                  refreshCard(true);
-                  notification("Modification du Panier",data.message,"success");
-                  
-                  LENGTH_CARD++;
-                  if(prods.length == LENGTH_CARD ){
-                    if($paidLaunch){
-                      $('#modal-payment button.submit').text('Paiement en cours...');
-                      $paidLaunch = false;
-                      proceedPayment();
-                    }
-                  }
-               }else{
-                  notification("Modification du Panier",data.message,"error");
-               }
-               $('.btn-add-to-card').css('pointer-events','auto');
-               $('.btn-add-to-card').text('Ajout au panier');
-               $('#add-product-modal').modal('hide');
-            });
-        }
-        function refreshCard_connected(show){
-            $.ajax({
-              contentType: "application/json",
-              dataType: "json",
-              url: "{{ path('commande_get_card') }}",
-              beforeSend: function( xhr ) {
-                
-              }
-            })
-            .done(function( data ) {
-               if(data.status==200){
-                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
-                  $(".cart-total-pay").html(total.toFixed(2));
-                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
-                  $(".card-list-product").html("");
-                   data.panier.products.forEach(function(item, index){
-                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
-                   }); 
-                  $(".card-list-coupon").html("");
-                   data.panier.coupons.forEach(function(item, index){
-                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
-                   });
-                  $(".card-list-formule").html("");
-                   data.panier.formules.forEach(function(item, index){
-                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
-                   });
-               }else{
-                  console.log(data.message);
-               }
-               if(show && !$(".cart-wrapper").hasClass("open"))
-                     $(".cart-wrapper").addClass("open");
-              });
-        }
-        synch_card();
-        
-      /**
-      ** USER NOT CONNECTED
-      **/
-        function addToCard_not_connected(id=-1,qty=-1,type="product"){
-            if(id == -1){
-               id = $("#add-product-modal .product-id-input").val();
-            }
-            if(qty == -1){
-               qty = $("#add-product-modal .product-quantity-input").val();
-            }
-
-            var x = window.localStorage.getItem('panier');
-            var prods = [];
-            if(x){
-               prods = JSON.parse(x);
-            }
-            
-
-            $.ajax({
-                 contentType: "application/json",
-                 dataType: "json",
-                 data:{
-                     product:id,
-                     quantity:qty,
-                     type:type,
-                     products:prods
-                 },
-                 url: "{{ path('commande_add_to_card_not_connected') }}",
-                 beforeSend: function( xhr ) {
-                   $('.btn-add-to-card').css('pointer-events','none');
-                   $('.btn-add-to-card').text('Ajout...');
-                 }
-               })
-            .done(function( data ) {
-               if(data.status==200){
-                  window.localStorage.setItem('panier', JSON.stringify(data.panier) );
-                  refreshCard(true);
-
-                  notification("Modification du Panier",data.message,"success");
-               }else{
-                  notification("Modification du Panier",data.message,"error");
-                  $('#modal-payment button.submit').text('Valider');
-               }
-               $('.btn-add-to-card').css('pointer-events','auto');
-               $('.btn-add-to-card').text('Ajout au panier');
-               $('#add-product-modal').modal('hide');
-            });
-        }
-        function refreshCard_not_connected(show){
-            var x = window.localStorage.getItem('panier');
-            var prods = [];
-            if(x){
-               prods = JSON.parse(x);
-            }
-            $.ajax({
-              contentType: "application/json",
-               dataType: "json",
-               data:{ products:prods },
-              url: "{{ path('commande_get_card_not_connected') }}",
-              beforeSend: function( xhr ) {
-                
-              }
-            })
-            .done(function( data ) {
-               if(data.status==200){
-                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
-                  $(".cart-total-pay").html(total.toFixed(2));
-                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
-                  $(".card-list-product").html("");
-                   data.panier.products.forEach(function(item, index){
-                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
-                   }); 
-                  $(".card-list-coupon").html("");
-                   data.panier.coupons.forEach(function(item, index){
-                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
-                   });
-                  $(".card-list-formule").html("");
-                   data.panier.formules.forEach(function(item, index){
-                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
-                   });
-               }else{
-                  console.log(data.message);
-               }
-               if(show && !$(".cart-wrapper").hasClass("open"))
-                     $(".cart-wrapper").addClass("open");
-              });
-        }
-  
-</script>
    <main id="main" class="site-main" role="main">
       {% block body_web %}{% endblock body_web %}
    </main>
@@ -1145,6 +860,292 @@
       $('#modal-payment .alert-dismissible').css('display','none');
     });
   </script>
+
+<script type="text/javascript">
+   function toggleMute() {
+          var video=document.getElementById("videoHeader");
+          if(video.muted){
+            video.muted = false;
+          } else {
+            debugger;
+            video.muted = true;
+          }
+          var sound = localStorage.getItem('sound');
+          localStorage.setItem('sound', !sound);
+   }
+
+   var LENGTH_CARD = 0;
+   var prods = [];
+
+   function addToCardForm(id,price,name,img){
+      var modal = $("#add-product-modal");
+      $("#add-product-modal .product-image").attr('src','{{asset("assets/img/products")}}/'+img);
+      $("#add-product-modal .product-name").html(name);
+      $("#add-product-modal .product-id-input").val(id);
+      $("#add-product-modal .product-price").html(price+"€");
+      $("#add-product-modal .product-price-input").html(id);
+      $("#add-product-modal .product-quantity-input").val(1);
+   }
+
+   function itemProduct(id,img, name, quantity, price, oldprice){
+      return '<div class="product-item product-'+id+'">'+
+            '<img src="{{asset("assets/img/products")}}/'+img+'" class="product-img">'+
+            '<ul class="detail-list">'+
+              '<li class="detail-item product-name">'+
+                name+
+              '</li>'+
+              '<li class="detail-item product-qte">'+
+               quantity+' x '+price+'€ <strike>'+oldprice+'€</strike>'+
+              '</li>'+
+              '<li class="detail-item product-etat">'+
+                '<span style="color: #009b7 !important; cursor: pointer; font-weight: 700;" onclick="addToCard('+id+',0)">supprimé</span>'+
+              '</li>'+
+            '</ul>'+
+          '</div>';
+   }
+   function itemFormule(id, name, quantity, price){
+      return '<div class="product-item formule-'+id+'">'+
+            '<img src="{{asset("assets/img/products/avatar.png")}}" class="product-img">'+
+            '<ul class="detail-list">'+
+              '<li class="detail-item product-name">Abonnement '+
+                name+
+              '</li>'+
+              '<li class="detail-item product-qte">'+
+               +price+'€ valables <span>'+quantity+' mois</span>'+
+              '</li>'+
+              '<li class="detail-item product-etat">'+
+                '<a href="javascript:void" onclick=" addFormuleToCard('+id+',0)">supprimé</a>'+
+              '</li>'+
+            '</ul>'+
+          '</div>';
+   }
+
+   function itemCoupon(id,name, value){
+      return '<li class="item coupon-'+id+'">'+
+                '<span>Réduction:</span>'+
+                '<span>'+name+' (-'+value+')</span>'+
+              '</li>';
+   }
+   function addCouponToCard(target,qty=1){
+      var code = $(target).val();
+      addToCard(code,qty,"coupon");
+   }
+   function addFormuleToCard(id,qty=1){
+      addToCard(id,qty,"formule");
+    }
+  function synch_card(){
+    var x = window.localStorage.getItem('panier');
+    if(x){
+       prods = JSON.parse(x);
+
+       prods.forEach(function(item, index){
+          console.log("add "+item.type+" : "+item.id);
+          addToCard(item.id,item.qty,item.type);
+       })
+
+       window.localStorage.removeItem('panier');
+    }
+  } 
+  function addToCard(id=-1,qty=-1,type="product"){
+    $.ajax({
+         contentType: "application/json",
+         dataType: "json",
+         url: "{{ path('api_use_connected') }}",
+         beforeSend: function( xhr ) {
+         }
+       })
+    .done(function( data ) {
+       if(data.status==200){
+          addToCard_connected(id,qty,type);
+          
+       }else{
+          addToCard_not_connected(id,qty,type);
+       }
+    });
+  }
+  function refreshCard(show){
+    $.ajax({
+                 contentType: "application/json",
+                 dataType: "json",
+                 url: "{{ path('api_use_connected') }}",
+                 beforeSend: function( xhr ) {
+                 }
+               })
+            .done(function( data ) {
+               if(data.status==200){
+                  refreshCard_connected(show);
+                  
+               }else{
+                  refreshCard_not_connected(show);
+               }
+            });
+  }
+        function addToCard_connected(id=-1,qty=-1,type="product"){
+            if(id == -1){
+               id = $("#add-product-modal .product-id-input").val();
+            }
+            if(qty == -1){
+               qty = $("#add-product-modal .product-quantity-input").val();
+            }
+            $.ajax({
+                 contentType: "application/json",
+                 dataType: "json",
+                 data:{
+                     product:id,
+                     quantity:qty,
+                     type:type
+                 },
+                 url: "{{ path('commande_add_to_card') }}",
+                 beforeSend: function( xhr ) {
+                   $('.btn-add-to-card').css('pointer-events','none');
+                   $('.btn-add-to-card').text('Ajout...');
+                 }
+               })
+            .done(function( data ) {
+               if(data.status==200){
+                  refreshCard(true);
+                  notification("Modification du Panier",data.message,"success");
+                  
+                  LENGTH_CARD++;
+                  if(prods.length == LENGTH_CARD ){
+                    if($paidLaunch){
+                      $('#modal-payment button.submit').text('Paiement en cours...');
+                      $paidLaunch = false;
+                      proceedPayment();
+                    }
+                  }
+               }else{
+                  notification("Modification du Panier",data.message,"error");
+               }
+               $('.btn-add-to-card').css('pointer-events','auto');
+               $('.btn-add-to-card').text('Ajout au panier');
+               $('#add-product-modal').modal('hide');
+            });
+        }
+        function refreshCard_connected(show){
+            $.ajax({
+              contentType: "application/json",
+              dataType: "json",
+              url: "{{ path('commande_get_card') }}",
+              beforeSend: function( xhr ) {
+                
+              }
+            })
+            .done(function( data ) {
+               if(data.status==200){
+                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+                  $(".cart-total-pay").html(total.toFixed(2));
+                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+                  $(".card-list-product").html("");
+                   data.panier.products.forEach(function(item, index){
+                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+                   }); 
+                  $(".card-list-coupon").html("");
+                   data.panier.coupons.forEach(function(item, index){
+                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+                   });
+                  $(".card-list-formule").html("");
+                   data.panier.formules.forEach(function(item, index){
+                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+                   });
+               }else{
+                  console.log(data.message);
+               }
+               if(show && !$(".cart-wrapper").hasClass("open"))
+                     $(".cart-wrapper").addClass("open");
+              });
+        }
+        synch_card();
+        
+      /**
+      ** USER NOT CONNECTED
+      **/
+        function addToCard_not_connected(id=-1,qty=-1,type="product"){
+            if(id == -1){
+               id = $("#add-product-modal .product-id-input").val();
+            }
+            if(qty == -1){
+               qty = $("#add-product-modal .product-quantity-input").val();
+            }
+
+            var x = window.localStorage.getItem('panier');
+            var prods = [];
+            if(x){
+               prods = JSON.parse(x);
+            }
+            
+
+            $.ajax({
+                 contentType: "application/json",
+                 dataType: "json",
+                 data:{
+                     product:id,
+                     quantity:qty,
+                     type:type,
+                     products:prods
+                 },
+                 url: "{{ path('commande_add_to_card_not_connected') }}",
+                 beforeSend: function( xhr ) {
+                   $('.btn-add-to-card').css('pointer-events','none');
+                   $('.btn-add-to-card').text('Ajout...');
+                 }
+               })
+            .done(function( data ) {
+               if(data.status==200){
+                  window.localStorage.setItem('panier', JSON.stringify(data.panier) );
+                  refreshCard(true);
+
+                  notification("Modification du Panier",data.message,"success");
+               }else{
+                  notification("Modification du Panier",data.message,"error");
+                  $('#modal-payment button.submit').text('Valider');
+               }
+               $('.btn-add-to-card').css('pointer-events','auto');
+               $('.btn-add-to-card').text('Ajout au panier');
+               $('#add-product-modal').modal('hide');
+            });
+        }
+        function refreshCard_not_connected(show){
+            var x = window.localStorage.getItem('panier');
+            var prods = [];
+            if(x){
+               prods = JSON.parse(x);
+            }
+            $.ajax({
+              contentType: "application/json",
+               dataType: "json",
+               data:{ products:prods },
+              url: "{{ path('commande_get_card_not_connected') }}",
+              beforeSend: function( xhr ) {
+                
+              }
+            })
+            .done(function( data ) {
+               if(data.status==200){
+                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+                  $(".cart-total-pay").html(total.toFixed(2));
+                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+                  $(".card-list-product").html("");
+                   data.panier.products.forEach(function(item, index){
+                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+                   }); 
+                  $(".card-list-coupon").html("");
+                   data.panier.coupons.forEach(function(item, index){
+                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+                   });
+                  $(".card-list-formule").html("");
+                   data.panier.formules.forEach(function(item, index){
+                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+                   });
+               }else{
+                  console.log(data.message);
+               }
+               if(show && !$(".cart-wrapper").hasClass("open"))
+                     $(".cart-wrapper").addClass("open");
+              });
+        }
+  
+</script>
 <script type="text/javascript">
         $paidLaunch = false;
         //var stripe = Stripe('pk_test_UDk94FpMwYG43JaCOfGjNDCY00YqA5l9DY');
@@ -1238,15 +1239,48 @@
 
             // Submit the form
             //form.submit();
-            var x = window.localStorage.getItem('panier');
-            if(x){
-              $('#modal-payment button.submit').text('Enregistrement du panier...');
-              $paidLaunch = true;
-              synch_card();
-            }
-            else
-              proceedPayment();
+
+            checklogin();
         }
+
+        function checklogin(){
+          $.ajax({
+             contentType: "application/json",
+             dataType: "json",
+             url: "{{ path('api_use_connected_or_exist') }}",
+             data: {
+              name: $('#payment-form input[name=name]').val(),
+              email: $('#payment-form input[name=email]').val()
+             },
+             beforeSend: function( xhr ) {
+              $('#modal-payment button.submit').text('Verification connexion...');
+             }
+           })
+          .done(function( data ) {
+              /* l'user est loggé ou compte nouvellement crée */
+              if(data.status == 200){
+                var x = window.localStorage.getItem('panier');
+                if(x){
+                  $('#modal-payment button.submit').text('Enregistrement de la commande...');
+                  $paidLaunch = true;
+                  synch_card();
+                }
+                else
+                  proceedPayment();
+              }
+              else{
+                $('#modal-payment button.submit').css('pointer-events','auto');
+                $('.lds-ripple').css('display','none');
+                $('#modal-payment button.submit').text('Valider');
+
+                $("#modal-payment .alert-dismissible").show().delay(60000).fadeOut();
+                $('#modal-payment .alert-dismissible').removeClass('alert-success');
+                $('#modal-payment .alert-dismissible').addClass('alert-danger');
+                $('#modal-payment .alert-dismissible .text').html(data.message);
+              }
+          });
+        }
+
         function proceedPayment(){
           $('#modal-payment button.submit').text('Paiement en cours...');
             var form = document.getElementById('payment-form');
@@ -1270,7 +1304,7 @@
                     $('#modal-payment button.submit').text('Valider');
                     //window.location.href = $('body').data('base-url');
 
-                } else {
+                }else {
                     notification("Paiement commande",oReq.response,"error");
                     $('#modal-payment button.submit').css('pointer-events','auto');
                     $('.lds-ripple').css('display','none');
