@@ -54,10 +54,22 @@ class Abonnement
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $active;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $resilie;
+
 
     public function __construct()
     {
         $this->is_paid = 0;
+        $this->active = 1;
+        $this->resilie = 0;
         $this->state = 0;
         $this->start = new \DateTime();
         $this->end = new \DateTime();
@@ -150,6 +162,30 @@ class Abonnement
     public function setIsPaid(int $is_paid): self
     {
         $this->is_paid = $is_paid;
+
+        return $this;
+    }
+
+    public function getActive(): ?int
+    {
+        return $this->active;
+    }
+
+    public function setActive(int $active): self
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    public function getResilie(): ?int
+    {
+        return $this->resilie;
+    }
+
+    public function setResilie(int $resilie): self
+    {
+        $this->resilie = $resilie;
 
         return $this;
     }

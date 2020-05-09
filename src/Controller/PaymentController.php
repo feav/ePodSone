@@ -70,6 +70,7 @@ class PaymentController extends AbstractController
                 $this->stripe_s->createStripeCustom($request->request->get('stripeSource'), $metadata);
                 $result = $this->stripe_s->proceedPayment($user, $amount);
             }
+            $flashBag = $this->get('session')->getFlashBag()->clear();
             $this->addFlash('success', 'Paiement effectué avec success');
         }
         else{
@@ -128,7 +129,7 @@ class PaymentController extends AbstractController
         }
         if(count($panier->getAbonnements())){
             $abonnement = $panier->getAbonnements()[0];
-            $mois_annee = ($abonnement->getFormule()->getMonth() == 12) ? "ans" : "mois";
+            $mois_annee = ($abonnement->getFormule()->getMonth() == 12) ? "ans" : $abonnement->getFormule()->getMonth()."mois";
 
             $content = "<p>Bien joué ".$user->getName()."! Confirmation de votre essai de ".$abonnement->getFormule()->getTryDays()." jours à notre abonnement de Livraison Gratuite en  illimité pour ".$abonnement->getFormule()->getPrice()."€/".$mois_annee.". <br><br>Il vous reste ".$abonnement->getFormule()->getTryDays()." jours d’essai pour commander et obtenir la Livraison Gratuite en  illimité sur notre boutique au lieu de 10€.<br><br>Vous serez débité de ".$abonnement->getFormule()->getPrice()."€/".$mois_annee." à partir du ". $this->getFullDate($abonnement->getEnd())." au moment de la  fin de votre essai.<br><br> Si vous souhaitez résilier veuillez vous connecter sur notre boutique et faire votre  demande de résiliation de manière automatique.<br><br>Vos informations de connexion vous ont été envoyés à cette email (<small>".$user->getEmail()."</small>) lors de votre tout premier achat";
             $url = $this->generateUrl('home');

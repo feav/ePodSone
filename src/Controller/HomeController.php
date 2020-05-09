@@ -9,6 +9,8 @@ use App\Repository\FormuleRepository;
 use App\Repository\TemoignageRepository;
 use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 
 use App\Repository\PanierRepository;
 use App\Repository\CommandeRepository;
@@ -120,4 +122,47 @@ class HomeController extends AbstractController
         }
         return $this->render('home/contact.html.twig');
     }
+
+    /**
+     * @Route("/resiliation-abonnement/{id}", name="abonnement_resilie", methods={"GET"})
+     */
+    public function resile(Request $request, $id, \Swift_Mailer $mailer)
+    {   
+        $user = $this->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $abonnement = $this->abonnementRepository->find($id);
+        if($abonnement->getStart() >= new \DateTime()){
+            //$flashBag = $this->get('session')->getFlashBag()->clear();
+            $this->addFlash('warning', "La periode d'essaie de cet abonnement est passée, vous ne pouvez plus le resilier");
+            return $this->redirectToRoute('account');
+        }
+        if(!$abonnement->getActive()){
+            $this->addFlash('warning', "cet abonnement n'est pas actif");
+            return $this->redirectToRoute('account');
+        }
+        $abonnement->setResilie(1);
+        $abonnement->setActive(0);
+        $entityManager->flush();
+
+        $content = "<p>Votre abonnement a bien été resilié</p>";
+        $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
+        try {
+            $mail = (new \Swift_Message("Résiliation d'abonement"))
+                ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
+                ->setTo([$user->getEmail()=>$user->getName()])
+                ->setCc("alexngoumo.an@gmail.com")
+                ->setBody(
+                    $this->renderView(
+                        'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
+                    ),
+                    'text/html'
+                );
+            $mailer->send($mail);
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        }            
+        $this->addFlash('success', "Abonnement resilié");
+        return $this->redirectToRoute('account');
+    }
+
 }

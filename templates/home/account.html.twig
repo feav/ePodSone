@@ -145,14 +145,16 @@
               <div class="border rounded bg-white px-4 pb-4 pt-2">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <img src="assets/img/logos/payment/mastercard.svg" alt="Mastercard">
-                  
-                  {% if abonnements.state and (date(abonnements.start) < date() and date(abonnements.end) > date()) %}
-
                   <div>
-                    <button class="btn btn-sm btn-primary" type="button" >Revoquer</button>
-                  </div>
-
+                  {% if (abonnements.resilie is not null) and abonnements.active and abonnements.state and (date(abonnements.start) < date() and date(abonnements.end) > date()) %}
+                    <a class="btn btn-sm btn-primary" type="button" href="{{path('abonnement_resilie', {'id':abonnements.id})}}">Revoquer</a>
                   {% endif %}
+                  {% if abonnements.resilie %}
+                    <a href="javascript:void()" style="cursor: text;">Resilié</a>
+                  {% endif %}
+                    <a href="" target="_blank" title="telecharger la facture" style="margin-left: 10px;color: #009b72;"><i class="fa fa-download"></i>
+                      </a>
+                  </div>
 
                 </div>
                 <div class="d-flex justify-content-between align-items-end">
@@ -190,8 +192,7 @@
         <div class="container">
           <div class="row mb-4 mb-md-5">
             <div class="col-auto">
-              <h3>Preferences</h3>
-              <div>When would you like to receive notification emails?</div>
+              <h3>Mes achats</h3>
             </div>
           </div>
            <div class="row">
