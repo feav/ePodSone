@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,6 +50,8 @@ class PaymentController extends AbstractController
         $panier = $this->panierRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
         if(!is_null($panier)){
             $amount = $panier->getTotalPrice();
+            if(!$amount)
+                return new Response("le montant de votre commande est null", 500);
         }
         else
             return new Response("Vous n'avez aucun panier en attente de paiement", 500);
@@ -91,7 +94,7 @@ class PaymentController extends AbstractController
             $assetFile = $this->params_dir->get('file_upload_dir');
             $ouput_name = 'facture.pdf';
             $commande_pdf = $assetFile.$ouput_name;
-            $this->sendMail($mailer, $user, $commande_pdf);
+            $this->sendMail($mailer, $user, $panier, $commande_pdf);
             
             return new Response("Paiement Effectué avec Succèss. ".$message, 200);
         }
@@ -100,23 +103,63 @@ class PaymentController extends AbstractController
         //return new Response(json_encode(['ok'=>true]));
     }
 
-    public function sendMail($mailer, $user, $commande_pdf){
+    public function sendMail($mailer, $user, $panier, $commande_pdf){
 
-        try {
-            $mail = (new \Swift_Message('Confirmation commande'))
-                ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
-                ->setTo([$user->getEmail()=>$user->getName()])
-                ->setCc("alexngoumo.an@gmail.com")
-                //->attach(\Swift_Attachment::fromPath($commande_pdf))
-                ->setBody("Bonjour ".$user->getName()."<br>ePodsOne - 4,99€ <br>  Livraison Gratuite (Essai de 3 jours",
-                    'text/html'
-                );
-            $mailer->send($mail);
-        } catch (Exception $e) {
-            print_r($e->getMessage());
+        if(count($panier->getCommandes())){
+            $content = "<p>Bonjour ".$user->getName().", <br> Vous avez acheté d'ePodsOne pour ".$panier->getTotalPrice()."€<br>
+            Livraison Gratuite (Essai de 3 jours) pour un de nos abonnements</p>";
+            $url = $this->generateUrl('home');
+            try {
+                $mail = (new \Swift_Message('Confirmation commande'))
+                    ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
+                    ->setTo([$user->getEmail()=>$user->getName()])
+                    ->setCc("alexngoumo.an@gmail.com")
+                    //->attach(\Swift_Attachment::fromPath($commande_pdf))
+                    ->setBody(
+                        $this->renderView(
+                            'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
+                        ),
+                        'text/html'
+                    );
+                $mailer->send($mail);
+            } catch (Exception $e) {
+                print_r($e->getMessage());
+            }            
         }
+        if(count($panier->getAbonnements())){
+            $abonnement = $panier->getAbonnements()[0];
+            $mois_annee = ($abonnement->getFormule()->getMonth() == 12) ? "ans" : "mois";
+
+            $content = "<p>Bien joué ".$user->getName()."! Confirmation de votre essai de ".$abonnement->getFormule()->getTryDays()." jours à notre abonnement de Livraison Gratuite en  illimité pour ".$abonnement->getFormule()->getPrice()."€/".$mois_annee.". <br><br>Il vous reste ".$abonnement->getFormule()->getTryDays()." jours d’essai pour commander et obtenir la Livraison Gratuite en  illimité sur notre boutique au lieu de 10€.<br><br>Vous serez débité de ".$abonnement->getFormule()->getPrice()."€/".$mois_annee." à partir du ". $this->getFullDate($abonnement->getEnd())." au moment de la  fin de votre essai.<br><br> Si vous souhaitez résilier veuillez vous connecter sur notre boutique et faire votre  demande de résiliation de manière automatique.<br><br>Vos informations de connexion vous ont été envoyés à cette email (<small>".$user->getEmail()."</small>) lors de votre tout premier achat";
+            $url = $this->generateUrl('home');
+            try {
+                $mail = (new \Swift_Message('Abonnement réussit'))
+                    ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
+                    ->setTo([$user->getEmail()=>$user->getName()])
+                    ->setCc("alexngoumo.an@gmail.com")
+                    //->attach(\Swift_Attachment::fromPath($commande_pdf))
+                    ->setBody(
+                        $this->renderView(
+                            'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
+                        ),
+                        'text/html'
+                    );
+                $mailer->send($mail);
+            } catch (Exception $e) {
+                print_r($e->getMessage());
+            }            
+        }     
+        return 1; 
     }
 
+    public function getFullDate($date){
+        $day = array("Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"); 
+        $month = array("01"=>"janvier", "02"=>"février", "03"=>"mars", "04"=>"avril", "05"=>"mai", "06"=>"juin", "07"=>"juillet", "08"=>"août", "09"=>"septembre", "10"=>"octobre", "11"=>"novembre", "12"=>"décembre"); 
+        $fullDate = "";
+        $fullDate .= $date->format('d')." ".$month[(string)$date->format('m')]." ".$date->format('Y'). " à ".$date->format('H')."h".$date->format('i');
+
+        return $fullDate;
+    }
     /**
      * @Route("/checkout/direct-paid", name="direct_paid")
      */
@@ -134,7 +177,7 @@ class PaymentController extends AbstractController
             $assetFile = $this->params_dir->get('file_upload_dir');
             $ouput_name = 'facture.pdf';
             $commande_pdf = $assetFile.$ouput_name;
-            $this->sendMail($mailer, $user, $commande_pdf);
+            $this->sendMail($mailer, $user, $panier, $commande_pdf);
             
             $response = new Response(json_encode("Paiement Effectué avec Succèss"), 200);
         }

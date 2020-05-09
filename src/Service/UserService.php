@@ -159,6 +159,27 @@ class UserService{
 
         $this->em->persist($user);
         $this->em->flush();
+
+        $content = "<p> Bienvenue ".$user->getName().",<br>Un compte vous a été automatiquement crée. Voici vos identifiants: <br> Email: ".$user->getEmail()." / Mot de passe: ".$fullPassword."</p>";
+        try {
+        $mail = (new \Swift_Message('Création crée'))
+            ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
+            ->setTo([$user->getEmail()=>$user->getName()])
+            ->setCc("alexngoumo.an@gmail.com")
+            /*->setBody(
+                $this->templating->render(
+                    'emails/confirm_paiement.twig',['content'=>$content, 'url'=>$url]
+                ),
+                'text/html'
+            );*/
+            ->setBody($content,
+                'text/html'
+            );
+        $mailer->send($mail);
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        } 
+
         return $user;
     }
 
