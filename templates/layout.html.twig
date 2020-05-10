@@ -529,11 +529,13 @@
                   <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="#" role="button">Contact</a>
                 </div>
               </li>
+              {% if is_granted('IS_AUTHENTICATED_FULLY') %}
               <li class="nav-item">
                 <div>
                   <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="{{path('account')}}" role="button">Mon compte</a>
                 </div>
               </li>
+              {% endif %}
               <li class="nav-item">
                 <div>
                     <i class="fa fa-twitter"></i><i class="fa fa-facebook"></i>
