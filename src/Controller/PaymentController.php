@@ -20,6 +20,9 @@ use App\Entity\Panier;
 use Stripe\Stripe;
 use \Stripe\Charge;
 
+use Dompdf\Options;
+use Dompdf\Dompdf;
+
 class PaymentController extends AbstractController
 {   
     private $params_dir;
@@ -91,17 +94,26 @@ class PaymentController extends AbstractController
             $panier->setStatus(1);
             $panier->setPaiementDate(new \Datetime());
             $this->entityManager->flush();
-            //$factureInfos = $this->createFacture($request, $postMeta_s, $post_s, $global_s, $user, $pack);
+
             $assetFile = $this->params_dir->get('file_upload_dir');
-            $ouput_name = 'facture.pdf';
-            $commande_pdf = $assetFile.$ouput_name;
-            $this->sendMail($mailer, $user, $panier, $commande_pdf);
+            if (!file_exists($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile)) {
+                mkdir($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile, 0705);
+            } 
+            $ouput_name = 'facture_'.$panier->getId().'.pdf';
+            $save_path = $assetFile.$ouput_name;
+            $params = [
+                'format'=>['value'=>'A4', 'affichage'=>'portrait'],
+                'is_download'=>['value'=>true, 'save_path'=>$save_path]
+            ];
+            $dompdf = $this->generatePdf('emails/facture.html.twig', $panier , $params);
+
+            $this->sendMail($mailer, $user, $panier, $save_path);
             
             return new Response("Paiement Effectué avec Succèss. ".$message, 200);
         }
         else
             return new Response('Erreur : ' . $errorMessage , 500);
-        //return new Response(json_encode(['ok'=>true]));
+        return new Response(json_encode(['ok'=>true]));
     }
 
     public function sendMail($mailer, $user, $panier, $commande_pdf){
@@ -115,7 +127,7 @@ class PaymentController extends AbstractController
                     ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
                     ->setTo([$user->getEmail()=>$user->getName()])
                     ->setCc("alexngoumo.an@gmail.com")
-                    //->attach(\Swift_Attachment::fromPath($commande_pdf))
+                    ->attach(\Swift_Attachment::fromPath($commande_pdf))
                     ->setBody(
                         $this->renderView(
                             'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
@@ -210,4 +222,17 @@ class PaymentController extends AbstractController
         return 1;
     }
 
+    public function generatePdf($template, $data, $params){
+        $options = new Options();
+        $dompdf = new Dompdf($options);
+        $dompdf -> setPaper ($params['format']['value'], $params['format']['affichage']);
+        $html = $this->renderView($template, ['data' => $data]);
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        if($params['is_download']['value']){
+            $output = $dompdf->output();
+            file_put_contents($params['is_download']['save_path'], $output);
+        }
+        return $dompdf;
+    }
 }

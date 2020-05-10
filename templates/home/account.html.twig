@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %} {{parent()}} | Accueil {% endblock %}
+{% block title %} {{parent()}} | Mon compte {% endblock %}
 
 {% block meta %}
 <meta name="description" content="">
@@ -9,13 +9,19 @@
 {% block stylesheets %}
 {{parent()}}
 <style type="text/css">
-   .navbar-light .navbar-nav .nav-link{
-   color: white;
-   }
-   .position-fixed.navbar-light .navbar-nav .nav-link{
-   color: rgba(0, 0, 0, 0.5);
-   }
-   .logo-head{
+  .navbar .navbar-nav .nav-link{
+    color: rgba(0, 0, 0, 0.5);
+  }
+  .navbar img.logo.scrolled-logo{display: block;}
+  .navbar img.logo.default-logo{display: none;}
+  .navbar .navbar-nav .nav-link{
+    color: rgba(0, 0, 0, 0.5);
+  }
+  .navbar .navbar-nav .nav-link:hover{
+   color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .logo-head{
    width: 100px;
    margin: 0;
    padding: 0;
@@ -152,7 +158,7 @@
                   {% if abonnements.resilie %}
                     <a href="javascript:void()" style="cursor: text;">Resilié</a>
                   {% endif %}
-                    <a href="" target="_blank" title="telecharger la facture" style="margin-left: 10px;color: #009b72;"><i class="fa fa-download"></i>
+                    <a href="{{path('billing',{id:abonnements.panier.id})}}" target="_blank" title="telecharger la facture" style="margin-left: 10px;color: #009b72;"><i class="fa fa-download"></i>
                       </a>
                   </div>
 
@@ -203,7 +209,7 @@
                   <img src="assets/img/logos/payment/visa.svg" alt="Mastercard">
                   
                      <div>
-                       <a class="btn btn-sm btn-primary" type="button" href="{{path('billing',{id:panier.id})}}" >Facture</a>
+                       <a class="btn btn-sm btn-primary" type="button" href="{{path('billing',{id:panier.id})}}" target="_blank">Facture</a>
                      </div>
 
                 </div>

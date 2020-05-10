@@ -33,6 +33,7 @@
         "symfony/serializer-pack": "*",
         "symfony/string": "5.0.*",
         "symfony/swiftmailer-bundle": "^3.4",
+        "symfony/templating": "5.0.*",
         "symfony/translation": "5.0.*",
         "symfony/twig-pack": "*",
         "symfony/validator": "5.0.*",

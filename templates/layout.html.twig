@@ -499,7 +499,7 @@
    <div class="navbar-container">
       <nav class="navbar navbar-expand-lg navbar-dark" data-overlay data-sticky="top">
          <div class="container">
-            <a class="navbar-brand navbar-brand-dynamic-color" href="">
+            <a class="navbar-brand navbar-brand-dynamic-color" href="{{path('home')}}">
                <img src="assets/img/logos/logo-noir.png" class="logo scrolled-logo" alt="logo">
                <img src="assets/img/logos/logo-blanc.png" class="logo default-logo" alt="logo">
              </a>
@@ -527,6 +527,11 @@
               <li class="nav-item">
                 <div>
                   <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="#" role="button">Contact</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <div>
+                  <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="{{path('account')}}" role="button">Mon compte</a>
                 </div>
               </li>
               <li class="nav-item">
@@ -703,6 +708,11 @@
                   </li>
                   <li class="nav-item mr-3 mr-md-0">
                     <a href="javascript:void()" class="nav-link px-0 py-2">Contact</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}  
+                        <a href="{{path('account')}}" class="nav-link px-0 py-2">Mon compte</a>
+                    {% endif %}
                   </li>
                   <li class="nav-item mr-3 mr-md-0">
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}

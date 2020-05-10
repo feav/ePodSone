@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\ProductService;
 use App\Repository\FormuleRepository;
@@ -18,6 +19,9 @@ use App\Repository\CouponRepository;
 use App\Repository\AbonnementRepository;
 use App\Repository\UserRepository;
 
+use Dompdf\Options;
+use Dompdf\Dompdf;
+
 class HomeController extends AbstractController
 {   
     private $prodService;
@@ -29,7 +33,9 @@ class HomeController extends AbstractController
     private $userRepository;
     private $entityManager;
     private $money_unit;
-    public function __construct(UserRepository $userRepository,AbonnementRepository $abonnementRepository,FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService,ProductService $prodService,UserService $user_s){
+    private $params_dir;
+
+    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository,AbonnementRepository $abonnementRepository,FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService,ProductService $prodService,UserService $user_s){
 
         $this->prodService = $prodService;
         $this->user_s = $user_s;
@@ -42,6 +48,7 @@ class HomeController extends AbstractController
         $this->couponRepository = $couponRepository;
         $this->formuleRepository = $formuleRepository;
         $this->UserRepository = $userRepository;
+        $this->params_dir = $params_dir;
     }
     /**
      * @Route("/", name="home")
@@ -78,7 +85,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/account/facture/{id}", name="billing")
      */
-    public function getCurrentCard($id)
+    public function getCurrentCard(Request $request, $id)
     {
         $this->entityManager = $this->getDoctrine()->getManager();
         $user = $this->getUser();
@@ -89,9 +96,10 @@ class HomeController extends AbstractController
             ** if commande do not exist create one
             **/
             if($panier){
-                return $this->render('home/facture.html.twig', array('card' => $panier ));
+                //return $this->render('home/facture.html.twig', array('card' => $panier ));
+                $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
+                return $this->redirect($url."documents/facture_".$panier->getId().".pdf");
             }
-
         }
 
         return $this->render('home/account.html.twig');
@@ -101,8 +109,6 @@ class HomeController extends AbstractController
      */
     public function contact(FormuleRepository $formuleRepository,TemoignageRepository $temoignageRepository,\Swift_Mailer $mailer)
     {
-
-
         if(isset($_POST['name'])){
             $name = $_POST['name'];
             $surname = $_POST['surname'];
@@ -167,4 +173,17 @@ class HomeController extends AbstractController
         return $this->redirectToRoute('account');
     }
 
+    public function generatePdf($template, $data, $params){
+        $options = new Options();
+        $dompdf = new Dompdf($options);
+        $dompdf -> setPaper ($params['format']['value'], $params['format']['affichage']);
+        $html = $this->renderView($template, ['data' => $data]);
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        if($params['is_download']['value']){
+            $output = $dompdf->output();
+            file_put_contents($params['is_download']['save_path'], $output);
+        }
+        return $dompdf;
+    }
 }
