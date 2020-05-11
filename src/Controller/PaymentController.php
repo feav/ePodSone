@@ -169,7 +169,7 @@ class PaymentController extends AbstractController
         $day = array("Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"); 
         $month = array("01"=>"janvier", "02"=>"février", "03"=>"mars", "04"=>"avril", "05"=>"mai", "06"=>"juin", "07"=>"juillet", "08"=>"août", "09"=>"septembre", "10"=>"octobre", "11"=>"novembre", "12"=>"décembre"); 
         $fullDate = "";
-        $fullDate .= $date->format('d')." ".$month[(string)$date->format('m')]." ".$date->format('Y'). " à ".$date->format('H')."h".$date->format('i');
+        $fullDate .= $date->format('d')." ".$month[(string)$date->format('m')]." ".$date->format('Y'). " à ".$date->format('H:i');
 
         return $fullDate;
     }
@@ -183,15 +183,34 @@ class PaymentController extends AbstractController
         if(is_null($user))
             $response = new Response(json_encode("Vous devez etre connecté pour un payement en un click"), 500);
 
-        $amount = 60;
+        $amount = 0;
+        $panier = $this->panierRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
+        if(!is_null($panier)){
+            $amount = $panier->getTotalPrice();
+            if(!$amount)
+                return new Response("le montant de votre commande est null", 500);
+        }
+        else
+            return new Response("Vous n'avez aucun panier en attente de paiement", 500);
+        
         $result = $this->stripe_s->proceedPayment($user, $amount);
         if($result == ""){
-            //$factureInfos = $this->createFacture($request, $postMeta_s, $post_s, $global_s, $user, $pack);
-            $assetFile = $this->params_dir->get('file_upload_dir');
-            $ouput_name = 'facture.pdf';
-            $commande_pdf = $assetFile.$ouput_name;
-            $this->sendMail($mailer, $user, $panier, $commande_pdf);
+            $panier->setStatus(1);
+            $panier->setPaiementDate(new \Datetime());
+            $this->entityManager->flush();
             
+            $assetFile = $this->params_dir->get('file_upload_dir');
+            if (!file_exists($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile)) {
+                mkdir($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile, 0705);
+            } 
+            $ouput_name = 'facture_'.$panier->getId().'.pdf';
+            $save_path = $assetFile.$ouput_name;
+            $params = [
+                'format'=>['value'=>'A4', 'affichage'=>'portrait'],
+                'is_download'=>['value'=>true, 'save_path'=>$save_path]
+            ];
+            $dompdf = $this->generatePdf('emails/facture.html.twig', $panier , $params);
+            $this->sendMail($mailer, $user, $panier, $save_path);
             $response = new Response(json_encode("Paiement Effectué avec Succèss"), 200);
         }
         else
