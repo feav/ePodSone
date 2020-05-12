@@ -1050,8 +1050,10 @@
                   $('.cart-container').css('display', 'none');
                   $('.empty-cart').css('display', 'block');
                 }
-                else
+                else{
+                  $('.cart-container').css('display', 'block');
                   $('.empty-cart').css('display', 'none');
+                }
                if(data.status==200){
                   var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
                   $(".cart-total-pay").html(total.toFixed(2));
@@ -1142,8 +1144,10 @@
                   $('.cart-container').css('display', 'none');
                   $('.empty-cart').css('display', 'block');
                 }
-                else
+                else{
+                  $('.cart-container').css('display', 'block');
                   $('.empty-cart').css('display', 'none');
+                }
                if(data.status==200){
                   var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
                   $(".cart-total-pay").html(total.toFixed(2));
