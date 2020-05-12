@@ -12,6 +12,7 @@
   <link href="{{ asset('assets/css/loaders/loader-pulse.css')}}" rel="stylesheet" type="text/css" media="all" />
   <!-- End loading animation -->
   <link href="{{ asset('assets/css/theme.css')}}" rel="stylesheet" type="text/css" media="all" />
+  <link href="{{ asset('assets/css/main.css')}}" rel="stylesheet" type="text/css" media="all" />
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,400i,600,700&display=swap" rel="stylesheet">
   <style type="text/css">
     button, .btn{outline: none!important;}
@@ -19,7 +20,7 @@
     .item-elt-foot{
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: left;
     }
     .item-elt-foot .nav{display: block!important }
     .item-elt-foot .nav .nav-link{display: inline-block;}
@@ -526,7 +527,7 @@
               </li>
               <li class="nav-item">
                 <div>
-                  <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="#" role="button">Contact</a>
+                  <a aria-expanded="false" aria-haspopup="true" class="nav-link nav-item" data-toggle="dropdown-grid" href="{{path('contact')}}" role="button">Contact</a>
                 </div>
               </li>
               {% if is_granted('IS_AUTHENTICATED_FULLY') %}
