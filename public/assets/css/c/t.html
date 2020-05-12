@@ -7,12 +7,6 @@
 {% block stylesheets %}
 {{parent()}}
 <style type="text/css">
-   nav.navbar.navbar-expand-lg.navbar-dark {
-       background: transparent;
-   }
-   nav.navbar.navbar-expand-lg.navbar-dark.position-fixed.scrolled {
-       background: white;
-   }
 </style>
 {% endblock %}
 {% block body_web %}
@@ -79,30 +73,7 @@
       <div style="background: #f5f9ff;padding: 15px 0px;text-align: center;font-weight: 500;font-size: 19px;color: #229b72;line-height: 0px;"><img alt="miniature" style="width: 80px;height: 80px;" src="https://cdn0.iconfinder.com/data/icons/kameleon-free-pack/110/Conveyor-Belt-256.png">Livraison dans le monde</div>
    </div>
 </div>
-<section class="border-bottom" id="video-lightbox">
-      <div class="container">
-        <div class="row justify-content-between align-items-start">
-          <div class="col-lg-3 mb-4 sticky-lg-top">
-            <h4>Epods One</h4>
-            <p>Les produits Epods One, sont des ecouteurs de haute Qualite, vous offrant une liberte complete d'action pendant que vous profitez de votre playlist.</p>
-          </div>
-          <div class="col-lg-8">
-            <div class="row mb-md-5 mb-4">
-              <div class="col">
-                <h2>Présentation des <span style=" color: #229b72; ">Epods One</span> !</h2>
-                <div class="d-flex position-relative align-items-center justify-content-center rounded">
-                  <img class="rounded img-fluid" src="https://imgur.com/TJk0PzY.png" alt="Video cover image">
-                  <a data-fancybox="" href="https://youtu.be/188arsh_DHQ" class="btn btn-lg btn-light rounded-circle position-absolute aos-init aos-animate" data-aos="zoom-in">
-                    <img src="" alt="Jouer" class="icon icon-lg bg-dark pl-1" data-inject-svg="">
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-<!-- <section class="features-more section-spacing section">
+<section class="features-more section-spacing section">
    <div class="ui-shape ui-shape-s1"></div>
    <div class="container">
       <div class="row justify-content-center">
@@ -119,7 +90,7 @@
          </div>
       </div>
    </div>
-</section> -->
+</section>
 <div class="modal fade" id="add-product-modal" tabindex="-1" role="dialog" aria-hidden="true">
    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content row flex-row no-gutters border-0">
@@ -247,7 +218,7 @@
       </div>
       <div class="row justify-content-center">
          <div class="col-lg-5 col-md-6 col-xs-12" style="text-align: center;">
-            <img alt="miniature" src="{{asset('assets/img/recevoir.png')}}" style="
+            <img alt="miniature" src="https://imgur.com/g0Yg0mR.png" style="
                width: 100%;
                height: auto;
                ">
@@ -471,27 +442,30 @@
    </div>
 </section>
 <div class="container">
-        <div class="row" style=" margin-bottom: 50px;margin-top: 50px; ">
+        <div class="row" style=" margin-bottom: 50px; ">
             <div class="col-lg-4">
-                <p style=" font-weight: 700; color: #229b72; font-size: 21px; ">Statistiques</p>
+                <p style=" font-weight: 700; color: #1671f5; font-size: 21px; ">Statistiques</p>
                 <p style=" font-size: 15px; "><span style=" border: 1px solid #e8e8e8; padding: 5px 10px; border-radius: 5px; background: #fdfdfd; margin-right: 10px; ">4-7 jours</span>de temps de livraison</p>
                 <p style=" font-size: 15px; "><span style=" border: 1px solid #e8e8e8; padding: 5px 10px; border-radius: 5px; background: #fdfdfd; margin-right: 10px; ">12 684</span>avis clients</p>
                 <p style=" font-size: 15px; "><span style=" border: 1px solid #e8e8e8; padding: 5px 10px; border-radius: 5px; background: #fdfdfd; margin-right: 10px; ">4.2/5</span>de note moyenne</p>
             </div>
             <div class="col-lg-4">
-                <p style=" font-weight: 700; color: #229b72; font-size: 21px; ">Assistance 7j/7</p>
+                <p style=" font-weight: 700; color: #1671f5; font-size: 21px; ">Assistance 7j/7</p>
                 <p style="font-size: 14px;margin-bottom: 5px;">Contactez-nous par e-mail. Nous vous répondrons en moins de 24 heures.</p>
                 <p style="font-size: 15px;margin-bottom: 5px;"><img style="margin-right: 5px;width: 20px;height: 20px;" src="https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_email-512.png"> sav@epodsone.com</p>
                 <p style=" font-size: 15px; "><img style="margin-right: 5px;width: 20px;height: 20px;" src="https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_mobile-512.png"> +33 7 56 85 04 50</p>
             </div>
             <div class="col-lg-4">
-                <p style=" font-weight: 700; color: #229b72; font-size: 21px; ">Les avis clients</p>
+                <p style=" font-weight: 700; color: #1671f5; font-size: 21px; ">Les avis clients</p>
                 <p style="text-transform: uppercase;font-size: 20px;margin-top: 10px;color: #ffbe5d;margin-bottom: 0px;"><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" data-prefix="far" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM388.6 312.3l23.7 138.4L288 385.4l-124.3 65.3 23.7-138.4-100.6-98 139-20.2 62.2-126 62.2 126 139 20.2-100.6 98z"></path></svg><span style="font-weight: 700;color: #212529;margin-left: 5px;">4.2/5</span></p><p style="font-size: 14px;">de note moyenne sur 12 684 notes par les clients de Epods One.</p>
             </div>
         </div>
-        <div class="row" style="padding-bottom: 20px;margin-bottom: 50px;">
+        <div class="row" style="border-bottom: 1px solid #00000014;padding-bottom: 20px;margin-bottom: 50px;">
             <div class="col-lg-12">
                 <p style="font-size: 12px;float: left;">Boutique partenaire Goody's Count.</p><img alt="logo" src="https://imgur.com/NFJjBdT.png" style="height: 20px;margin-left: 10px;">
+            </div>
+            <div class="col-lg-12">
+                <p style="font-size: 12px;">This site is not a part of the Facebook website or Facebook Inc. Additionally, This site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
             </div>
         </div>
     </div>

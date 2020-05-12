@@ -158,8 +158,11 @@
                   {% if abonnements.resilie %}
                     <a href="javascript:void()" style="cursor: text;">Resilié</a>
                   {% endif %}
+                  
+                  {% if abonnements.panier %}
                     <a href="{{path('billing',{id:abonnements.panier.id})}}" target="_blank" title="telecharger la facture" style="margin-left: 10px;color: #009b72;"><i class="fa fa-download"></i>
                       </a>
+                  {% endif %}
                   </div>
 
                 </div>
