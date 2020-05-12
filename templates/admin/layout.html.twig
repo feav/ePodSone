@@ -296,7 +296,8 @@
         }
     </script>
     <div id="config-js">
-    {{ set json_script =  render(controller('App\\Controller\\ApiConfigController::getScripts') ) }}
+       {{  render(controller('App\\Controller\\ApiConfigController::getScripts') )  }}
+
     </div>
     <!-- BEGIN THEME GLOBAL STYLES -->
     <link href="{{asset('assetsBo/plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
