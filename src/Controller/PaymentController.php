@@ -178,6 +178,7 @@ class PaymentController extends AbstractController
      */
     public function directPaid(Request $request, \Swift_Mailer $mailer){
         
+        $this->entityManager = $this->getDoctrine()->getManager();
         $result = "";
         $user = $this->getUser();
         if(is_null($user))
