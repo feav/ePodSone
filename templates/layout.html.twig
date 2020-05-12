@@ -1,3 +1,4 @@
+{% set stripe_pkey = render(controller('App\\Controller\\PaymentController::getStripePkey')) %}
 {% extends 'base.html.twig' %}
 
 {% block meta %}
@@ -1170,8 +1171,7 @@
 </script>
 <script type="text/javascript">
         $paidLaunch = false;
-        //var stripe = Stripe('pk_test_UDk94FpMwYG43JaCOfGjNDCY00YqA5l9DY');
-        var stripe = Stripe("pk_test_CtAIy4NNabE9gv280qV4UijC");
+        var stripe = Stripe("{{stripe_pkey}}");
 
         var elements = stripe.elements();
         var style = {

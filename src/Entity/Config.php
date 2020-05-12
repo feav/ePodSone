@@ -38,7 +38,7 @@ class Config
             ),
             array(
                 "key" => "STRIPE_PRIVATE_KEY",
-                "description" => "Cle pricee Stripe" 
+                "description" => "Cle secrete Stripe" 
             ),
             array(
                 "key" => "GOOGLE_ADWORD_JS_",

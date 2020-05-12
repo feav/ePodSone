@@ -7,26 +7,37 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 use App\Repository\UserRepository;
+use App\Repository\ConfigRepository;
 use App\Entity\User;
+use App\Entity\Config;
 
 use Stripe\Stripe;
 use \Stripe\Charge;
-\Stripe\Stripe::setApiKey('sk_test_zJN82UbRA4k1a6Mvna4rV3qn');
-//sk_test_QM1PN2GsJWClfDtLTfPSbiZn00IwVC4sK5
 
 class StripeService{
     
-    private $stripeApiKey = 'sk_test_zJN82UbRA4k1a6Mvna4rV3qn';
+    private $stripeApiKey;
     private $stripeCurrency = "eur";
     private $userRepository;
+    private $configRepository;
 
-    public function __construct(EntityManagerInterface $em, UserRepository $userRepository){
+    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ConfigRepository $configRepository){
         $this->userRepository = $userRepository;
+        $this->configRepository = $configRepository;
         $this->em = $em;
+        $this->stripeApiKey = !is_null($this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])) ? $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])->getValue() : "";
+    }
+    public function getStripeSKey(){
+        $sk = $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY']);
+        return $sk->getValue();
+    }
+    public function getStripePKey(){
+        $sk = $this->configRepository->findOneBy(['mkey'=>'STRIPE_PUBLIC_KEY']);
+        return $sk->getValue();
     }
 
     public function createStripeCustom($source, $metadata){
-        \Stripe\Stripe::setApiKey('sk_test_zJN82UbRA4k1a6Mvna4rV3qn');
+        \Stripe\Stripe::setApiKey($this->stripeApiKey);
         $custom =  \Stripe\Customer::create([
             'source' => $source,
             'email' => $metadata['email'],
