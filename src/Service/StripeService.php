@@ -27,13 +27,9 @@ class StripeService{
         $this->em = $em;
         $this->stripeApiKey = !is_null($this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])) ? $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])->getValue() : "";
     }
-    public function getStripeSKey(){
-        $sk = $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY']);
-        return $sk->getValue();
-    }
-    public function getStripePKey(){
-        $sk = $this->configRepository->findOneBy(['mkey'=>'STRIPE_PUBLIC_KEY']);
-        return $sk->getValue();
+    public function getValueByKey($key){
+        $config = $this->configRepository->findOneBy(['mkey'=>$key]);
+        return is_null($config) ? "" : $config->getValue();
     }
 
     public function createStripeCustom($source, $metadata){

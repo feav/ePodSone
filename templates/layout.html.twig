@@ -1,4 +1,5 @@
-{% set stripe_pkey = render(controller('App\\Controller\\PaymentController::getStripePkey')) %}
+{% set STRIPE_PUBLIC_KEY = render(controller('App\\Controller\\ApiConfigController::getValueByKey', {'key':'STRIPE_PUBLIC_KEY'})) %}
+
 {% extends 'base.html.twig' %}
 
 {% block meta %}
@@ -1176,7 +1177,7 @@
 </script>
 <script type="text/javascript">
         $paidLaunch = false;
-        var stripe = Stripe("{{stripe_pkey}}");
+        var stripe = Stripe("{{STRIPE_PUBLIC_KEY}}");
 
         var elements = stripe.elements();
         var style = {

@@ -9,12 +9,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Service\StripeService;
+
 class ApiConfigController extends AbstractController
 {
     private $configRepository;
-    public function __construct(ConfigRepository $configRepository)
+    private $stripe_s;
+    public function __construct(ConfigRepository $configRepository, StripeService $stripe_s)
     {
         $this->configRepository = $configRepository;
+        $this->stripe_s = $stripe_s;
     }
     public function getScripts():Response
     {
@@ -38,4 +42,7 @@ class ApiConfigController extends AbstractController
         return new Response($retour);
     }
 
+    public function getValueByKey($key){
+        return new Response($this->stripe_s->getValueByKey($key));
+    }
 }

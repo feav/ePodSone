@@ -255,8 +255,4 @@ class PaymentController extends AbstractController
         }
         return $dompdf;
     }
-
-    public function getStripePkey(){
-        return new Response($this->stripe_s->getStripePKey());
-    }
 }

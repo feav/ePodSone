@@ -97,6 +97,11 @@ class HomeController extends AbstractController
             **/
             if($panier){
                 //return $this->render('home/facture.html.twig', array('card' => $panier ));
+                
+                $assetFile = $this->params_dir->get('file_upload_dir');
+                if (!file_exists($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile."facture_".$panier->getId().".pdf")) {
+                    return $this->render('home/facture.html.twig', array('card' => $panier ));
+                }
                 $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
                 return $this->redirect($url."documents/facture_".$panier->getId().".pdf");
             }
