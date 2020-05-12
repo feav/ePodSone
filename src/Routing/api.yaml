@@ -21,3 +21,8 @@ commande_get_card_not_connected:
 api_use_connected:
    path: /user/connected
    controller: App\Controller\ApiPanierController::userIsConnected
+
+
+config_array:
+   path: /config/js
+   controller: App\Controller\ApiConfigController::getScripts

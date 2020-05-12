@@ -22,10 +22,45 @@ class Config
     private $mkey;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=2000)
      */
     private $value;
 
+    public function getKeyName(){
+        return array(
+            array(
+                "key" => "PAYPAL_EMAIL",
+                "description" => "PayPal email" 
+            ),
+            array(
+                "key" => "STRIPE_PUBLIC_KEY",
+                "description" => "Cle public Stripe" 
+            ),
+            array(
+                "key" => "STRIPE_PRIVATE_KEY",
+                "description" => "Cle pricee Stripe" 
+            ),
+            array(
+                "key" => "GOOGLE_ADWORD_JS_",
+                "description" => "Script Google Adword" 
+            ),
+            array(
+                "key" => "GOOGLE_ANALYTIC_JS_",
+                "description" => "Script Google Analytics " 
+            ),
+            array(
+                "key" => "FACEBOOK_PIXEL_JS_",
+                "description" => "Script Pixel Facebook " 
+            )
+        );
+    }
+    public function __toString (  ) : string{
+        foreach ($this->getKeyName() as $key => $value) {
+            if($value['key']==$this->getMkey())
+                return $value['description'];
+        }
+        return 'NON DEFINI';
+    }
     public function getId(): ?int
     {
         return $this->id;
