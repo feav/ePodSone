@@ -33,6 +33,10 @@ class Config
                 "description" => "PayPal email" 
             ),
             array(
+                "key" => "SENDER_EMAIL",
+                "description" => "Sender email" 
+            ),
+            array(
                 "key" => "STRIPE_PUBLIC_KEY",
                 "description" => "Cle public Stripe" 
             ),

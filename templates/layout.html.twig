@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css" integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
   <link href="{{ asset('assets/css/loaders/loader-pulse.css')}}" rel="stylesheet" type="text/css" media="all" />
   <!-- End loading animation -->
-  <link href="{{ asset('assets/css/theme.css')}}" rel="stylesheet" type="text/css" media="all" />
   <link href="{{ asset('assets/css/main.css')}}" rel="stylesheet" type="text/css" media="all" />
+  <link href="{{ asset('assets/css/theme.css')}}" rel="stylesheet" type="text/css" media="all" />
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,400i,600,700&display=swap" rel="stylesheet">
   <style type="text/css">
     button, .btn{outline: none!important;}
@@ -54,7 +54,7 @@
       height: 100vh;
       width: 290px;
       background: #fff;
-      z-index: 1030;
+      z-index: 1055;
       padding: 45px 20px 10px;
       transition: linear .2s right;
       right: -290px;
@@ -1366,6 +1366,7 @@
                 $that.css('pointer-events', 'auto');
                 $that.text("Payer en 1 click");
                 notification("Paiement commande","Paiement effectué avec succèss","success");
+                window.localStorage.removeItem('panier');
                 window.location.href = $('body').data('base-url');
               },
               error: function(xhr, textStatus, errorThrown) {

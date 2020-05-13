@@ -71,7 +71,11 @@ class PaymentController extends AbstractController
             
             if($request->request->get('stripeSource') !== null && $amount !== null) {
                 $this->stripe_s->createStripeCustom($request->request->get('stripeSource'), $metadata);
-                $result = $this->stripe_s->proceedPayment($user, $amount);
+                $preparePaid = $this->preparePaid($panier);
+                if($preparePaid['paid'])
+                    $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                else
+                    return new Response("Vous serez facturé à la fin de votre periode d'essaie. ".$message, 200); 
             }
             $flashBag = $this->get('session')->getFlashBag()->clear();
             $this->addFlash('success', 'Paiement effectué avec success');
@@ -81,10 +85,18 @@ class PaymentController extends AbstractController
             
             if($request->request->get('stripeSource') !== null && $amount !== null) {
                 $this->stripe_s->createStripeCustom($request->request->get('stripeSource'), $metadata);
-                $result = $this->stripe_s->proceedPayment($user, $amount);
+                $preparePaid = $this->preparePaid($panier);
+                if($preparePaid['paid'])
+                    $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                else
+                    return new Response("Vous serez facturé à la fin de votre periode d'essaie. ".$message, 200); 
             }
             elseif($user->getStripeCustomId() !=""){
-                $result = $this->stripe_s->proceedPayment($user, $amount);
+                $preparePaid = $this->preparePaid($panier);
+                if($preparePaid['paid'])
+                    $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                else
+                    return new Response("Vous serez facturé à la fin de votre periode d'essaie. ".$message, 200); 
             }
             else
                 return new Response("Vous n'avez entré aucune carte", 500);
@@ -194,7 +206,14 @@ class PaymentController extends AbstractController
         else
             return new Response("Vous n'avez aucun panier en attente de paiement", 500);
         
-        $result = $this->stripe_s->proceedPayment($user, $amount);
+        $preparePaid = $this->preparePaid($panier);
+        if($preparePaid['paid'])
+            $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+        else{
+            $response = new Response(json_encode("Vous serez facturé à la fin de votre periode d'essaie. "), 200);
+            return $response;   
+        }
+
         if($result == ""){
             $panier->setStatus(1);
             $panier->setPaiementDate(new \Datetime());
@@ -215,7 +234,7 @@ class PaymentController extends AbstractController
             $response = new Response(json_encode("Paiement Effectué avec Succèss"), 200);
         }
         else
-            $response = new Response(json_encode('Erreur : ' . $errorMessage), 200);
+            $response = new Response(json_encode('Erreur : ' . $errorMessage), 500);
 
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -255,4 +274,24 @@ class PaymentController extends AbstractController
         }
         return $dompdf;
     }
+
+    public function preparePaid($panier){
+        $amount = $panier->getTotalPrice();
+        if(!count($panier->getCommandes())){
+            $this->entityManager = $this->getDoctrine()->getManager();
+            $panier->setStatus(1);
+            $panier->setPaiementDate(new \Datetime());
+            $this->entityManager->flush();
+
+            $this->addFlash('success', "Votre abonnement sera facturé apres la periode d'essaie");
+            return ['paid'=>false, 'message'=>"Votre abonnement sera facturé apres la periode d'essaie", 'amount'=>0];
+        }
+        elseif(count($panier->getAbonnements())){
+            $abonnement = $panier->getAbonnements()[0];
+            $abonnementAmount = $abonnement->getFormule()->getPrice();
+            $amount -= $abonnementAmount;
+        }
+        return ['paid'=>true, 'message'=>"", 'amount'=>$amount];
+    }
+
 }

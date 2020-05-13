@@ -91,7 +91,7 @@
           {% endif %}</h1>
       <div class="infos-contact">
         <div class="infos-client" style="float: left;">
-          <span>Adresse a :</span><br>
+          <span>Adresse à :</span><br>
           <span>{{data.user.surname}} {{data.user.name}}</span><br>
           <span>{{data.user.email}}</span>
           <span>{{data.user.town}},{{data.user.country}}
@@ -101,12 +101,10 @@
           <div class="label-wrapper" style="float: left;font-weight: 600">
             <div>Facture No:</div>
             <div style="padding-left: 16px;">Emission:</div>
-            <div style="padding-left: 16px;">Date Due:</div>
           </div>
           <div class="label-wrapper" style="float: right;">
-            <div>{{data.id}}</div>
+            <div>#{{data.id}}</div>
             <div>{{data.emmission|date('d/m/y')}}</div>
-            <div>{{data.getPriceShipping()|date('d/m/y')}}</div>
           </div>
           <div class="clearfix"></div>
         </div>
@@ -148,7 +146,7 @@
                 {% else %}
                   {{data.getTotalPrice() - data.getTotalReduction()}} EUR
                 {% endif %}
-                <strike>9.99EUR</strike></h1>
+                <strike>{{data.getTotalPrice()}} EUR</strike></h1>
             </td>
           </tr>
         </tbody>
