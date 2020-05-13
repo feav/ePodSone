@@ -1,3 +1,4 @@
 /var
 /vendor
 .env
+/public/documents
