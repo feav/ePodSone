@@ -27,7 +27,7 @@
     .item-elt-foot .nav{display: block!important }
     .item-elt-foot .nav .nav-link{display: inline-block;}
         
-    .toast__container{z-index: 9999!important}
+    .toast__container{z-index: 99999!important}
     .navbar img.logo{width: 140px}
     .navbar img.logo.scrolled-logo {display: none;}
     .navbar.scrolled img.logo.default-logo {display: none;}
@@ -1024,7 +1024,7 @@
                   LENGTH_CARD++;
                   if(prods.length == LENGTH_CARD ){
                     if($paidLaunch){
-                      $('#modal-payment button.submit').text('Paiement en cours...');
+                      $('#modal-payment button.submit').text('Initialisation paiement');
                       $paidLaunch = false;
                       proceedPayment();
                     }
@@ -1142,7 +1142,7 @@
               }
             })
             .done(function( data ) {
-              if(data.coupons.length == 0 && data.formules.length == 0 && data.produits.length==0){
+              if(data.coupons && data.coupons.length == 0 && data.formules.length == 0 && data.produits.length==0){
                   $('.cart-container').css('display', 'none');
                   $('.empty-cart').css('display', 'block');
                 }
@@ -1310,7 +1310,7 @@
         }
 
         function proceedPayment(){
-          $('#modal-payment button.submit').text('Paiement en cours...');
+          $('#modal-payment button.submit').text('Initialisation paiement');
             var form = document.getElementById('payment-form');
             oData = new FormData(form);
             var oReq = new XMLHttpRequest();
@@ -1319,7 +1319,6 @@
                 if (oReq.status == 200) {
                     $(".success-checkmark").show().delay(3000).fadeOut();
                     $(".check-icon").show().show().delay(3000).fadeOut();
-                    $('#modal-payment').modal('hide');
                     notification("Paiement commande",oReq.response,"success");
                     card.clear();
                     $('#modal-payment button.submit').css('pointer-events','auto');
@@ -1331,8 +1330,6 @@
                     $('#modal-payment .alert-dismissible .text').text(oReq.response);
                     $('#modal-payment button.submit').text('Valider');
                     window.localStorage.removeItem('panier');
-                    window.location.href = $('body').data('base-url');
-
                 }else {
                     notification("Paiement commande",oReq.response,"error");
                     $('#modal-payment button.submit').css('pointer-events','auto');
@@ -1349,7 +1346,7 @@
         }
 
         $('.oneClickPaid').click(function(e){
-          $(this).text('paiement en cours...');
+          $(this).text('Initialisation paiement...');
           $(this).css('pointer-events', 'none');
           var $url = $(this).attr("href");
           proceed($url, $(this));
@@ -1365,9 +1362,9 @@
               success: function(data, status) {
                 $that.css('pointer-events', 'auto');
                 $that.text("Payer en 1 click");
-                notification("Paiement commande","Paiement effectué avec succèss","success");
+                notification("Paiement commande","Opération effectuée avec succèss","success");
                 window.localStorage.removeItem('panier');
-                window.location.href = $('body').data('base-url');
+                
               },
               error: function(xhr, textStatus, errorThrown) {
                 $that.css('pointer-events', 'auto');
@@ -1428,7 +1425,7 @@
               $(".check-icon").show().show().delay(3000).fadeOut();
               setTimeout(function(){
                 $( "#sign-in-modal button.close" ).trigger( "click" );
-              });
+              },1000);
             },
             error:function(response){
               notification("Connexion","Identifiant incorrect","error");

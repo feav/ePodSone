@@ -71,11 +71,12 @@ class PaymentController extends AbstractController
             
             if($request->request->get('stripeSource') !== null && $amount !== null) {
                 $this->stripe_s->createStripeCustom($request->request->get('stripeSource'), $metadata);
-                $preparePaid = $this->preparePaid($panier);
-                if($preparePaid['paid'])
+                $preparePaid = $this->preparePaid($panier, $mailer);
+                $message = $preparePaid['message'];
+                if($preparePaid['paid']){
+                    $amount = $preparePaid['amount'];
                     $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
-                else
-                    return new Response("Vous serez facturé à la fin de votre periode d'essaie. ".$message, 200); 
+                }
             }
             $flashBag = $this->get('session')->getFlashBag()->clear();
             $this->addFlash('success', 'Paiement effectué avec success');
@@ -85,18 +86,20 @@ class PaymentController extends AbstractController
             
             if($request->request->get('stripeSource') !== null && $amount !== null) {
                 $this->stripe_s->createStripeCustom($request->request->get('stripeSource'), $metadata);
-                $preparePaid = $this->preparePaid($panier);
-                if($preparePaid['paid'])
+                $preparePaid = $this->preparePaid($panier, $mailer);
+                $message = $preparePaid['message'];
+                if($preparePaid['paid']){
+                    $amount = $preparePaid['amount'];
                     $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
-                else
-                    return new Response("Vous serez facturé à la fin de votre periode d'essaie. ".$message, 200); 
+                }
             }
             elseif($user->getStripeCustomId() !=""){
-                $preparePaid = $this->preparePaid($panier);
-                if($preparePaid['paid'])
+                $preparePaid = $this->preparePaid($panier, $mailer);
+                $message = $preparePaid['message'];
+                if($preparePaid['paid']){
+                    $amount = $preparePaid['amount'];
                     $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
-                else
-                    return new Response("Vous serez facturé à la fin de votre periode d'essaie. ".$message, 200); 
+                }
             }
             else
                 return new Response("Vous n'avez entré aucune carte", 500);
@@ -115,20 +118,21 @@ class PaymentController extends AbstractController
             $save_path = $assetFile.$ouput_name;
             $params = [
                 'format'=>['value'=>'A4', 'affichage'=>'portrait'],
-                'is_download'=>['value'=>true, 'save_path'=>$save_path]
+                'is_download'=>['value'=>true, 'save_path'=>$save_path],
+                'total_price'=>$amount
             ];
             $dompdf = $this->generatePdf('emails/facture.html.twig', $panier , $params);
 
-            $this->sendMail($mailer, $user, $panier, $save_path);
+            $this->sendMail($mailer, $user, $panier, $save_path, $amount);
             
-            return new Response("Paiement Effectué avec Succèss. ".$message, 200);
+            return new Response($message, 200);
         }
         else
             return new Response('Erreur : ' . $errorMessage , 500);
         return new Response(json_encode(['ok'=>true]));
     }
 
-    public function sendMail($mailer, $user, $panier, $commande_pdf){
+    public function sendMail($mailer, $user, $panier, $commande_pdf, $amount){
 
         if(count($panier->getCommandes())){
             $content = "<p>Bonjour ".$user->getName().", <br> Vous avez acheté d'ePodsOne pour ".$panier->getTotalPrice()."€<br>
@@ -194,7 +198,7 @@ class PaymentController extends AbstractController
         $result = "";
         $user = $this->getUser();
         if(is_null($user))
-            $response = new Response(json_encode("Vous devez etre connecté pour un payement en un click"), 500);
+            $response = new Response(json_encode("Vous devez etre connecté pour un paiement en un click"), 500);
 
         $amount = 0;
         $panier = $this->panierRepository->findOneBy(['user'=>$user->getId(), 'status'=>0]);
@@ -206,12 +210,11 @@ class PaymentController extends AbstractController
         else
             return new Response("Vous n'avez aucun panier en attente de paiement", 500);
         
-        $preparePaid = $this->preparePaid($panier);
-        if($preparePaid['paid'])
+        $preparePaid = $this->preparePaid($panier, $mailer);
+        $message = $preparePaid['message'];
+        if($preparePaid['paid']){
+            $amount = $preparePaid['amount'];
             $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
-        else{
-            $response = new Response(json_encode("Vous serez facturé à la fin de votre periode d'essaie. "), 200);
-            return $response;   
         }
 
         if($result == ""){
@@ -227,11 +230,12 @@ class PaymentController extends AbstractController
             $save_path = $assetFile.$ouput_name;
             $params = [
                 'format'=>['value'=>'A4', 'affichage'=>'portrait'],
-                'is_download'=>['value'=>true, 'save_path'=>$save_path]
+                'is_download'=>['value'=>true, 'save_path'=>$save_path],
+                'total_price'=>$amount
             ];
             $dompdf = $this->generatePdf('emails/facture.html.twig', $panier , $params);
-            $this->sendMail($mailer, $user, $panier, $save_path);
-            $response = new Response(json_encode("Paiement Effectué avec Succèss"), 200);
+            $this->sendMail($mailer, $user, $panier, $save_path, $amount);
+            $response = new Response(json_encode($message), 200);
         }
         else
             $response = new Response(json_encode('Erreur : ' . $errorMessage), 500);
@@ -261,11 +265,11 @@ class PaymentController extends AbstractController
         return 1;
     }
 
-    public function generatePdf($template, $data, $params){
+    public function generatePdf($template, $data, $params, $type_produit = "product"){
         $options = new Options();
         $dompdf = new Dompdf($options);
         $dompdf -> setPaper ($params['format']['value'], $params['format']['affichage']);
-        $html = $this->renderView($template, ['data' => $data]);
+        $html = $this->renderView($template, ['data' => $data, 'total_price'=>$params['total_price'] , 'type_produit'=>$type_produit]);
         $dompdf->loadHtml($html);
         $dompdf->render();
         if($params['is_download']['value']){
@@ -275,23 +279,29 @@ class PaymentController extends AbstractController
         return $dompdf;
     }
 
-    public function preparePaid($panier){
-        $amount = $panier->getTotalPrice();
+    public function preparePaid($panier, $mailer){
+        $user = $this->getUser();
+        $amount = $panier->getTotalPrice() - $panier->getTotalReduction();
+        $amount = ( $amount <0 ) ? 0 : $amount;
+        $message = "";
+        if(count($panier->getAbonnements())){
+            $message = "Votre abonnement sera facturé apres la periode d'essaie";   
+        }
         if(!count($panier->getCommandes())){
             $this->entityManager = $this->getDoctrine()->getManager();
-            $panier->setStatus(1);
             $panier->setPaiementDate(new \Datetime());
             $this->entityManager->flush();
-
+            
             $this->addFlash('success', "Votre abonnement sera facturé apres la periode d'essaie");
             return ['paid'=>false, 'message'=>"Votre abonnement sera facturé apres la periode d'essaie", 'amount'=>0];
         }
         elseif(count($panier->getAbonnements())){
+            $message = "Paiement Effectué avec Succèss";
             $abonnement = $panier->getAbonnements()[0];
             $abonnementAmount = $abonnement->getFormule()->getPrice();
             $amount -= $abonnementAmount;
         }
-        return ['paid'=>true, 'message'=>"", 'amount'=>$amount];
+        return ['paid'=>true, 'message'=>$message, 'amount'=>$amount];
     }
 
 }

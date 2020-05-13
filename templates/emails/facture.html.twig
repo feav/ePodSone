@@ -82,13 +82,13 @@
 
       <div class="separate" style="margin-top: 37px;"></div>
       <h1 style="padding-top: 58px">Facture Client 
-        {% if data.status == 0 %}
+        {#{% if data.status == 0 %}
           <div class="badge badge-info">ENCOURS</div>
           {% elseif data.status == 1 %}
           <div class="badge badge-success">PAYEE</div>
           {% elseif data.status == -1 %}
           <div class="badge badge-danger">EXPIREE</div>
-          {% endif %}</h1>
+          {% endif %}#}</h1>
       <div class="infos-contact">
         <div class="infos-client" style="float: left;">
           <span>Adresse à :</span><br>
@@ -119,34 +119,41 @@
             <td class="td_right" width="25%" style="padding: 14px 0;font-weight: 600;">Prix Unitaire</td>
             <td class="td_right" width="25%" style="padding: 14px 0;font-weight: 600;">Total</td>
           </tr>
-          {% for abonnements in data.abonnements %}
-            <tr>
-              <td class="td_left">Abonnement {{abonnements.formule.name}}</td>
-              <td class="td_right">1</td>
-              <td class="td_right">{{abonnements.formule.price}}</td>
-              <td class="td_right">{{abonnements.formule.price}}€</td>
-            </tr>
-          {% endfor %}
-          {% for commande in data.commandes %}
-            <tr>
-              <td class="td_left">{{commande.product.name}}</td>
-              <td class="td_right">{{commande.quantity}}</td>
-              <td class="td_right">{{commande.price}}</td>
-              <td class="td_right">{{commande.getTotalPrice()}}€</td>
-            </tr>
-          {% endfor %}
+          {% if type_produit == "abonnement" %}
+            {% for abonnements in data.abonnements %}
+              <tr>
+                <td class="td_left">Abonnement {{abonnements.formule.name}}</td>
+                <td class="td_right">1</td>
+                <td class="td_right">{{abonnements.formule.price}}</td>
+                <td class="td_right">{{abonnements.formule.price}}€</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+          {% if type_produit == "product" %}
+            {% for commande in data.commandes %}
+              <tr>
+                <td class="td_left">{{commande.product.name}}</td>
+                <td class="td_right">{{commande.quantity}}</td>
+                <td class="td_right">{{commande.price}}</td>
+                <td class="td_right">{{commande.getTotalPrice()}}€</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
           <tr>
             <td colspan="4" style="padding-top: 19px;font-size: 14px;border-bottom: none">Reduction coupons:<br><b>{{data.getTotalReduction()}} EUR</b></td>
           </tr>
           <tr>
             <td style="text-align: right;padding-top: 25px; border-bottom: none"  colspan="4">Net A payer <br>
               <h1 style="font-size: 24px;">
-                {% if data.getTotalPrice() - data.getTotalReduction() <= 0 %}
+                {% if total_price <= 0 %}
                   0 EUR
                 {% else %}
-                  {{data.getTotalPrice() - data.getTotalReduction()}} EUR
+                  {{total_price}} EUR
                 {% endif %}
-                <strike>{{data.getTotalPrice()}} EUR</strike></h1>
+
+                {% if data.getTotalReduction() > 0 %}
+                  <strike>{{total_price + data.getTotalReduction()}} EUR</strike></h1>
+                {% endif %}
             </td>
           </tr>
         </tbody>
