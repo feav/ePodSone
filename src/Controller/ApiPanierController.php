@@ -254,7 +254,8 @@ class ApiPanierController extends AbstractController
                             $date = new \DateTime();
                             $date_start = new \DateTime();
                             $month = $formule->getMonth();
-                            $date->add(new \DateInterval('P0Y'.$month.'M0DT0H0M0S'));
+                            $trialDay = $formule->getTryDays();
+                            $date->add(new \DateInterval('P0Y'.$month.'M'.$trialDay.'DT0H0M0S'));
 
                             $abonnement = new Abonnement();
                             $abonnement->setPanier($panier);

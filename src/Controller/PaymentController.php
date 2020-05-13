@@ -247,21 +247,90 @@ class PaymentController extends AbstractController
     /**
      * @Route("/abonnement/update-abonnement", name="update_abonnement")
      */
-    public function updateAbonnements(Request $request){
-        $abonnements = $this->abonnementRepository->updateAbonnement();
+    public function updateAbonnements(Request $request, \Swift_Mailer $mailer){
+        $this->entityManager = $this->getDoctrine()->getManager();
+        $abonnements = $this->abonnementRepository->findBy(['active'=>1]);
         foreach ($abonnements as $key => $value) {
-            $result = $this->stripe_s->proceedPayment($value['stripe_custom_id'], $value['price']);
-            if($result == ""){
-                if(!$value['is_paid'])
-                    $value->setIsPaid(1);
-                else{
-                    $value->setState(1);
-                    $this->createNewAbonnement();    
+            $result = "";
+            $user = $value->getUser();
+            if($value->getActive()){
+                $date = $value->getStart();
+                $date->add(new \DateInterval('P'.$value->getFormule()->getTryDays().'D'));
+                
+                if(!$value->getState() && (new \Datetime() >= $date )){
+                    $result = $this->stripe_s->proceedPayment($user, $value->getFormule()->getPrice());
+                    if($result == ""){
+                        $value->setState(1);
+                        $content = "<p>Vous etes arrivé à la fin de votre periode d'essaie pour l'abonnement ".$value->getFormule()->getMonth()." mois. vous avez été débité de ".$value->getFormule()->getPrice()."€ sur votre carte</p>";
+                        $url = $this->generateUrl('home');
+                        try {
+                            $mail = (new \Swift_Message('Abonnement Payé'))
+                                ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
+                                ->setTo([$user->getEmail()=>$user->getName()])
+                                ->setCc("alexngoumo.an@gmail.com")
+                                //->attach(\Swift_Attachment::fromPath($commande_pdf))
+                                ->setBody(
+                                    $this->renderView(
+                                        'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
+                                    ),
+                                    'text/html'
+                                );
+                            $mailer->send($mail);
+                        } catch (Exception $e) {
+                            print_r($e->getMessage());
+                        }
+                    }
                 }
+                if( (new \Datetime() >= $value->getEnd()) && !$value->getIsPaid() ){
+                    $result = $this->stripe_s->proceedPayment($user, $value->getFormule()->getPrice());
+                    if($result == ""){
+                        $value->setIsPaid(1);
+                        $value->setActive(0);
+                        $this->createNewAbonnement($value);
+
+                        $content = "<p>Votre abonnement ".$value->getFormule()->getMonth()." Mois a été renouvellé et vous a couté ".$value->getFormule()->getPrice()."€</p>";
+                        $url = $this->generateUrl('home');
+                        try {
+                            $mail = (new \Swift_Message('Abonnement renouvellé'))
+                                ->setFrom(array('alexngoumo.an@gmail.com' => 'EpodsOne'))
+                                ->setTo([$user->getEmail()=>$user->getName()])
+                                ->setCc("alexngoumo.an@gmail.com")
+                                //->attach(\Swift_Attachment::fromPath($commande_pdf))
+                                ->setBody(
+                                    $this->renderView(
+                                        'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
+                                    ),
+                                    'text/html'
+                                );
+                            $mailer->send($mail);
+                        } catch (Exception $e) {
+                            print_r($e->getMessage());
+                        }            
+                    }
+                } 
+                $this->entityManager->flush();
             }
         }
+
+        return new Response("renouvellé");
     }
-    public function createNewAbonnement(){
+    public function createNewAbonnement($abonnement){
+        $this->entityManager = $this->getDoctrine()->getManager();
+        $entity = new Abonnement();
+        $month = $abonnement->getFormule()->getMonth();
+        //$trialDay = $abonnement->getFormule()->getTryDays();
+
+        $curDate = new \Datetime();
+        $entity->setStart(new \Datetime());
+        $curDate->add(new \DateInterval('P0Y'.$month.'M0DT0H0M0S'));
+        $entity->setEnd($curDate);
+        $entity->setState(1);
+        $entity->setFormule($abonnement->getFormule());
+        $entity->setPanier($abonnement->getPanier());
+        $entity->setUser($abonnement->getUser());
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
         return 1;
     }
 
