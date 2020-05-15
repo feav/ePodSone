@@ -74,6 +74,16 @@ class Panier
      */    
     private $commandes;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $stripe_charge_id;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $remboursement;
+
     public function __construct()
     {
         $this->price_shipping = 0;
@@ -315,6 +325,30 @@ class Panier
 
     public function __toString (  ) : string{
         return $this->getToken();
+    }
+
+    public function getStripeChargeId(): ?string
+    {
+        return $this->stripe_charge_id;
+    }
+
+    public function setStripeChargeId(?string $stripe_charge_id): self
+    {
+        $this->stripe_charge_id = $stripe_charge_id;
+
+        return $this;
+    }
+
+    public function getRemboursement(): ?int
+    {
+        return $this->remboursement;
+    }
+
+    public function setRemboursement(?int $remboursement): self
+    {
+        $this->remboursement = $remboursement;
+
+        return $this;
     }
 
 

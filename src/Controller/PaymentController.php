@@ -10,12 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\UserRepository;
 use App\Repository\AbonnementRepository;
+use App\Repository\CommandeRepository;
 use App\Repository\PanierRepository;
 use App\Service\StripeService;
 use App\Service\UserService;
 use App\Entity\User;
 use App\Entity\Abonnement;
 use App\Entity\Panier;
+use App\Entity\Commande;
 
 use Stripe\Stripe;
 use \Stripe\Charge;
@@ -30,15 +32,17 @@ class PaymentController extends AbstractController
     private $user_s;
     private $userRepository;
     private $panierRepository;
+    private $commandeRepository;
     private $entityManager;
     private $abonnementRepository;
 
-    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository, PanierRepository $panierRepository){
+    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository, PanierRepository $panierRepository, CommandeRepository $commandeRepository){
         $this->params_dir = $params_dir;
         $this->stripe_s = $stripe_s;
         $this->user_s = $user_s;
         $this->userRepository = $userRepository;
         $this->panierRepository = $panierRepository;
+        $this->commandeRepository = $commandeRepository;
         $this->abonnementRepository = $abonnementRepository;
     }
     /**
@@ -75,7 +79,9 @@ class PaymentController extends AbstractController
                 $message = $preparePaid['message'];
                 if($preparePaid['paid']){
                     $amount = $preparePaid['amount'];
-                    $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                    $response = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                    $this->stripe_s->saveChargeToRefund($panier, $response['charge']);
+                    $result = $response['message'];
                 }
             }
             $flashBag = $this->get('session')->getFlashBag()->clear();
@@ -90,7 +96,9 @@ class PaymentController extends AbstractController
                 $message = $preparePaid['message'];
                 if($preparePaid['paid']){
                     $amount = $preparePaid['amount'];
-                    $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                    $response = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                    $result = $response['message'];
+                    $this->stripe_s->saveChargeToRefund($panier, $response['charge']);
                 }
             }
             elseif($user->getStripeCustomId() !=""){
@@ -98,7 +106,10 @@ class PaymentController extends AbstractController
                 $message = $preparePaid['message'];
                 if($preparePaid['paid']){
                     $amount = $preparePaid['amount'];
-                    $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                    $response = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+                    $this->stripe_s->saveChargeToRefund($panier, $response['charge']);
+                    $result = $response['message'];
+                    
                 }
             }
             else
@@ -214,14 +225,16 @@ class PaymentController extends AbstractController
         $message = $preparePaid['message'];
         if($preparePaid['paid']){
             $amount = $preparePaid['amount'];
-            $result = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+            $response = $this->stripe_s->proceedPayment($user, $preparePaid['amount']);
+            $this->stripe_s->saveChargeToRefund($panier, $response['charge']);
+            $result = $response['message'];
         }
 
         if($result == ""){
             $panier->setStatus(1);
             $panier->setPaiementDate(new \Datetime());
             $this->entityManager->flush();
-            
+
             $assetFile = $this->params_dir->get('file_upload_dir');
             if (!file_exists($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile)) {
                 mkdir($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile, 0705);
@@ -352,7 +365,7 @@ class PaymentController extends AbstractController
         $user = $this->getUser();
         $amount = $panier->getTotalPrice() - $panier->getTotalReduction();
         $amount = ( $amount <0 ) ? 0 : $amount;
-        $message = "";
+        $message = "Paiement Effectué avec Succèss";
         if(count($panier->getAbonnements())){
             $message = "Votre abonnement sera facturé apres la periode d'essaie";   
         }
@@ -365,7 +378,7 @@ class PaymentController extends AbstractController
             return ['paid'=>false, 'message'=>"Votre abonnement sera facturé apres la periode d'essaie", 'amount'=>0];
         }
         elseif(count($panier->getAbonnements())){
-            $message = "Paiement Effectué avec Succèss";
+            $message = "Paiement Effectué avec Succèss. Votre abonnement sera facturé apres la periode d'essaie";
             $abonnement = $panier->getAbonnements()[0];
             $abonnementAmount = $abonnement->getFormule()->getPrice();
             $amount -= $abonnementAmount;

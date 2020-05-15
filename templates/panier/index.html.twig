@@ -41,20 +41,31 @@
                   <table id="html5-extension" class="table table-hover non-hover" style="width:100%">
                      <thead>
                         <tr>
+                           <th>User</th>
                            <th>Emission</th>
                            <th>Prix de Livraison</th>
                            <th>Token</th>
                            <th>Cout Total</th>
+                           <th>Remboursement</th>
                            <th>actions</th>
                         </tr>
                      </thead>
                      <tbody>
                         {% for panier in paniers %}
                         <tr>
+                          <td>{{ panier.user.email }}</td>
                            <td>{{ panier.emmission ? panier.emmission|date('Y-m-d') : '' }}</td>
                            <td>{{ panier.priceShipping }}</td>
                            <td><div class="badge badge-warning">{{ panier.token }}</div></td>
                            <td>{{ panier.totalPrice }}</td>
+                           <td>
+                              {% if panier.remboursement == 1 %}
+                                <a href="{{path('confirm_remboursement', {'id':panier.id})}}" style="color:#007bff">confirmer</a>
+                              {% endif %}
+                              {% if panier.remboursement == 2 %}
+                                <span>Rembousé</span>
+                              {% endif %}
+                           </td>
                            <td>
                               <a href="{{ path('panier_edit', {'id': panier.id}) }}">Editer</a>
                               {{ include('panier/_delete_form.html.twig') }}

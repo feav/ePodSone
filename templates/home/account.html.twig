@@ -230,7 +230,14 @@
                            <span class="badge badge-info badge-pill">Commande Encours </span>
                         {% endif %}
                      </div>
-                    <div class="text-muted">Emission : <a class="badge badge-info badge-pill">{{panier.emmission|date('d/m/Y')}}</a>  </div>
+                    <div class="text-muted">Emission : <a class="badge badge-info badge-pill">{{panier.emmission|date('d/m/Y')}}</a>  
+                      {% if panier.getStripeChargeId is not null and panier.remboursement is null %}
+                        <a href="{{path('demande_remboursement', {'id':panier.id})}}">Remboursement</a>
+                      {% endif %}
+                      {% if panier.remboursement == 2 %}
+                        <span>Remboursé</span>
+                      {% endif %}
+                    </div>
                   </div>
                 </div>
               </div>

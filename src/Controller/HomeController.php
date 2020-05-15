@@ -191,4 +191,34 @@ class HomeController extends AbstractController
         }
         return $dompdf;
     }
+
+    /**
+     * @Route("/demande-remboursement/{id}", name="demande_remboursement", methods={"GET"})
+     */
+    public function remboursement(Request $request, $id, \Swift_Mailer $mailer){
+        $entityManager = $this->getDoctrine()->getManager();
+        $panier = $this->panierRepository->find($id);
+        $panier->setRemboursement(1);
+        $entityManager->flush();
+
+        $urlPanier = $this->generateUrl('panier_index', [], UrlGenerator::ABSOLUTE_URL);
+        $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
+        $content = "<p>l'utilisateur <b>".$this->getUser()->getEmail()."</b> vient de faire une demande de remboursement.<br> connectez-vous à la plateforme afin de valider cette demande.<br><a href='".$urlPanier."'>".$urlPanier."</a></p>";
+        try {
+            $mail = (new \Swift_Message("Demande de remboursement"))
+                ->setFrom([$this->getUser()->getEmail()=>$this->getUser()->getName()])
+                ->setTo("bahuguillaume@gmail.com")
+                ->setBody(
+                    $this->renderView(
+                        'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
+                    ),
+                    'text/html'
+                );
+            $mailer->send($mail);
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        }     
+        $this->addFlash('success', "Votre demande de remboursement a été envoyé");
+        return $this->redirectToRoute('account');       
+    }
 }

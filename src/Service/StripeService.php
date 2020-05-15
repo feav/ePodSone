@@ -7,9 +7,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 use App\Repository\UserRepository;
+use App\Repository\CommandeRepository;
 use App\Repository\ConfigRepository;
 use App\Entity\User;
 use App\Entity\Config;
+use App\Entity\Commande;
 
 use Stripe\Stripe;
 use \Stripe\Charge;
@@ -19,10 +21,12 @@ class StripeService{
     private $stripeApiKey;
     private $stripeCurrency = "eur";
     private $userRepository;
+    private $commandeRepository;
     private $configRepository;
 
-    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ConfigRepository $configRepository){
+    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ConfigRepository $configRepository, CommandeRepository $commandeRepository){
         $this->userRepository = $userRepository;
+        $this->commandeRepository = $commandeRepository;
         $this->configRepository = $configRepository;
         $this->em = $em;
         $this->stripeApiKey = !is_null($this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])) ? $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])->getValue() : "";
@@ -55,7 +59,7 @@ class StripeService{
             'customer' => $stripe_custom_id, 
         ]);
 
-        return 1;
+        return $charge['id'];
     }
 
     public function proceedPayment($user, $amount){
@@ -63,7 +67,8 @@ class StripeService{
         $result = "";
         Stripe::setApiKey($this->stripeApiKey);
         try {
-            $this->paidByStripeCustom($user->getStripeCustomId(), $amount);
+            $chargeId = $this->paidByStripeCustom($user->getStripeCustomId(), $amount);
+
         }catch(\Stripe\Error\Card $e) {
             // Since it's a decline, \Stripe\Error\Card will be caught
             $body = $e->getJsonBody();
@@ -83,7 +88,23 @@ class StripeService{
             $result = "Une erreur s'est produite.";
         }
         
-        return $result;
+        return ['message'=>$result, 'charge'=> $chargeId];
     }
 
+    public function saveChargeToRefund($panier, $charge){
+        if(count($panier->getCommandes())){
+            $panier->setStripeChargeId($charge);
+            $this->em->flush();
+        }
+        return $panier->getId();
+    }
+
+    public function refund($charge){
+        \Stripe\Stripe::setApiKey($this->stripeApiKey);
+        $charge = \Stripe\Refund::create([
+          'charge' => $charge,
+        ]);
+
+        return 1;
+    }
 }
