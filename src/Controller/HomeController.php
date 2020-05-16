@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 use App\Repository\PanierRepository;
+use App\Repository\ProductRepository;
 use App\Repository\CommandeRepository;
 use App\Repository\CouponRepository;
 use App\Repository\AbonnementRepository;
@@ -66,6 +67,7 @@ class HomeController extends AbstractController
             'temoignages' => $temoignage
         ]);
     }
+
     /**
      * @Route("/account", name="account")
      */
@@ -82,6 +84,31 @@ class HomeController extends AbstractController
             'controller_name' => 'ePodSone'
         ]);
     }
+
+    /**
+     * @Route("/temoignage", name="temoignage")
+     */
+    public function temoignage(TemoignageRepository $temoignageRepository)
+    {
+        $temoignages = $temoignageRepository->findAll();
+        
+        return $this->render('home/temoignage.html.twig', [
+            'temoignages' => $temoignages
+        ]);
+    }
+
+    /**
+     * @Route("/marque", name="marque")
+     */
+    public function marque(ProductRepository $productRepository)
+    {
+        $produits = $productRepository->findAll();
+        
+        return $this->render('home/marque.html.twig', [
+            'marques' => $produits
+        ]);
+    }
+
     /**
      * @Route("/account/facture/{id}", name="billing")
      */
@@ -134,6 +161,20 @@ class HomeController extends AbstractController
         return $this->render('home/contact.html.twig');
     }
 
+    public function generatePdf($template, $data, $params){
+        $options = new Options();
+        $dompdf = new Dompdf($options);
+        $dompdf -> setPaper ($params['format']['value'], $params['format']['affichage']);
+        $html = $this->renderView($template, ['data' => $data]);
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        if($params['is_download']['value']){
+            $output = $dompdf->output();
+            file_put_contents($params['is_download']['save_path'], $output);
+        }
+        return $dompdf;
+    }
+
     /**
      * @Route("/resiliation-abonnement/{id}", name="abonnement_resilie", methods={"GET"})
      */
@@ -178,19 +219,6 @@ class HomeController extends AbstractController
         return $this->redirectToRoute('account');
     }
 
-    public function generatePdf($template, $data, $params){
-        $options = new Options();
-        $dompdf = new Dompdf($options);
-        $dompdf -> setPaper ($params['format']['value'], $params['format']['affichage']);
-        $html = $this->renderView($template, ['data' => $data]);
-        $dompdf->loadHtml($html);
-        $dompdf->render();
-        if($params['is_download']['value']){
-            $output = $dompdf->output();
-            file_put_contents($params['is_download']['save_path'], $output);
-        }
-        return $dompdf;
-    }
 
     /**
      * @Route("/demande-remboursement/{id}", name="demande_remboursement", methods={"GET"})

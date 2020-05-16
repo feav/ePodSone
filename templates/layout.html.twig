@@ -20,7 +20,15 @@
   
   <style type="text/css">
     button, .btn{outline: none!important;}
-    .cart-btn{padding: 1px 13px}
+    .cart-btn{
+      padding: 0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex!important;
+      align-items: center;
+      justify-content: center;
+    }
     .item-elt-foot{
       display: flex;
       flex-direction: column;
@@ -706,7 +714,7 @@
                <h5>Le site</h5>
                <ul class="nav flex-row flex-md-column">
                   <li class="nav-item mr-3 mr-md-0">
-                    <a href="javascript:void()" class="nav-link px-0 py-2">Accueil</a>
+                    <a href="{{path('home')}}" class="nav-link px-0 py-2">Accueil</a>
                   </li>
                   <li class="nav-item mr-3 mr-md-0">
                     <a href="javascript:void()" class="nav-link px-0 py-2">Boutique</a>
@@ -715,7 +723,13 @@
                     <a href="javascript:void()" class="nav-link px-0 py-2">Livraison</a>
                   </li>
                   <li class="nav-item mr-3 mr-md-0">
-                    <a href="javascript:void()" class="nav-link px-0 py-2">Contact</a>
+                    <a href="{{path('contact')}}" class="nav-link px-0 py-2">Contact</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="{{path('marque')}}" class="nav-link px-0 py-2">Marques</a>
+                  </li>
+                  <li class="nav-item mr-3 mr-md-0">
+                    <a href="{{path('temoignage')}}" class="nav-link px-0 py-2">Témoignages</a>
                   </li>
                   <li class="nav-item mr-3 mr-md-0">
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}  
