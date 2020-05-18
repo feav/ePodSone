@@ -45,6 +45,11 @@
    .toast{
       opacity: 1;
    }
+   .achat-title{
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+   }
 </style>
 {% endblock %}
 {% block body_web %}
@@ -200,8 +205,16 @@
       <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
         <div class="container">
           <div class="row mb-4 mb-md-5">
-            <div class="col-auto">
+            <div class="col-auto achat-title">
               <h3>Mes achats</h3>
+              <div class="wrapper-export">
+                  <div>Exporter les commandes</div>
+                  <form class="form-inline" action="{{path('export_facture')}}" method="POST">
+                      Du &nbsp<input type="date" name="date_debut" class="form-control" required>&nbsp Au &nbsp
+                      <input type="date" name="date_fin" class="form-control" required>&nbsp
+                      <button type="submit"  class="btn btn-sm btn-primary"> Exporter</button>
+                  </form>
+              </div>
             </div>
           </div>
            <div class="row">

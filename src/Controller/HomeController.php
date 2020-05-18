@@ -165,7 +165,7 @@ class HomeController extends AbstractController
         $options = new Options();
         $dompdf = new Dompdf($options);
         $dompdf -> setPaper ($params['format']['value'], $params['format']['affichage']);
-        $html = $this->renderView($template, ['data' => $data]);
+        $html = $this->renderView($template, ['data' => $data, 'date_debut'=>$params['date_debut'], 'date_fin'=>$params['date_fin'] ]);
         $dompdf->loadHtml($html);
         $dompdf->render();
         if($params['is_download']['value']){
@@ -248,5 +248,26 @@ class HomeController extends AbstractController
         }     
         $this->addFlash('success', "Votre demande de remboursement a été envoyé");
         return $this->redirectToRoute('account');       
+    }
+
+    /**
+     * @Route("/export-facture", name="export_facture")
+     */
+    public function exportFacture(Request $request){
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        $dateDebut = $request->request->get('date_debut');
+        $dateFin = $request->request->get('date_fin');
+        $paniers = $this->panierRepository->getPanierByDate($user->getId(), $dateDebut, $dateFin);
+        
+        $ouput_name = 'facture_du_'.$dateDebut.'_au_'.$dateFin.'.pdf';
+        $params = [
+            'format'=>['value'=>'A4', 'affichage'=>'portrait'],
+            'is_download'=>['value'=>false, 'save_path'=>""],
+            'date_debut'=>$dateDebut,
+            'date_fin'=> $dateFin 
+        ];
+        $dompdf = $this->generatePdf('emails/commande_facture.html.twig', $paniers , $params);  
+        return new Response ($dompdf->stream($ouput_name, array("Attachment" => false)));
     }
 }

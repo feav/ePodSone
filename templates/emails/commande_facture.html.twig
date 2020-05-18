@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-Type" content="text/html; charset=utf-8"/>
+    <style>
+      @font-face {
+        font-family: 'Quicksand';
+        font-style: normal;
+        font-weight: normal;
+        src: url(assets/fonts/quicksand/Quicksand-Bold.ttf) format('truetype');
+      }
+      @font-face {
+        font-family: 'Quicksand-Bold';
+        font-style: normal;
+        font-weight: normal;
+        src: url(assets/fonts/quicksand/Quicksand-Light.ttf) format('truetype');
+      }
+      @page {
+        margin:0px;
+      }
+
+      body { font-family: HelveticaNeue, sans-serif; color: #555A64}
+      hr {
+        page-break-after: always;
+        border: 0;
+      }
+      .page { width: 100%; height: 100%; }
+      .page_break { page-break-before: always; }
+      .container-content{
+        position: absolute;
+        z-index: 17;
+      }
+      .container-content{
+        padding: 40px 50px 50px 60px;
+      }
+      .head{
+        line-height: 33px;
+        color: #333;
+      }
+      a{
+        color: #009b72;
+        
+        text-decoration: none;
+      }
+      .separate{
+        border-top: 1px solid #f1efef;
+      }
+      h1{color: #333}
+      h1 .badge{
+        display: inline-block;
+        color: #fff;
+        font-size: 12px;
+        background: #009b72;
+        padding: 6px 6px;
+        border-radius: 8px;
+      }
+      .infos-client{float: left;}
+      table{
+        width: 100%;
+        margin-top: 15px;
+      }
+      .infos-contact{
+        margin-top: 46px;
+        margin-bottom: 70px;
+        line-height: 23px;
+      }
+      td{
+        border-bottom: 1px solid #EAEDF2;
+        font-size: 13px;
+      }
+      .clearfix{
+        display: table;
+        content: "";
+        clear: both;
+      }
+    </style>
+  </head>
+  <body>  
+    <div class="container-content page"> 
+      <div class="head">
+        <div>EpodsOne</div>
+        <div>Paris France</div>
+        <a href="">contact@epodsone.com</a>
+      </div>
+        {#{% if data.status == 0 %}
+          <div class="badge badge-info">ENCOURS</div>
+          {% elseif data.status == 1 %}
+          <div class="badge badge-success">PAYEE</div>
+          {% elseif data.status == -1 %}
+          <div class="badge badge-danger">EXPIREE</div>
+          {% endif %}#}</h1>
+
+        <h3>Commande du {{date_debut|date('Y-m-d')}} au {{ date_fin|date('Y-m-d') }}</h3>
+      
+      <table>
+        <tbody>
+          <tr class="header" style="font-family: 'Quicksand'; ">
+            <td class="td_left" width="25%" >Emmission</td>
+            <td class="td_right" width="25%" >Produit</td>
+            <td class="td_right" width="25%" >Quantite</td>
+            <td class="td_right" width="25%" >Prix Total</td>
+          </tr>
+          {% for panier in data %}
+            {% if panier.commandes|length %}
+              {% for cmd in panier.commandes %}
+                <tr style="font-family: 'Quicksand'; ">
+                  <td class="td_left" width="25%" >{{panier.emmission|date('Y-m-d')}}</td>
+                  <td class="td_right" width="25%" >{{cmd.product.name}}</td>
+                  <td class="td_right" width="25%" >{{cmd.quantity}}</td>
+                  <td class="td_right" width="25%" >{{cmd.price}}</td>
+                </tr>
+              {% endfor %}
+              <tr style="background:#EAEDF2">
+                  <td>Total:</td>
+                  <td colspan="3" style="text-align:center;">{{panier.getTotalPrice}} €</td>
+              </tr>
+            {% endif %}
+            {% if loop.index % 35 == 0 and loop.index > 1 %}
+              <hr class="page_break">
+            {% endif %}
+
+          {% endfor %}
+
+        </tbody>
+      </table>
+      <div class="separate"></div>
+      <div style="padding-top: 15px;font-size: 14px;">
+        Payer a : <br>
+        <span>contact@epodsone.com</span>
+      </div>
+    </div>
+  </body>
+</html>
