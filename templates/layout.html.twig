@@ -452,6 +452,33 @@
     .navbar .shopping-cart{
       color: #fff;
     }
+
+
+
+    .cart-container .control-qte{
+      width: 32px;
+      float: left;
+      margin-right: 10px;
+      text-align: center;
+      border: 1px solid #8888885c;
+      border-radius: 4px;
+    }
+    .cart-container .control-qte > *{width: 100%}
+    .cart-container .qte-change{
+      height: 15px;
+      display: block;
+      cursor: pointer;
+    }
+    .cart-container .input-qte{
+      border:none;
+      text-align: center;
+      border-top: 1px solid #8888885c;
+      border-bottom: 1px solid #8888885c;
+      height: 18px;
+      font-size: 12px;
+    }
+
+
     @media(max-width: 992px){
       .separe-nav-xs{
         width: 2px;
@@ -922,12 +949,16 @@
    function itemProduct(id,img, name, quantity, price, oldprice){
       return '<div class="product-item product-'+id+'">'+
             '<img src="{{asset("assets/img/products")}}/'+img+'" class="product-img">'+
+            '<div class="control-qte">'+
+              '<span class="qte-change qty-plus" onclick="updateQty('+id+',1)">+</span>'+
+              '<input class="input-qte input-qte-'+id+'" type="text" value="'+quantity+'">'+
+              '<span class="qte-change qty-min" onclick="updateQty('+id+',0)">-</span>'+
+            '</div>'+
             '<ul class="detail-list">'+
               '<li class="detail-item product-name">'+
                 name+
               '</li>'+
-              '<li class="detail-item product-qte">'+
-               quantity+' x '+price+'€ <strike>'+oldprice+'€</strike>'+
+              '<li class="detail-item product-qte">'+' x '+price+'€ <strike>'+oldprice+'€</strike>'+
               '</li>'+
               '<li class="detail-item product-etat">'+
                 '<span style="color: #009b7 !important; cursor: pointer; font-weight: 700;" onclick="addToCard('+id+',0)">supprimé</span>'+
@@ -978,6 +1009,24 @@
        window.localStorage.removeItem('panier');
     }
   } 
+  function updateQty(id, action){
+    $qtyInput = $('.control-qte .input-qte-'+id);
+      var qty = parseInt($qtyInput.val());
+      if(action == 0 && qty >0){
+        qty -= 1;
+        $qtyInput.val(qty);
+      }
+      else if(action == 1){
+        qty += 1;
+        $qtyInput.val(qty);
+      }
+      else{
+        notification("Modification du quantité","la quantité n'est pas bonne","error");
+        return false;
+      }
+      addToCard(id, qty);
+   }
+
   function addToCard(id=-1,qty=-1,type="product"){
     $.ajax({
          contentType: "application/json",
