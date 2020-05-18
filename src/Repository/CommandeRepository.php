@@ -17,6 +17,7 @@ class CommandeRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Commande::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
 
     // /**
@@ -47,4 +48,21 @@ class CommandeRepository extends ServiceEntityRepository
         ;
     }
     */
+
+        public function getPanierByDate($dateDebut, $dateFin){
+            $sql = "SELECT cmd.id FROM commande as cmd inner join panier  WHERE cmd.panier_id = panier.id AND  panier.emmission >= :dateDebut AND panier.emmission <= :dateFin ";
+
+            $posts = $this->em->prepare($sql);
+            $posts->execute(['dateDebut' => $dateDebut, 'dateFin' => $dateFin]);
+            $posts = $posts->fetchAll();
+
+            $postsArray = [];
+            foreach ($posts as $key => $value) {
+                $qb = $this->createQueryBuilder('commande')
+                    ->Where('commande.id = :id')
+                    ->setParameter('id', $value['id']);
+                $postsArray[] = $qb->getQuery()->getOneOrNullResult();
+            }
+            return $postsArray;
+        }
 }

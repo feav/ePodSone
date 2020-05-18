@@ -12,6 +12,7 @@ use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use App\Repository\PanierRepository;
 use App\Repository\ProductRepository;
@@ -35,6 +36,8 @@ class HomeController extends AbstractController
     private $entityManager;
     private $money_unit;
     private $params_dir;
+    private $dateDebut;
+    private $dateFin;
 
     public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository,AbonnementRepository $abonnementRepository,FormuleRepository $formuleRepository,PanierRepository $panierRepository,CouponRepository $couponRepository,CommandeRepository $commandeRepository, ProductService $productService,ProductService $prodService,UserService $user_s){
 
@@ -254,20 +257,80 @@ class HomeController extends AbstractController
      * @Route("/export-facture", name="export_facture")
      */
     public function exportFacture(Request $request){
-        $entityManager = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
-        $dateDebut = $request->request->get('date_debut');
-        $dateFin = $request->request->get('date_fin');
-        $paniers = $this->panierRepository->getPanierByDate($user->getId(), $dateDebut, $dateFin);
-        
-        $ouput_name = 'facture_du_'.$dateDebut.'_au_'.$dateFin.'.pdf';
-        $params = [
-            'format'=>['value'=>'A4', 'affichage'=>'portrait'],
-            'is_download'=>['value'=>false, 'save_path'=>""],
-            'date_debut'=>$dateDebut,
-            'date_fin'=> $dateFin 
-        ];
-        $dompdf = $this->generatePdf('emails/commande_facture.html.twig', $paniers , $params);  
-        return new Response ($dompdf->stream($ouput_name, array("Attachment" => false)));
+        $this->dateDebut = $request->request->get('date_debut');
+        $this->dateFin = $request->request->get('date_fin');
+
+        $response = new StreamedResponse();
+        $response->setCallback(function() {
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $dateDebut = $this->dateDebut;
+            $dateFin = $this->dateFin;
+            $commandes = $this->commandeRepository->getPanierByDate($dateDebut, $dateFin);
+            
+            $dataBody = [];
+            $dataBody[] = ['Date Emission', 'Produit', 'Quantite', 'Prix Unique', 'Prix Total'];
+            foreach ($commandes as $key => $value) {
+                $dataBody[] = [
+                    $value->getPanier()->getEmmission()->format('Y-m-d'),
+                    $value->getProduct()->getName(),
+                    $value->getQuantity(),
+                    $value->getPrice(),
+                    $value->getTotalPrice(),
+                ];
+            }
+
+            $handle = fopen('php://output', 'w+');
+
+            // Add the header of the CSV file
+            //fputcsv($handle, ['Name', 'Surname', 'Age', 'Sex'],';');
+            foreach ($dataBody as $key => $value) {
+                fputcsv(
+                    $handle, // The file pointer
+                    $value, // The fields
+                    ';' // The delimiter
+                );
+            }
+            //while($row = $results->fetch()) {
+                
+            //}
+
+            fclose($handle);
+        });
+
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+
+        return $response;
+
+    }
+
+    public function generateCsvAction()
+    {
+        $response = new StreamedResponse();
+        $response->setCallback(function() {
+            $handle = fopen('php://output', 'w+');
+
+            // Add the header of the CSV file
+            fputcsv($handle, array('Name', 'Surname', 'Age', 'Sex'),';');
+            // Query data from database
+            // Add the data queried from database
+            while($row = $results->fetch()) {
+                fputcsv(
+                    $handle, // The file pointer
+                    array($row['name'], $row['surname'], $row['age'], $row['sex']), // The fields
+                    ';' // The delimiter
+                );
+            }
+
+            fclose($handle);
+        });
+
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+
+        return $response;
     }
 }

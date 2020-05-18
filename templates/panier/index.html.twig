@@ -4,6 +4,15 @@
 <link rel="stylesheet" type="text/css" href="{{asset('assetsBo/plugins/table/datatable/datatables.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('assetsBo/plugins/table/datatable/custom_dt_html5.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('assetsBo/plugins/table/datatable/dt-global_style.css')}}">
+
+<!-- BEGIN THEME GLOBAL STYLES -->
+<link href="{{asset('assetsBo/plugins/flatpickr/flatpickr.css')}}" rel="stylesheet" type="text/css">
+<!-- END THEME GLOBAL STYLES -->
+
+<!--  BEGIN CUSTOM STYLE FILE  -->
+<link href="{{asset('assetsBo/plugins/flatpickr/custom-flatpickr.css')}}" rel="stylesheet" type="text/css">
+    <!--  END CUSTOM STYLE FILE  -->
+
 <style type="text/css">
    .widget-content-area{box-shadow: none;}
 </style>
@@ -37,6 +46,16 @@
                </div>
             </div>
             <div class="widget-content widget-content-area br-6">
+
+              <div class="wrapper-export">
+                  <div>Exporter les commandes</div>
+                  <form class="form-inline" action="{{path('export_facture')}}" method="POST">
+                      Du &nbsp<input type="date" name="date_debut" class="form-control dateTimeFlatpickr" required>&nbsp Au &nbsp
+                      <input type="date" name="date_fin" class="form-control dateTimeFlatpickr" required>&nbsp
+                      <button type="submit"  class="btn btn-primary"> Exporter</button>
+                  </form>
+              </div>
+
                <div class="table-responsive mb-4 mt-4">
                   <table id="html5-extension" class="table table-hover non-hover" style="width:100%">
                      <thead>
@@ -93,6 +112,22 @@
 <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/jszip.min.js')}}"></script>    
 <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/buttons.html5.min.js')}}"></script>
 <script src="{{asset('assetsBo/plugins/table/datatable/button-ext/buttons.print.min.js')}}"></script>
+
+  <!-- BEGIN PAGE LEVEL SCRIPTS -->
+  <script src="{{asset('assetsBo/plugins/flatpickr/flatpickr.js')}}"></script>
+  <script src="{{asset('assetsBo/plugins/flatpickr/custom-flatpickr.js')}}"></script>
+  <!-- END PAGE LEVEL SCRIPTS -->
+  <script type="text/javascript">
+    $('#sidebar .menu.menu-abonnement').addClass('active');
+      var elements = document.getElementsByClassName("dateTimeFlatpickr");
+      for (var i = 0; i < elements.length; i++) {
+          var f2 = flatpickr(elements[i], {
+              enableTime: true,
+              dateFormat: "Y-m-d H:i",
+          });
+      }
+  </script>
+
 <script>
    $('#sidebar .menu.menu-commande').addClass('active');
    $('#html5-extension').DataTable( {

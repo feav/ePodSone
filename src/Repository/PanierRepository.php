@@ -17,7 +17,6 @@ class PanierRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Panier::class);
-        $this->em = $this->getEntityManager()->getConnection();
     }
 
     // /**
@@ -48,20 +47,4 @@ class PanierRepository extends ServiceEntityRepository
         ;
     }
     */
-    public function getPanierByDate($user_id, $dateDebut, $dateFin){
-        $sql = "SELECT id FROM panier WHERE panier.user_id = :user_id AND panier.emmission >= :dateDebut AND panier.emmission <= :dateFin ";
-
-        $posts = $this->em->prepare($sql);
-        $posts->execute(['user_id' => $user_id, 'dateDebut' => $dateDebut, 'dateFin' => $dateFin]);
-        $posts = $posts->fetchAll();
-
-        $postsArray = [];
-        foreach ($posts as $key => $value) {
-            $qb = $this->createQueryBuilder('panier')
-                ->Where('panier.id = :id')
-                ->setParameter('id', $value['id']);
-            $postsArray[] = $qb->getQuery()->getOneOrNullResult();
-        }
-        return $postsArray;
-    }
 }
