@@ -19,7 +19,7 @@ class GlobalService{
 
 
     public function isAbonnementValide($user_id){
-        $abonnement = $this->abonnementRepository->findOneBy(['user_id'=>$user_id], ['id'=>'DESC'], 1);
+        $abonnement = $this->abonnementRepository->findOneBy(['user'=>$user_id], ['id'=>'DESC'], 1);
         if(is_null($abonnement) || !$abonnement->getActive() || ($abonnement->getEnd() > new \DateTime()) ){
             return false;
         }
