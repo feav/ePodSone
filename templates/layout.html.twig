@@ -73,17 +73,20 @@
       font-size: 14px;
     }
     .cart-wrapper.open{right: 0}
+    .cart-wrapper .product-item{
+      display: flex;
+      margin-top: 11px;
+    }
     .cart-wrapper .product-item img.product-img {
       height: 60px;
       width: 80px;
       object-fit: cover;
       border-radius: 5px;
-      box-shadow: 0px 5px 15px -5px rgba(0, 0, 0, 0.1);
-      float: left;
-      margin-right: 13px;
+      /*box-shadow: 0px 5px 15px -5px rgba(0, 0, 0, 0.1);*/
+      margin-right: 9px;
     }
     .cart-wrapper .product-item ul.detail-list {
-      padding-left: 14px;
+      padding-left: 7px;
     }
     .cart-wrapper .form-coupon{
       display: flex;
@@ -452,13 +455,8 @@
     .navbar .shopping-cart{
       color: #fff;
     }
-
-
-
     .cart-container .control-qte{
       width: 32px;
-      float: left;
-      margin-right: 10px;
       text-align: center;
       border: 1px solid #8888885c;
       border-radius: 4px;
@@ -610,6 +608,10 @@
             </ul>
             <ul class="totaux card-list-details">
             </ul>
+            <div style="text-align:center">
+                <img alt="miniature" style="height: 30px;border: 1px solid #e8e8e8;padding: 0px 10px;border-radius: 5px;background: #fdfdfd;" src="https://cdn3.iconfinder.com/data/icons/payment-method-1/64/_Visa-512.png"><img alt="miniature" style="height: 30px;border: 1px solid #e8e8e8;padding: 0px 10px;margin: 0px 15px;border-radius: 5px;background: #fdfdfd;" src="https://cdn3.iconfinder.com/data/icons/payment-method-1/64/_Mastercard-512.png"><img alt="miniature" style="height: 30px;border: 1px solid #e8e8e8;padding: 0px 10px;border-radius: 5px;background: #fdfdfd;" src="https://cdn3.iconfinder.com/data/icons/payment-method-1/64/_Maestro-512.png"> 
+                <p style="font-size: 12px;font-weight: 400;margin-top: 10px;margin-bottom: 15px;">Paiements sécurisés par Stripe.</p>
+            </div>
             <div>
               <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-sm-block order-lg-3 open-modal-payment">Paiement de <b class="cart-total-pay">o</b>€ <strike><i class="cart-total-reduction">0</i>€ </strike></a>
             </div>
