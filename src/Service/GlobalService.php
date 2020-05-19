@@ -9,6 +9,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Templating\EngineInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Repository\AbonnementRepository;
+use App\Entity\Abonnement;
+
 use Dompdf\Options;
 use Dompdf\Dompdf;
 
@@ -17,12 +21,14 @@ class GlobalService{
     private $requestStack;
     private $public_path;
     private $templating;
+    private $abonnementRepository;
     
-    public function __construct(EntityManagerInterface $em, RequestStack $requestStack, EngineInterface $templating){
+    public function __construct(EntityManagerInterface $em, RequestStack $requestStack, EngineInterface $templating, AbonnementRepository $abonnementRepository){
         $this->em = $em;
         $this->request = $requestStack->getCurrentRequest();
         $this->public_path = $this->request->server->get('DOCUMENT_ROOT');
         $this->templating = $templating;
+        $this->abonnementRepository = $abonnementRepository;
     }
 
     public function buildFiles($files, $tabExtension, $maxSize, $directorySave, $save_originalName){
@@ -72,4 +78,11 @@ class GlobalService{
         return $dompdf;
     }
 
+    public function isAbonnementValide($user_id){
+        $abonnement = $this->abonnementRepository->findOneBy(['user_id'=>$user_id], ['id'=>'DESC'], 1);
+        if(is_null($abonnement) || !$abonnement->getActive() || ($abonnement->getEnd() > new \DateTime()) ){
+            return false;
+        }
+        return true;
+    }
 }
