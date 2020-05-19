@@ -277,7 +277,7 @@ class PaymentController extends AbstractController
         foreach ($abonnements as $key => $value) {
             $result = "";
             $user = $value->getUser();
-            if($value->getActive()){
+            if($value->getActive() && $user->getStripeCustomId()){
                 $date = $value->getStart();
                 $date->add(new \DateInterval('P'.$value->getFormule()->getTryDays().'D'));
                 
