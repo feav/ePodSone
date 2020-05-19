@@ -33,6 +33,10 @@ class Config
                 "description" => "PayPal email" 
             ),
             array(
+                "key" => "LIVRAISON_AMOUNT",
+                "description" => "Montant livraison" 
+            ),
+            array(
                 "key" => "SENDER_EMAIL",
                 "description" => "Sender email" 
             ),
