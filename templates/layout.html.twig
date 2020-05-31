@@ -1131,7 +1131,7 @@
             })
             .done(function( data ) {
               console.log(data);
-                if(data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0){
+                if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0) || !data.panier ){
                   $('.cart-container').css('display', 'none');
                   $('.empty-cart').css('display', 'block');
                 }
@@ -1226,7 +1226,7 @@
             })
             .done(function( data ) {
               console.log(data);
-              if(data.coupons && data.coupons.length == 0 && data.formules.length == 0 && data.produits.length==0){
+              if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0)|| !data.panier){
                   $('.cart-container').css('display', 'none');
                   $('.empty-cart').css('display', 'block');
                 }
