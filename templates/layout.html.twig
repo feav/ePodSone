@@ -20,6 +20,15 @@
 
   
   <style type="text/css">
+    nav.navbar.white-theme img.logo.scrolled-logo{
+      display: block;
+    }
+    nav.navbar.white-theme img.logo.default-logo{
+      display: none;
+    }
+    .navbar.white-theme.navbar-dark .navbar-nav .nav-link{
+      color: rgba(0, 0, 0, 0.5)!important;
+    }
     button, .btn{outline: none!important;}
     .cart-btn{
       padding: 0;
@@ -29,6 +38,22 @@
       display: flex!important;
       align-items: center;
       justify-content: center;
+    }
+    .cart-btn{padding: 1px 13px; position: relative;}
+    .cart-btn > .nb-product-cart{
+      position: absolute;
+      top: -5px;
+      right: -3px;
+      background: white;
+      font-size: 11px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      color: #007556;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
     }
     .item-elt-foot{
       display: flex;
@@ -513,6 +538,8 @@
     .cart-container .list-recap{
       font-size: 14px;
       padding: 0 1.4rem;
+      font-weight: 900;
+      line-height: 1.2em;
     }
     .cart-container .list-recap .recap-item{
       font-size: 14px;
@@ -521,6 +548,12 @@
     .cart-container .list-recap .recap-item >.recap-value {
       float: right;
       font-weight: 600;
+    }
+    @media(max-width: 768px){
+      .cart-btn > .nb-product-cart{
+        background: #007556;
+        color: #fff;
+      }
     }
   </style>
 {% endblock %}
@@ -564,7 +597,7 @@
                  <img alt="Navbar Toggler Close Icon" class="navbar-toggler-close icon icon-sm" data-inject-svg src="{{ asset('assets/img/icons/interface/icon-x.svg')}}">
                </button>
                <span class="separe-nav-xs"></span>
-               <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-lg-0 d-sm-block order-lg-3 toggle-cart cart-btn"><i class="fa fa-shopping-cart shopping-cart"></i></a>
+               <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-lg-0 d-sm-block order-lg-3 toggle-cart cart-btn"><span class="nb-product-cart">0</span><i class="fa fa-shopping-cart shopping-cart"></i></a>
             </div>
             <div class="collapse navbar-collapse order-3 order-lg-2 justify-content-lg-end" id="navigation-menu">
             <ul class="navbar-nav my-3 my-lg-0">
@@ -624,8 +657,7 @@
             <ul class="list-recap">
             </ul>
             <div>
-              <a href="javascript:void()" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-sm-block order-lg-3 open-modal-payment">Paiement de <b class="cart-total-pay">o</b>€ <strike><i class="cart-total-reduction">0</i>€ </strike></a>
-              <div style="text-align: center;margin-top: 7px;">Livraison: {{livraison_montant}}€</div>
+              <a href="{{path('paiement_cart')}}" class="btn btn-primary ml-lg-4 mr-3 mr-md-4 mr-lg-0 d-sm-block order-lg-3">Paiement de <b class="cart-total-pay">o</b>€ <strike><i class="cart-total-reduction">0</i>€ </strike></a> 
             </div>
             {% if is_granted('IS_AUTHENTICATED_FULLY') and (app.user.getStripeCustomId is not null) %}
               <div style="text-align: center;margin-top: 19px;font-size: 16px">
@@ -737,7 +769,7 @@
                   <label class="custom-control-label" for="sign-in-remember">Remember me next time</label>
                 </div>
               </div>
-              <button class="btn btn-primary btn-block submit" type="submit">Sign In</button>
+              <button class="btn btn-primary btn-block submit" type="submit">Connexion</button>
               <div class="lds-ripple"><div></div><div></div></div>
                 <div class="success-checkmark">
                   <div class="check-icon">
@@ -1001,6 +1033,32 @@
           '</div>';
    }
 
+    function itemRecap(products, total_amount, total_reduction, reduction){
+      $ELT = $('.cart-container .list-recap');
+      var DATA_STRING = ""; 
+      products.forEach(function(item, index){
+        if(item.price > 0){
+          DATA_STRING += '<li class="recap-item">'+
+                  '<span class="recap-label">'+item.name+' x '+item.quantity+'</span>'+
+                  '<span class="recap-value">'+item.price+'€</span>'+
+                '</li>';
+        }
+      });
+      DATA_STRING += '<li class="recap-item">'+
+                  '<span class="recap-label">Réduction</span>'+
+                  '<span class="recap-value">(-'+(total_amount?parseInt( (reduction*100)/ total_amount):0)+'%) -'+reduction.toFixed(2)+'€</span>'+
+                '</li>'+
+                '<li class="recap-item">'+
+                  '<span class="recap-label">Livraison</span>'+
+                  '<span class="recap-value">{{livraison_montant}}€</span>'+
+                '</li>'+
+                '<li class="recap-item">'+
+                  '<span class="recap-label">Total</span>'+
+                  '<span class="recap-value">'+total_reduction+'€</span>'+
+                '</li>';
+      $ELT.html(DATA_STRING);
+    }
+
    function itemCoupon(id,name, value){
       return '<li class="item coupon-'+id+'">'+
                 '<span>Réduction:</span>'+
@@ -1012,8 +1070,8 @@
       addToCard(code,qty,"coupon");
    }
    function addFormuleToCard(id,qty=1){
-      addToCard(id,qty,"formule");
-    }
+    addToCard(id,qty,"formule");
+  }
   function synch_card(){
     var x = window.localStorage.getItem('panier');
     if(x){
@@ -1081,182 +1139,189 @@
                }
             });
   }
-        function addToCard_connected(id=-1,qty=-1,type="product"){
-            if(id == -1){
-               id = $("#add-product-modal .product-id-input").val();
-            }
-            if(qty == -1){
-               qty = $("#add-product-modal .product-quantity-input").val();
-            }
-            $.ajax({
-                 contentType: "application/json",
-                 dataType: "json",
-                 data:{
-                     product:id,
-                     quantity:qty,
-                     type:type
-                 },
-                 url: "{{ path('commande_add_to_card') }}",
-                 beforeSend: function( xhr ) {}
-               })
-            .done(function( data ) {
-               if(data.status==200){
-                  refreshCard(true);
-                  notification("Modification du Panier",data.message,"success");
-                  
-                  LENGTH_CARD++;
-                  if(prods.length == LENGTH_CARD ){
-                    if($paidLaunch){
-                      $('#modal-payment button.submit').text('Initialisation paiement...');
-                      $paidLaunch = false;
-                      proceedPayment();
-                    }
-                  }
-               }else{
-                  notification("Modification du Panier",data.message,"error");
-               }
-               $('.btn-add-to-card').css('pointer-events','auto');
-               $('.btn-add-to-card').text('Ajout au panier');
-               $('#add-product-modal').modal('hide');
-            });
-        }
-        function refreshCard_connected(show){
-            $.ajax({
-              contentType: "application/json",
-              dataType: "json",
-              url: "{{ path('commande_get_card') }}",
-              beforeSend: function( xhr ) {
-                
-              }
-            })
-            .done(function( data ) {
-              console.log(data);
-                if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0) || !data.panier ){
-                  $('.cart-container').css('display', 'none');
-                  $('.empty-cart').css('display', 'block');
-                }
-                else{
-                  $('.cart-container').css('display', 'block');
-                  $('.empty-cart').css('display', 'none');
-                }
-               if(data.status==200){
-                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
-                  $(".cart-total-pay").html(total.toFixed(2));
-                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
-                  $(".card-list-product").html("");
-                   data.panier.products.forEach(function(item, index){
-                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
-                   }); 
-                  $(".card-list-coupon").html("");
-                   data.panier.coupons.forEach(function(item, index){
-                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
-                   });
-                  $(".card-list-formule").html("");
-                   data.panier.formules.forEach(function(item, index){
-                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
-                   });
-               }else{
-                  console.log(data.message);
-               }
-               if(show && !$(".cart-wrapper").hasClass("open"))
-                     $(".cart-wrapper").addClass("open");
-              });
-        }
-        synch_card();
-        
-      /**
-      ** USER NOT CONNECTED
-      **/
-        function addToCard_not_connected(id=-1,qty=-1,type="product"){
-            if(id == -1){
-               id = $("#add-product-modal .product-id-input").val();
-            }
-            if(qty == -1){
-               qty = $("#add-product-modal .product-quantity-input").val();
-            }
-
-            var x = window.localStorage.getItem('panier');
-            var prods = [];
-            if(x){
-               prods = JSON.parse(x);
-            }
+  function addToCard_connected(id=-1,qty=-1,type="product"){
+      if(id == -1){
+         id = $("#add-product-modal .product-id-input").val();
+      }
+      if(qty == -1){
+         qty = $("#add-product-modal .product-quantity-input").val();
+      }
+      $.ajax({
+           contentType: "application/json",
+           dataType: "json",
+           data:{
+               product:id,
+               quantity:qty,
+               type:type
+           },
+           url: "{{ path('commande_add_to_card') }}",
+           beforeSend: function( xhr ) {}
+         })
+      .done(function( data ) {
+         if(data.status==200){
+            refreshCard(true);
+            notification("Modification du Panier",data.message,"success");
             
-
-            $.ajax({
-                 contentType: "application/json",
-                 dataType: "json",
-                 data:{
-                     product:id,
-                     quantity:qty,
-                     type:type,
-                     products:prods
-                 },
-                 url: "{{ path('commande_add_to_card_not_connected') }}",
-                 beforeSend: function( xhr ) {}
-               })
-            .done(function( data ) {
-               if(data.status==200){
-                  window.localStorage.setItem('panier', JSON.stringify(data.panier) );
-                  refreshCard(true);
-
-                  notification("Modification du Panier",data.message,"success");
-               }else{
-                  notification("Modification du Panier",data.message,"error");
-                  $('#modal-payment button.submit').text('Valider');
-               }
-               $('.btn-add-to-card').css('pointer-events','auto');
-               $('.btn-add-to-card').text('Ajout au panier');
-               $('#add-product-modal').modal('hide');
-            });
-        }
-        function refreshCard_not_connected(show){
-            var x = window.localStorage.getItem('panier');
-            var prods = [];
-            if(x){
-               prods = JSON.parse(x);
-            }
-            $.ajax({
-              contentType: "application/json",
-               dataType: "json",
-               data:{ products:prods },
-              url: "{{ path('commande_get_card_not_connected') }}",
-              beforeSend: function( xhr ) {
-                
+            LENGTH_CARD++;
+            if(prods.length == LENGTH_CARD ){
+              if($paidLaunch){
+                $('#modal-payment button.submit').text('Initialisation paiement...');
+                $paidLaunch = false;
+                proceedPayment2();
               }
-            })
-            .done(function( data ) {
-              console.log(data);
-              if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0)|| !data.panier){
-                  $('.cart-container').css('display', 'none');
-                  $('.empty-cart').css('display', 'block');
-                }
-                else{
-                  $('.cart-container').css('display', 'block');
-                  $('.empty-cart').css('display', 'none');
-                }
-               if(data.status==200){
-                  var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
-                  $(".cart-total-pay").html(total.toFixed(2));
-                  $(".cart-total-reduction").html(data.panier.total.toFixed(2));
-                  $(".card-list-product").html("");
-                   data.panier.products.forEach(function(item, index){
-                     $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
-                   }); 
-                  $(".card-list-coupon").html("");
-                   data.panier.coupons.forEach(function(item, index){
-                     $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
-                   });
-                  $(".card-list-formule").html("");
-                   data.panier.formules.forEach(function(item, index){
-                     $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
-                   });
-               }else{
-                  console.log(data.message);
-               }
-               if(show && !$(".cart-wrapper").hasClass("open"))
-                     $(".cart-wrapper").addClass("open");
-              });
+            }
+         }else{
+            notification("Modification du Panier",data.message,"error");
+         }
+         $('.btn-add-to-card').css('pointer-events','auto');
+         $('.btn-add-to-card').text('Ajout au panier');
+         $('#add-product-modal').modal('hide');
+      });
+  }
+  function refreshCard_connected(show){
+      $.ajax({
+        contentType: "application/json",
+        dataType: "json",
+        url: "{{ path('commande_get_card') }}",
+        beforeSend: function( xhr ) {
+          
         }
+      })
+      .done(function( data ) {
+        console.log(data);
+          if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0) || !data.panier ){
+            $('.cart-container').css('display', 'none');
+            $('.empty-cart').css('display', 'block');
+          }
+          else{
+            $('.cart-container').css('display', 'block');
+            $('.empty-cart').css('display', 'none');
+          }
+         if(data.status==200){
+            $('.cart-btn > .nb-product-cart').text(data.panier.products.length);
+            var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+            $(".cart-total-pay").html(total.toFixed(2));
+            $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+            $(".card-list-product").html("");
+
+            itemRecap(data.panier.products, data.panier.total, total.toFixed(2), data.panier.reduction);
+            
+            data.panier.products.forEach(function(item, index){
+               $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+             }); 
+            $(".card-list-coupon").html("");
+             data.panier.coupons.forEach(function(item, index){
+               $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+             });
+            $(".card-list-formule").html("");
+             data.panier.formules.forEach(function(item, index){
+               $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+             });
+         }else{
+            console.log(data.message);
+         }
+         if(show && !$(".cart-wrapper").hasClass("open"))
+               $(".cart-wrapper").addClass("open");
+        });
+  }
+  synch_card();
+        
+  /**
+  ** USER NOT CONNECTED
+  **/
+    function addToCard_not_connected(id=-1,qty=-1,type="product"){
+        if(id == -1){
+           id = $("#add-product-modal .product-id-input").val();
+        }
+        if(qty == -1){
+           qty = $("#add-product-modal .product-quantity-input").val();
+        }
+
+        var x = window.localStorage.getItem('panier');
+        var prods = [];
+        if(x){
+           prods = JSON.parse(x);
+        }
+        
+        $.ajax({
+             contentType: "application/json",
+             dataType: "json",
+             data:{
+                 product:id,
+                 quantity:qty,
+                 type:type,
+                 products:prods
+             },
+             url: "{{ path('commande_add_to_card_not_connected') }}",
+             beforeSend: function( xhr ) {}
+           })
+        .done(function( data ) {
+           if(data.status==200){
+              window.localStorage.setItem('panier', JSON.stringify(data.panier) );
+              refreshCard(true);
+
+              notification("Modification du Panier",data.message,"success");
+           }else{
+              notification("Modification du Panier",data.message,"error");
+              $('#modal-payment button.submit').text('Valider');
+           }
+           $('.btn-add-to-card').css('pointer-events','auto');
+           $('.btn-add-to-card').text('Ajout au panier');
+           $('#add-product-modal').modal('hide');
+        });
+    }
+    function refreshCard_not_connected(show){
+        var x = window.localStorage.getItem('panier');
+        var prods = [];
+        if(x){
+           prods = JSON.parse(x);
+        }
+        $.ajax({
+          contentType: "application/json",
+           dataType: "json",
+           data:{ products:prods },
+          url: "{{ path('commande_get_card_not_connected') }}",
+          beforeSend: function( xhr ) {
+            
+          }
+        })
+        .done(function( data ) {
+          console.log(data);
+          if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0)|| !data.panier){
+              $('.cart-container').css('display', 'none');
+              $('.empty-cart').css('display', 'block');
+            }
+            else{
+              $('.cart-container').css('display', 'block');
+              $('.empty-cart').css('display', 'none');
+            }
+           if(data.status==200){
+            $('.cart-btn > .nb-product-cart').text(data.panier.products.length);
+              var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+              $(".cart-total-pay").html(total.toFixed(2));
+              $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+              $(".card-list-product").html("");
+
+              itemRecap(data.panier.products, data.panier.total, total.toFixed(2), data.panier.reduction);
+
+               data.panier.products.forEach(function(item, index){
+                 $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, item.oldprice));
+               }); 
+              $(".card-list-coupon").html("");
+               data.panier.coupons.forEach(function(item, index){
+                 $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+               });
+              $(".card-list-formule").html("");
+               data.panier.formules.forEach(function(item, index){
+                 $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+               });
+           }else{
+              console.log(data.message);
+           }
+           if(show && !$(".cart-wrapper").hasClass("open"))
+                 $(".cart-wrapper").addClass("open");
+          });
+    }
   
 </script>
 <script type="text/javascript">
@@ -1393,6 +1458,29 @@
           });
         }
 
+        function proceedPayment2(){
+          $('.btn-next').text('Initialisation paiement...');
+            var form = document.getElementById('form-stripe');
+            oData = new FormData(form);
+            var oReq = new XMLHttpRequest();
+            oReq.open("POST", $('#form-stripe').attr('action'), true);
+            oReq.onload = function(oEvent) {
+                if (oReq.status == 200) {
+                    $(".success-checkmark").show().delay(3000).fadeOut();
+                    $(".check-icon").show().show().delay(3000).fadeOut();
+                    notification("Paiement commande",oReq.response,"success");
+                    card.clear();
+                    submitting('reset');
+                    window.localStorage.removeItem('panier');
+                    window.location.href = "{{path('success_payment')}}";
+                }else {
+                    notification("Paiement commande",oReq.response,"error");
+                    submitting('reset');
+                }
+            };
+            oReq.send(oData);  
+        }
+
         function proceedPayment(){
           $('#modal-payment button.submit').text('Initialisation paiement...');
             var form = document.getElementById('payment-form');
@@ -1430,31 +1518,32 @@
         }
 
         $('.oneClickPaid').click(function(e){
-          $(this).text('Initialisation paiement...');
           $(this).css('pointer-events', 'none');
           var $url = $(this).attr("href");
           proceed($url, $(this));
           e.preventDefault();
         });
         function proceed($url, $that){
+          $realText = $that.text();
+          $that.text('Initialisation paiement...');
           $.ajax({
-              url: $url,
-              type: "GET",
-              dataType: "json",
-              async: true,
-              data: {},
-              success: function(data, status) {
-                $that.css('pointer-events', 'auto');
-                $that.text("Payer en 1 click");
-                notification("Paiement commande","Opération effectuée avec succèss","success");
-                window.localStorage.removeItem('panier');
-                
-              },
-              error: function(xhr, textStatus, errorThrown) {
-                $that.css('pointer-events', 'auto');
-                $that.text("Payer en 1 click");
-                notification("Paiement commande",errorThrown,"error");
-              }
+            url: $url,
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {},
+            success: function(data, status) {
+              $that.css('pointer-events', 'auto');
+              $that.text($realText);
+              notification("Paiement commande","Opération effectuée avec succèss","success");
+              window.localStorage.removeItem('panier');
+              window.location.href = "{{path('success_payment')}}";
+            },
+            error: function(xhr, responseText, errorThrown) {
+              $that.css('pointer-events', 'auto');
+              $that.text($realText);
+              notification("Paiement commande",xhr.responseText,"error");
+            }
           });
         }
 </script>

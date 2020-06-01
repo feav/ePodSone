@@ -133,6 +133,28 @@ class UserController extends AbstractController
             return new Response(json_encode(array('status' => 500, 'message' => "Un utilisateur existe déjà avec l'email ".$email.". s'il s'agit de vous, veuillez vous connecter avant d'effectuer le paiement. <a href='javascript:void()' class='open-sign-in-modal'>Connectez-vous</a>" )));
     }
 
+    /**
+     * @Route("/update-user-xhr", name="update_user_xhr")
+     */
+    public function updateUserXhr(Request $request)
+    {
+        $user = $this->getUser();
+        if($user){
+            if(isset($_POST['user'])){
+                $user_data = $_POST['user'];
+                $this->user_s->updateUser($user_data,$user);
+            
+                $response = new Response("Les informations ont ete mises a jour" , 200);
+            }
+        }else{
+         $response = new Response("Utilisateur non connecte" , 500);
+        }
+
+        
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+    
     public function registerAjax($request, $mailer, $email, $name){
         $user = $this->user_s->register($mailer, $email, $name);
         if($user){
@@ -143,4 +165,6 @@ class UserController extends AbstractController
         else
             return new Response(json_encode(array('status' => 500, 'message' => "Echec Création de compte" )));
     }
+
+
 }

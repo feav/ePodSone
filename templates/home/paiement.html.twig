@@ -1,0 +1,400 @@
+{% extends 'layout.html.twig' %}
+{% block title %} {{parent()}} | paiement {% endblock %}
+{% block meta %}
+<meta name="description" content="">
+{% endblock %}
+{% block dataStructured %}{% endblock %}
+{% block stylesheets %}
+{{parent()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.css" integrity="sha256-6Wozb/CzRANFOaGqN+u/uRT7kcffVIQt9OhOuuA6I9o=" crossorigin="anonymous" />
+<style type="text/css">
+   .navbar-light .navbar-nav .nav-link{
+   color: white;
+   }
+   .position-fixed.navbar-light .navbar-nav .nav-link{
+   color: rgba(0, 0, 0, 0.5);
+   }
+   .logo-head{
+   width: 100px;
+   margin: 0;
+   padding: 0;
+   height: 40px;
+   }
+   .navbar-light .logo-head.black{
+   display: none;
+   }
+   .position-fixed.navbar-light .logo-head{
+   display: none;
+   }
+   .position-fixed.navbar-light .logo-head.black{
+   display: block;
+   }
+   .toast {
+   backdrop-filter: none !important;
+   }
+   .container.pb-5 {
+   min-height: 300px;
+   }
+   .toast{
+   opacity: 1;
+   }
+   .paiement-container{
+      width: 100%;
+   }
+   .paiement-container .wizard-nav .liste-stape {
+       max-width: 700px;
+       margin: auto;
+       display: flex;
+       justify-content: space-around;
+   }
+   .paiement-container .wizard-nav{
+      box-shadow: 0 2px 3px rgba(20,35,51,.06);
+      margin-bottom: 20px;
+      padding: 25px 8px 28px;
+   }
+   .paiement-container .wizard-nav .liste-stape .stape-item{
+      text-align: center;
+   }
+   .wizard-nav .liste-stape .stape-item .stape-text {
+       text-transform: uppercase;
+       font-size: 13px;
+       margin-top: 13px;
+   }
+   
+   .wizard-nav .liste-stape .stape-item .stape-num .num.check{display: none;}
+   .wizard-nav .liste-stape .stape-item .stape-num .num{
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin: auto;
+      border:2px solid #009b72;
+   }
+   .wizard-nav .liste-stape .stape-item .stape-num.active .num{
+      background: #009b72;
+      color: #fff;
+      border:none;
+   }
+   .wizard-nav .liste-stape .stape-item .stape-num.complete .num.number{display: none;}
+   .wizard-nav .liste-stape .stape-item .stape-num.complete .num.check{
+      display: flex;
+      background: #2eb399;
+      border:none;
+      color: #fff;
+   }
+   .wizard-container-content{position: relative;}
+   .wizard-container-content .stape-item{
+      max-width: 500px;
+      margin: 40px auto 20px;
+      display: none;
+   }
+   .wizard-container-content .stape-item.active{
+    display: block
+   }
+   .paiement-container .wizard-nav-submit{
+      text-align: center;
+      padding: 19px 6px 17px;
+   }
+</style>
+{% endblock %}
+{% block body_web %}
+<section class="p-0 border-top border-bottom row no-gutters" style="margin-top: 90px;">
+   <div class="paiement-container">
+      <div class="wizard-nav">
+         <div class="liste-stape">
+            <div class="stape-item">
+               <div class="stape-num active">
+                  <span class="num number">1</span>
+                  <i class="fa fa-check check num"></i>
+               </div>
+               <div class="stape-text">Vos informations</div>
+            </div>
+            <div class="stape-item">
+               <div class="stape-num">
+                  <span class="num number">2</span>
+                  <i class="fa fa-check check num"></i>
+               </div>
+               <div class="stape-text">Adresse de livraison</div>
+            </div>
+            <div class="stape-item">
+               <div class="stape-num">
+                  <span class="num number">3</span>
+                  <i class="fa fa-check check num"></i>
+               </div>
+               <div class="stape-text">paiement</div>
+            </div>
+         </div>
+      </div>
+      <div class="wizard-container-content">
+        <div class="lds-ripple"><div></div><div></div></div>
+        <div class="success-checkmark">
+          <div class="check-icon">
+            <span class="icon-line line-tip"></span>
+            <span class="icon-line line-long"></span>
+            <div class="icon-circle"></div>
+            <div class="icon-fix"></div>
+          </div>
+        </div>
+        <div class="content-stape-list">
+           <div class="stape-item animated fadeIn active">
+              <h5 class="col-sm" style="color:#585858">Vos informations</h5>
+              
+              <form id="infoPersonnelle" name="infoPersonnelle">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;width: 100%;">
+                <span class="text"></span>
+                <button type="button" class="close close-alert-msg">
+                  x
+                </button>
+              </div>
+                <div class="">
+                  <div class="col-sm">
+                    <div class="form-group">
+                      <input type="text" name="name" class="form-control" id="contact-name" placeholder="votre nom" value="{{ app.user is not null ? app.user.name : ''}}">
+                    </div>
+                  </div>
+                  <div class="col-sm">
+                    <div class="form-group">
+                      <input type="email" name="email" class="form-control" id="contact-email" placeholder="votre email" value="{{ app.user is not null ? app.user.email : ''}}">
+                    </div>
+                  </div>
+               </div>
+              </form>
+           </div>
+           <div class="stape-item animated fadeIn">
+              <h5 class="col-sm" style="color:#585858">Adresse livraison</h5>
+              <form id="infosLivraison" name="infosLivraison" action="{{path('update_user_xhr')}}">
+                  <div class="row form-row">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <input type="text" class="form-control" name="user[country]" id="country" value="{{ app.user is not null ? app.user.country  : '' }}" placeholder="pays">
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <input type="text" class="form-control" id="town" name="user[town]" value="{{ app.user is not null ? app.user.town  : '' }}" placeholder="ville">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row form-row">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <input type="text" class="form-control" id="street" name="user[street]" value="{{ app.user is not null ? app.user.street  : '' }}" placeholder="rue">
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <input type="text" class="form-control" id="zip_code" name="user[zip_code]" value="{{ app.user is not null ? app.user.getZipCode()  : '' }}" placeholder="code postal">
+                      </div>
+                    </div>
+                  </div>
+              </form>
+           </div>
+           <div class="stape-item animated fadeIn">
+              <h5 class="col-sm" style="color:#585858">Paiement</h5>
+              <form id="form-stripe" name="form-stripe" action="{{path('checkout_product')}}" style="position: relative;">
+                <div class="form-group">
+                    <div id="card-element">
+                      <!-- A Stripe Element will be inserted here. -->
+                    </div>
+
+                    <!-- Used to display form errors. -->
+                    <div id="card-errors" role="alert"></div>
+                </div>
+              </form>
+           </div>          
+        </div>
+
+      </div>
+      <div class="wizard-nav-submit">
+         <span class="btn btn-primary btn-next">Suivant</span>
+      </div>
+   </div>
+</section>
+{% endblock body_web %}
+{% block javascripts %}
+{{parent()}}
+  <script type="text/javascript">
+    $('nav').addClass('white-theme');
+    $("#infoPersonnelle").on('click', '.open-sign-in-modal', (function(event){
+      $("#sign-in-modal").modal({backdrop: "static"});
+    }));
+    var sizeItem = 3; /* nombre d'etape */
+    var currentstape = 0;
+    gotoNext = function(){
+      var next_stape = currentstape+1;
+      for (var i = 0; i < next_stape; i++) {
+        $('.wizard-nav .stape-item .stape-num').eq(i).addClass('complete');
+      }
+      $('.wizard-container-content .stape-item').removeClass('active');
+      $('.wizard-container-content .stape-item').eq(next_stape).addClass('active');
+      $('.wizard-nav .stape-item .stape-num').removeClass('active');
+      $('.wizard-nav .stape-item .stape-num').eq(next_stape).addClass('active');
+      currentstape++;
+    }
+    $('.wizard-nav-submit .btn-next').click(function(){
+        if ($('.wizard-nav-submit .btn-next').hasClass('end-stape')) {
+          console.log("fin de l'inscription");
+          return false;
+        }
+        validateStape(currentstape);
+    });
+    validateStape = function(stape){
+      if(stape == 0){
+          function validate(){
+              try{
+                  var validator = $('#infoPersonnelle').validate({
+                      rules:{
+                          name:{
+                            required:true
+                          },
+                          email:{
+                              required:true,
+                              email:true
+                          }
+                      }
+                  });
+                  
+                  var $validated = $('#infoPersonnelle').valid();
+                  return $validated;
+              }catch(error){
+                  console.log(error)
+              }
+          }
+          if( !validate()){
+            notification("informations infoPersonnelles",'Tous les champs sont obligatoires.',"error");
+            return false;
+          }
+          else{
+              submitting('loading');
+              $.ajax({
+                 contentType: "application/json",
+                 dataType: "json",
+                 url: "{{ path('api_use_connected_or_exist') }}",
+                 data: {
+                  name: $('#infoPersonnelle input[name=name]').val(),
+                  email: $('#infoPersonnelle input[name=email]').val()
+                 },
+                 beforeSend: function( xhr ) {
+                  $('.btn-next').text('Verification connexion...');
+                 }
+              })
+              .done(function( data ) {
+                  submitting('reset');
+                  if(data.status == 200){
+                    notification("Connexion",data.message,"success");
+                    gotoNext();
+                  }
+                  else{
+                    /*notification("Connexion",data.message,"error");*/
+                    $("#infoPersonnelle .alert-dismissible").show().delay(30000).fadeOut();
+                    $('#infoPersonnelle .alert-dismissible').removeClass('alert-success');
+                    $('#infoPersonnelle .alert-dismissible').addClass('alert-danger');
+                    $('#infoPersonnelle .alert-dismissible .text').html(data.message);
+                    return false;
+                  }
+              });
+          } 
+      }
+      else if(stape == 1){
+          function validate(){
+              try{
+                  var validator = $('#infosLivraison').validate({
+                      rules:{
+                          'user[country]':{
+                              required:true
+                          },
+                          'user[town]':{
+                              required:true,
+                          },
+                          'user[street]':{
+                              required:true,
+                          },
+                          'user[zip_code]':{
+                              required:true,
+                          }
+                      }
+                  });
+                  
+                  var $validated = $('#infosLivraison').valid();
+                  return $validated;
+              }catch(error){
+                  console.log(error)
+              }
+          }
+          if( !validate()){
+            notification("Paiement commande",'Tous les champs sont obligatoires.',"error");
+            return false;
+          }
+          else{
+            submitting('loading');
+              var form = document.getElementById('infosLivraison');
+              oData = new FormData(form);
+              var oReq = new XMLHttpRequest();
+              oReq.open("POST", $('#infosLivraison').attr('action'), true);
+              oReq.onload = function(oEvent) {
+                  if (oReq.status == 200) {
+                      submitting('reset');
+                      notification("Livraison",oReq.response,"success");
+                      gotoNext();
+                  }else {
+                      notification("Livraison",oReq.response,"error");
+                      submitting('reset');
+                  }
+              };
+              oReq.send(oData);  
+          } 
+      }
+      else if(stape == 2){
+        // Handle form submission.
+          $('.btn-next').css('pointer-events','none');
+          var ownerInfo = {
+              owner: {},
+          };
+          stripe.createSource(card, ownerInfo).then(function(result) {
+              if (result.error) {
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+                $('.btn-next').css('pointer-events','auto');
+              } else {
+                stripeSourceHandler(result.source);
+              }
+          });
+        function stripeSourceHandler(source) {
+          submitting('loading');
+          $('.lds-ripple').css('display','inline-block');
+          // Insert the source ID into the form so it gets submitted to the server
+          var form = document.getElementById('form-stripe');
+          var hiddenInput = document.createElement('input');
+          hiddenInput.setAttribute('type', 'hidden');
+          hiddenInput.setAttribute('name', 'stripeSource');
+          hiddenInput.setAttribute('value', source.id);
+          form.appendChild(hiddenInput);
+          // Submit the form
+          //form.submit();
+          var x = window.localStorage.getItem('panier');
+          if(x){
+            $('.btn-next').text('Enregistrement de la commande...');
+            $paidLaunch = true;
+            synch_card();
+          }
+          else
+            proceedPayment2();
+        }
+      }
+      return false;
+    }
+    submitting = function(state){
+      if(state == "loading"){
+          $('.lds-ripple').css('display','inline-block');
+          $('.btn-next').addClass('no-click');
+      }
+      else if(state == "reset"){
+          $('.lds-ripple').css('display','none');
+          $('.btn-next').removeClass('no-click');
+          $('.btn-next').text('Suivant');
+      }
+    }
+</script>
+{% endblock %}

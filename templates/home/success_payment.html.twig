@@ -1,0 +1,40 @@
+{% extends 'layout.html.twig' %}
+{% block title %} {{parent()}} | paiement réussit {% endblock %}
+{% block meta %}
+<meta name="description" content="">
+{% endblock %}
+{% block dataStructured %}{% endblock %}
+{% block stylesheets %}
+{{parent()}}
+  <style type="text/css">
+    body{
+      background: #F7F9FC !important;
+    }
+    .container-page{
+      margin-top: 90px;
+      height: calc( 100vh - 13rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .paid-success{
+      font-size: 35px;
+      text-align: center;
+    }
+  </style>
+{% endblock %}
+{% block body_web %}
+  <section class="container container-page">
+     <div class="paid-success"> 
+        <div class="felicitation" style="color:#009b72">Felicitation!!!</div>
+        <div class="message">Paiement effectué avec succèss </div>
+        <div style="margin-top: 19px; display: none;"><span class="btn btn-primary slide-to-formule">Nos formules</span></div>
+     </div>
+  </section>
+{% endblock body_web %}
+{% block javascripts %}
+{{parent()}}
+<script type="text/javascript">
+  $('nav').addClass('white-theme');
+</script>
+{% endblock %}
