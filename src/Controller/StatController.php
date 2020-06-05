@@ -73,7 +73,8 @@ class StatController extends AbstractController
     public function getInfosCommandeByEcheance($echeance, $produit)
     {
 
-        $dateNow = new \Datetime('2020-05-22');
+        //$dateNow = new \Datetime('2020-05-22');
+        $dateNow = new \Datetime();
         $finalActivity = [];
         if($echeance == "semaine"){
             $day = $dateNow->format('D');
