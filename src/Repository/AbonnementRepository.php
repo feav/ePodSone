@@ -87,4 +87,20 @@ class AbonnementRepository extends ServiceEntityRepository
         $val->execute(['is_paid' => 1]);
         return $val->fetch();
     }
+
+
+    public function countAbonnementPayeByDate($dateDebut, $dateFin){
+        $sql = "SELECT COUNT(*) as count FROM abonnement as abon inner join panier as pan WHERE abon.panier_id = pan.id AND pan.paiement_date >= :dateDebut AND pan.paiement_date <= :dateFin AND is_paid = :is_paid";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['is_paid' => 1, 'dateDebut'=>$dateDebut->format('Y-m-d H:i:s'), 'dateFin'=>$dateFin->format('Y-m-d H:i:s')]);
+        return $val->fetch();
+    }
+    public function getInfosAbonnement($dateDebut, $dateFin){
+
+        $abonnementPaye = $this->countAbonnementPayeByDate($dateDebut, $dateFin);
+        //$vente = $this->sumAbonnementPaye($dateDebut, $dateFin);
+
+        return ['nbr_commande'=>$abonnementPaye['count'], 'vente'=>$abonnementPaye['count']*9.99];
+    }
 }

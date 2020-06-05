@@ -49,20 +49,45 @@ class CommandeRepository extends ServiceEntityRepository
     }
     */
 
-        public function getPanierByDate($dateDebut, $dateFin){
-            $sql = "SELECT cmd.id FROM commande as cmd inner join panier  WHERE cmd.panier_id = panier.id AND  panier.emmission >= :dateDebut AND panier.emmission <= :dateFin ";
+    public function getPanierByDate($dateDebut, $dateFin){
+        $sql = "SELECT cmd.id FROM commande as cmd inner join panier  WHERE cmd.panier_id = panier.id AND  panier.emmission >= :dateDebut AND panier.emmission <= :dateFin ";
 
-            $posts = $this->em->prepare($sql);
-            $posts->execute(['dateDebut' => $dateDebut, 'dateFin' => $dateFin]);
-            $posts = $posts->fetchAll();
+        $posts = $this->em->prepare($sql);
+        $posts->execute(['dateDebut' => $dateDebut, 'dateFin' => $dateFin]);
+        $posts = $posts->fetchAll();
 
-            $postsArray = [];
-            foreach ($posts as $key => $value) {
-                $qb = $this->createQueryBuilder('commande')
-                    ->Where('commande.id = :id')
-                    ->setParameter('id', $value['id']);
-                $postsArray[] = $qb->getQuery()->getOneOrNullResult();
-            }
-            return $postsArray;
+        $postsArray = [];
+        foreach ($posts as $key => $value) {
+            $qb = $this->createQueryBuilder('commande')
+                ->Where('commande.id = :id')
+                ->setParameter('id', $value['id']);
+            $postsArray[] = $qb->getQuery()->getOneOrNullResult();
         }
+        return $postsArray;
+    }
+    
+
+    public function countCommandePaye($dateDebut, $dateFin){
+        $sql = "SELECT COUNT(DISTINCT panier_id) as count FROM commande as cmd inner join panier as pan WHERE cmd.panier_id = pan.id AND pan.status = :status AND pan.remboursement IS NULL AND pan.paiement_date >= :dateDebut AND pan.paiement_date <= :dateFin ";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['status' => 1, 'dateDebut'=>$dateDebut->format('Y-m-d H:i:s'), 'dateFin'=>$dateFin->format('Y-m-d H:i:s')]);
+        return $val->fetch();
+    }
+    public function sumCommandePaye($dateDebut, $dateFin){
+        $sql = "SELECT SUM(cmd.total_price) as price FROM commande as cmd inner join panier as pan WHERE cmd.panier_id = pan.id AND pan.status = :status AND pan.remboursement IS NULL AND pan.paiement_date >= :dateDebut AND pan.paiement_date <= :dateFin";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['status' => 1, 'dateDebut'=>$dateDebut->format('Y-m-d H:i:s'), 'dateFin'=>$dateFin->format('Y-m-d H:i:s')]);
+        return $val->fetch();
+    }
+
+    public function getInfosVente($dateDebut, $dateFin){
+
+        $commandePaye = $this->countCommandePaye($dateDebut, $dateFin);
+        //dd($commandePaye);
+        $vente = $this->sumCommandePaye($dateDebut, $dateFin);
+
+        return ['nbr_commande'=>$commandePaye['count'], 'vente'=>$vente['price']];
+    }
 }

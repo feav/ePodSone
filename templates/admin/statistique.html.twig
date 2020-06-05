@@ -70,14 +70,12 @@
          </div>
       </div>
    </div>
-   {#<div class="row layout-top-spacing">
+
+   <div class="row layout-top-spacing">
       <div class="col-sm-12 layout-spacing">
          <div class="widget widget-chart-three">
              <div class="widget-heading">
-                 <h5 class="">Taux de commandes rembousées</h5>
-                 <ul class="tabs tab-pills" style="display: none;">
-                     <li><a href="javascript:void(0);" id="tb_1" class="tabmenu">Monthly</a></li>
-                 </ul>
+                 <h5 class="">Vente de la semaine</h5>
              </div>
 
              <div class="widget-content">
@@ -87,7 +85,167 @@
              </div>
          </div>
       </div>
-   </div>#}
+   </div>
+   <div class="row layout-top-spacing">
+      <div class="col-sm-12 layout-spacing">
+         <div class="table-responsive">
+             <table class="table table-bordered mb-4" style="background:#fff">
+                 <thead>
+                     <tr>
+                        <th>RECAP SEMAINE</th>
+                        {% for item in rapportSemaineCmd.x_axis %}
+                           <th>{{item}}</th>
+                        {% endfor %}
+                     </tr>
+                 </thead>
+                 <tbody>
+                        <tr>
+                           <td>Nbr Commande</td>
+                           {% for item in rapportSemaineCmd.nbr_commande %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr style="border-bottom:2px solid #000">
+                           <td>Montant Commande €</td>
+                           {% for item in rapportSemaineCmd.vente %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr>
+                           <td>Nbr Abonnement</td>
+                           {% for item in rapportSemaineAbon.nbr_commande %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr>
+                           <td>Montant Abonnement €</td>
+                           {% for item in rapportSemaineAbon.vente %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                 </tbody>
+             </table>
+         </div>
+      </div>
+   </div>
+
+   <div class="row layout-top-spacing">
+      <div class="col-sm-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Vente du mois</h5>
+             </div>
+
+             <div class="widget-content">
+                  <div class="widget-content widget-content-area">
+                     <div id="s-col-2" class=""></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+   </div>
+   <div class="row layout-top-spacing">
+      <div class="col-sm-12 layout-spacing">
+         <div class="table-responsive">
+             <table class="table table-bordered mb-4" style="background:#fff">
+                 <thead>
+                     <tr>
+                        <th>RECAP MOIS</th>
+                        {% for item in rapportMoisCmd.x_axis %}
+                           <th>{{item}}</th>
+                        {% endfor %}
+                     </tr>
+                 </thead>
+                 <tbody>
+                        <tr>
+                           <td>Nbr Commande</td>
+                           {% for item in rapportMoisCmd.nbr_commande %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr style="border-bottom:2px solid #000">
+                           <td>Montant Commande €</td>
+                           {% for item in rapportMoisCmd.vente %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr>
+                           <td>Nbr Abonnement</td>
+                           {% for item in rapportMoisAbon.nbr_commande %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr>
+                           <td>Montant Abonnement €</td>
+                           {% for item in rapportMoisAbon.vente %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                 </tbody>
+             </table>
+         </div>
+      </div>
+   </div>
+
+   <div class="row layout-top-spacing">
+      <div class="col-sm-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Vente de l'année</h5>
+             </div>
+
+             <div class="widget-content">
+                  <div class="widget-content widget-content-area">
+                     <div id="s-col-3" class=""></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+   </div>
+   <div class="row layout-top-spacing">
+      <div class="col-sm-12 layout-spacing">
+         <div class="table-responsive">
+             <table class="table table-bordered mb-4" style="background:#fff">
+                 <thead>
+                     <tr>
+                        <th>RECAP ANNEE</th>
+                        {% for item in rapportAnneeCmd.x_axis %}
+                           <th>{{item}}</th>
+                        {% endfor %}
+                     </tr>
+                 </thead>
+                 <tbody>
+                        <tr>
+                           <td>Nbr Commande</td>
+                           {% for item in rapportAnneeCmd.nbr_commande %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr style="border-bottom:2px solid #000">
+                           <td>Montant Commande €</td>
+                           {% for item in rapportAnneeCmd.vente %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr>
+                           <td>Nbr Abonnement</td>
+                           {% for item in rapportAnneeAbon.nbr_commande %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                        <tr>
+                           <td>Montant Abonnement €</td>
+                           {% for item in rapportAnneeAbon.vente %}
+                              <th>{{item}}</th>
+                           {% endfor %}
+                        </tr>
+                 </tbody>
+             </table>
+         </div>
+      </div>
+   </div>
+
+
 </div>
 {% endblock %}
 {% block javascripts %}
@@ -157,7 +315,7 @@
 
 
 
-   /*var sCol = {
+   var sCol = {
        chart: {
            height: 350,
            type: 'bar',
@@ -180,39 +338,8 @@
            width: 2,
            colors: ['transparent']
        },
-       series: [{
-           name: 'Abon resilé',
-           data: [parseInt("{{abonnementResilie}}"), 0, 0, 0]
-       }, {
-           name: 'Total Abon',
-           data: [parseInt("{{abonnements}}"), 0, 0, 0]
-       },{
-           name: 'Abon payé',
-           data: [0, parseInt("{{abonnementPaye}}"), 0, 0]
-       },
-       {
-           name: 'Total Abon',
-           data: [0, parseInt("{{abonnements}}"), 0, 0]
-       },
-       {
-           name: 'Cmd remboursé',
-           data: [0, 0, parseInt("{{remboursement}}"), 0]
-       },
-       {
-           name: 'Total Cmd',
-           data: [0, 0, parseInt("{{commandes}}"), 0]
-       },
-       {
-           name: 'Cmd payé',
-           data: [0, 0, 0, parseInt("{{commandePaye}}")]
-       },
-       {
-           name: 'Total Cmd',
-           data: [0, 0, 0, parseInt("{{commandes}}")]
-       }],
-       xaxis: {
-           categories: ['Abon Resiliés', 'Abon payées', 'Cmd remboursé', 'Cmd payées'],
-       },
+       series: [],
+       xaxis: {},
        yaxis: {
            title: {
                text: ''
@@ -225,18 +352,54 @@
        tooltip: {
            y: {
                formatter: function (val) {
-                   return val
+                   return val + "€"
                }
            }
        }
    }
 
-   var chart = new ApexCharts(
+
+   var DATA_SEMAINE = {{ rapportSemaineCmd|json_encode()|raw }};
+   var DATA_ABON_SEMAINE = {{ rapportSemaineAbon|json_encode()|raw }};
+   var sCol_semaine = sCol;
+   sCol_semaine.series = [
+      { name: 'Ipods vendu', data: DATA_SEMAINE.vente },
+      { name: 'Abonnements', data: DATA_ABON_SEMAINE.vente }
+   ];
+   sCol_semaine.xaxis = { categories: DATA_SEMAINE.x_axis};
+   var chart1 = new ApexCharts(
        document.querySelector("#s-col"),
-       sCol
+       sCol_semaine
    );
 
-   chart.render();*/
+   var DATA_MOIS = {{ rapportMoisCmd|json_encode()|raw }};
+   var DATA_ABON_MOIS = {{ rapportMoisAbon|json_encode()|raw }};
+   var sCol_mois = sCol;
+   sCol_mois.series = [
+      { name: 'Ipods vendu', data: DATA_MOIS.vente },
+      { name: 'Abonnements', data: DATA_ABON_MOIS.vente }
+   ];
+   sCol_mois.xaxis = { categories: DATA_MOIS.x_axis};
+   var chart2 = new ApexCharts(
+       document.querySelector("#s-col-2"),
+       sCol_mois
+   );
 
+   var DATA_ANNEE = {{ rapportAnneeCmd|json_encode()|raw }};
+   var DATA_ABON_ANNEE = {{ rapportAnneeAbon|json_encode()|raw }};
+   var sCol_annee = sCol;
+   sCol_annee.series = [
+      { name: 'Ipods vendu', data: DATA_ANNEE.vente },
+      { name: 'Abonnements', data: DATA_ABON_ANNEE.vente }
+      ];
+   sCol_annee.xaxis = { categories: DATA_ANNEE.x_axis};
+   var chart3 = new ApexCharts(
+       document.querySelector("#s-col-3"),
+       sCol_annee
+   );
+
+   chart1.render();
+   chart2.render();
+   chart3.render();
 </script>
 {% endblock %}
