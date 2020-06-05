@@ -17,6 +17,7 @@ class PanierRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Panier::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
 
     // /**
@@ -47,4 +48,34 @@ class PanierRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function countCommande(){
+        $sql = "SELECT COUNT(DISTINCT panier_id) as count FROM commande";
+        $val = $this->em->prepare($sql);
+        $val->execute();
+        return $val->fetch();
+    }
+
+    public function countRemboursement(){
+        $sql = "SELECT COUNT(*) as count FROM panier WHERE remboursement = :rembours";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['rembours' => 1]);
+        return $val->fetch();
+    }
+    public function countCommandePaye(){
+        $sql = "SELECT COUNT(DISTINCT panier_id) as count FROM commande as cmd inner join panier as pan WHERE cmd.panier_id = pan.id AND pan.status = :status";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['status' => 1]);
+        return $val->fetch();
+    }
+    public function countCommandeNonPaye(){
+        $sql = "SELECT COUNT(*) as count FROM commande as cmd inner join panier as pan WHERE cmd.panier_id = pan.id AND pan.status != :status";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['status' => 1]);
+        return $val->fetch();
+    }
+
 }

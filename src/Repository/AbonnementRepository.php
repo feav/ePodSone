@@ -58,4 +58,33 @@ class AbonnementRepository extends ServiceEntityRepository
         $abonnement = $abonnement->fetchAll();
         return $abonnement;
     }
+
+        public function countAbonnement(){
+        $sql = "SELECT COUNT(*) as count FROM abonnement";
+
+        $val = $this->em->prepare($sql);
+        $val->execute();
+        return $val->fetch();
+    }
+    public function countAbonnementResilie(){
+        $sql = "SELECT COUNT(*) as count FROM abonnement WHERE resilie = :resilie";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['resilie' => 1]);
+        return $val->fetch();
+    }
+    public function countAbonnementPaye(){
+        $sql = "SELECT COUNT(*) as count FROM abonnement WHERE is_paid = :is_paid";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['is_paid' => 1]);
+        return $val->fetch();
+    }
+    public function countAbonnementNonPaye(){
+        $sql = "SELECT COUNT(*) as count FROM abonnement WHERE is_paid != :is_paid";
+
+        $val = $this->em->prepare($sql);
+        $val->execute(['is_paid' => 1]);
+        return $val->fetch();
+    }
 }

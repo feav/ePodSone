@@ -143,6 +143,14 @@
                             </div>
                         </a>
                     </li> -->
+                    <li class="menu menu-statistique">
+                        <a href="{{path('statistique')}}" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                                <span>Dashboard</span>
+                            </div>
+                        </a>
+                    </li>
                     <li class="menu menu-panier">
                         <a href="{{path('panier_index')}}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -286,7 +294,6 @@
     <script src="{{asset('assetsBo/plugins/flatpickr/custom-flatpickr.js')}}"></script>
     <!-- END PAGE LEVEL SCRIPTS -->
     <script type="text/javascript">
-        $('#sidebar .menu.menu-abonnement').addClass('active');
         var elements = document.getElementsByClassName("dateTimeFlatpickr");
         for (var i = 0; i < elements.length; i++) {
             var f2 = flatpickr(elements[i], {

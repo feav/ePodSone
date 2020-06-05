@@ -1,0 +1,242 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} | Formule {% endblock %}{% block stylesheets %}
+{{parent()}}
+<style type="text/css">
+   .widget-content-area{box-shadow: none;}
+</style>
+{% endblock %}
+{% block body_bo %}
+<div class="layout-px-spacing">
+   <div class="row layout-top-spacing">
+      <div class="col-md-6 col-sm-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Taux resiliation abonnements</h5>
+                 <ul class="tabs tab-pills" style="display: none;">
+                     <li><a href="javascript:void(0);" id="tb_1" class="tabmenu">Monthly</a></li>
+                 </ul>
+             </div>
+
+             <div class="widget-content">
+                  <div class="widget-content widget-content-area br-6">
+                      <div id="donut-chart"></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+
+      <div class="col-md-6 col-sm-12 col-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Taux d'abonnements payés</h5>
+             </div>
+             <div class="widget-content">
+                 <div class="widget-content widget-content-area br-6">
+                      <div id="donut-chart-2"></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="row layout-top-spacing">
+      <div class="col-md-6 col-sm-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Taux de commandes rembousées</h5>
+                 <ul class="tabs tab-pills" style="display: none;">
+                     <li><a href="javascript:void(0);" id="tb_1" class="tabmenu">Monthly</a></li>
+                 </ul>
+             </div>
+
+             <div class="widget-content">
+                  <div class="widget-content widget-content-area br-6">
+                      <div id="donut-chart-3"></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+
+      <div class="col-md-6 col-sm-12 col-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Taux de commandes payées</h5>
+             </div>
+             <div class="widget-content">
+                 <div class="widget-content widget-content-area br-6">
+                      <div id="donut-chart-4"></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+   </div>
+   {#<div class="row layout-top-spacing">
+      <div class="col-sm-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Taux de commandes rembousées</h5>
+                 <ul class="tabs tab-pills" style="display: none;">
+                     <li><a href="javascript:void(0);" id="tb_1" class="tabmenu">Monthly</a></li>
+                 </ul>
+             </div>
+
+             <div class="widget-content">
+                  <div class="widget-content widget-content-area">
+                     <div id="s-col" class=""></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+   </div>#}
+</div>
+{% endblock %}
+{% block javascripts %}
+{{parent()}}
+<script type="text/javascript">
+   $('#sidebar .menu.menu-statistique').addClass('active');
+
+   var donutChart = {
+      chart: {
+          height: 350,
+          type: 'donut',
+          toolbar: {
+            show: false,
+          }
+      },
+      series: [],
+      labels: [],
+      responsive: [{
+          breakpoint: 480,
+          options: {
+              chart: {
+                  width: 200
+              },
+              legend: {
+                  position: 'bottom'
+              }
+          }
+      }]
+    }
+
+    var donutChart1 = donutChart;
+    donutChart1.series = [parseInt("{{abonnementResilie}}"), (parseInt("{{abonnements}}") - parseInt("{{abonnementResilie}}"))];
+    donutChart1.labels = ['Resilés', 'Non resilés'];
+    var donut = new ApexCharts(
+        document.querySelector("#donut-chart"),
+        donutChart1
+    );
+
+    var donutChart2 = donutChart;
+    donutChart2.series = [parseInt("{{abonnementPaye}}"), (parseInt("{{abonnements}}") - parseInt("{{abonnementPaye}}"))];
+    donutChart2.labels = ['Payés', 'Non payés'];
+    var donut2 = new ApexCharts(
+        document.querySelector("#donut-chart-2"),
+        donutChart2
+    );
+
+    var donutChart3 = donutChart;
+    donutChart3.series = [parseInt("{{remboursement}}"), (parseInt("{{commandes}}") - parseInt("{{remboursement}}"))];
+    donutChart3.labels = ['Remboursé', 'Non remboursé'];
+    var donut3 = new ApexCharts(
+        document.querySelector("#donut-chart-3"),
+        donutChart3
+    );
+
+    var donutChart4 = donutChart;
+    donutChart4.series = [parseInt("{{commandePaye}}"), (parseInt("{{commandes}}") - parseInt("{{commandePaye}}"))];
+    donutChart4.labels = ['Payé', 'Non payé'];
+    var donut4 = new ApexCharts(
+        document.querySelector("#donut-chart-4"),
+        donutChart4
+    );
+
+    donut.render();
+    donut2.render();
+    donut3.render();
+    donut4.render();
+
+
+
+   /*var sCol = {
+       chart: {
+           height: 350,
+           type: 'bar',
+           toolbar: {
+             show: false,
+           }
+       },
+       plotOptions: {
+           bar: {
+               horizontal: false,
+               columnWidth: '55%',
+               endingShape: 'rounded'  
+           },
+       },
+       dataLabels: {
+           enabled: false
+       },
+       stroke: {
+           show: true,
+           width: 2,
+           colors: ['transparent']
+       },
+       series: [{
+           name: 'Abon resilé',
+           data: [parseInt("{{abonnementResilie}}"), 0, 0, 0]
+       }, {
+           name: 'Total Abon',
+           data: [parseInt("{{abonnements}}"), 0, 0, 0]
+       },{
+           name: 'Abon payé',
+           data: [0, parseInt("{{abonnementPaye}}"), 0, 0]
+       },
+       {
+           name: 'Total Abon',
+           data: [0, parseInt("{{abonnements}}"), 0, 0]
+       },
+       {
+           name: 'Cmd remboursé',
+           data: [0, 0, parseInt("{{remboursement}}"), 0]
+       },
+       {
+           name: 'Total Cmd',
+           data: [0, 0, parseInt("{{commandes}}"), 0]
+       },
+       {
+           name: 'Cmd payé',
+           data: [0, 0, 0, parseInt("{{commandePaye}}")]
+       },
+       {
+           name: 'Total Cmd',
+           data: [0, 0, 0, parseInt("{{commandes}}")]
+       }],
+       xaxis: {
+           categories: ['Abon Resiliés', 'Abon payées', 'Cmd remboursé', 'Cmd payées'],
+       },
+       yaxis: {
+           title: {
+               text: ''
+           }
+       },
+       fill: {
+           opacity: 1
+
+       },
+       tooltip: {
+           y: {
+               formatter: function (val) {
+                   return val
+               }
+           }
+       }
+   }
+
+   var chart = new ApexCharts(
+       document.querySelector("#s-col"),
+       sCol
+   );
+
+   chart.render();*/
+
+</script>
+{% endblock %}
