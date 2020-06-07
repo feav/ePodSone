@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\HttpFoundation\Response;
 use App\Repository\PanierRepository;
 use App\Repository\AbonnementRepository;
 use App\Repository\CommandeRepository;
@@ -188,5 +188,10 @@ class StatController extends AbstractController
     	}
 
     	return $x_axis;
+    }
+
+    public function getChiffreAffaire(){
+        $CA = $this->commandeRepository->getChiffreAffaire();
+        return new Response( round($CA, 2) );
     }
 }

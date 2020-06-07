@@ -1,3 +1,5 @@
+{% set CA = render(controller('App\\Controller\\StatController::getChiffreAffaire')) %}
+
 {% extends 'base.html.twig' %}
 
 {% block meta %}
@@ -36,6 +38,14 @@
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
+    }
+    .chiffre-affaire{
+        text-align: center;
+        font-size: 16px;
+        color: #fff;
+        margin-top: 25px!important;
+        font-weight: 600;
+        background: rgba(59, 63, 92, 0.35);
     }
   </style>
 {% endblock %}
@@ -241,6 +251,9 @@
                             </li>
                         </ul>
                     </li>-->
+                    <li class="menu chiffre-affaire">
+                        <span>CA: </span><span>{{CA}}€</span>
+                    </li>
                 </ul>
                 
             </nav>

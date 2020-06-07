@@ -90,4 +90,20 @@ class CommandeRepository extends ServiceEntityRepository
 
         return ['nbr_commande'=>$commandePaye['count'], 'vente'=>$vente['price']];
     }
+
+    public function getChiffreAffaire(){
+        $sql1 = "SELECT SUM(cmd.total_price) as price FROM commande as cmd inner join panier as pan WHERE cmd.panier_id = pan.id AND pan.status = :status AND pan.remboursement IS NULL";
+
+        $val1 = $this->em->prepare($sql1);
+        $val1->execute(['status' => 1]);
+        $val1 = $val1->fetch();
+
+        $sql2 = "SELECT COUNT(*) as count FROM abonnement WHERE state = :state";
+
+        $val2 = $this->em->prepare($sql2);
+        $val2->execute(['state' => 1]);
+        $val2 = $val2->fetch();
+
+        return $val1['price'] + ($val2['count']*59.55);
+    }
 }

@@ -99,30 +99,37 @@
                      </tr>
                  </thead>
                  <tbody>
-                        <tr>
-                           <td>Nbr Commande</td>
-                           {% for item in rapportSemaineCmd.nbr_commande %}
-                              <th>{{item}}</th>
-                           {% endfor %}
-                        </tr>
-                        <tr style="border-bottom:2px solid #ebedf2">
-                           <td>Montant Commande €</td>
-                           {% for item in rapportSemaineCmd.vente %}
-                              <th>{{item}}</th>
-                           {% endfor %}
-                        </tr>
-                        <tr>
-                           <td>Nbr Abonnement</td>
-                           {% for item in rapportSemaineAbon.nbr_commande %}
-                              <th>{{item}}</th>
-                           {% endfor %}
-                        </tr>
-                        <tr>
-                           <td>Montant Abonnement €</td>
-                           {% for item in rapportSemaineAbon.vente %}
-                              <th>{{item}}</th>
-                           {% endfor %}
-                        </tr>
+                    {% set CA_SEMAINE = 0  %}
+                    <tr>
+                       <td>Nbr Commande</td>
+                       {% for item in rapportSemaineCmd.nbr_commande %}
+                          <th>{{item}}</th>
+                       {% endfor %}
+                    </tr>
+                    <tr style="border-bottom:2px solid #ebedf2">
+                       <td>Montant Commande €</td>
+                       {% for item in rapportSemaineCmd.vente %}
+                          <th>{{item}}</th>
+                          {% set CA_SEMAINE = CA_SEMAINE + item  %}
+                       {% endfor %}
+                    </tr>
+                    <tr>
+                       <td>Nbr Abonnement</td>
+                       {% for item in rapportSemaineAbon.nbr_commande %}
+                          <th>{{item}}</th>
+                       {% endfor %}
+                    </tr>
+                    <tr>
+                       <td>Montant Abonnement €</td>
+                       {% for item in rapportSemaineAbon.vente %}
+                          <th>{{item}}</th>
+                          {% set CA_SEMAINE = CA_SEMAINE + item  %}
+                       {% endfor %}
+                    </tr>
+                    <tr style="font-weight: 900;"> 
+                        <td>CHIFFRE D'AFFAIRE</td>
+                        <td colspan="{{ rapportSemaineCmd.x_axis|length }}" style="text-align:center; font-size: 18px;font-size:25px 0px">{{CA_SEMAINE}}€</td>
+                    </tr>
                  </tbody>
              </table>
          </div>
@@ -157,6 +164,7 @@
                      </tr>
                  </thead>
                  <tbody>
+                    {% set CA_MOIS = 0  %}
                         <tr>
                            <td>Nbr Commande</td>
                            {% for item in rapportMoisCmd.nbr_commande %}
@@ -167,6 +175,7 @@
                            <td>Montant Commande €</td>
                            {% for item in rapportMoisCmd.vente %}
                               <th>{{item}}</th>
+                              {% set CA_MOIS = CA_MOIS + item  %}
                            {% endfor %}
                         </tr>
                         <tr>
@@ -179,7 +188,12 @@
                            <td>Montant Abonnement €</td>
                            {% for item in rapportMoisAbon.vente %}
                               <th>{{item}}</th>
+                              {% set CA_MOIS = CA_MOIS + item  %}
                            {% endfor %}
+                        </tr>
+                        <tr style="font-weight: 900;"> 
+                            <td>CHIFFRE D'AFFAIRE</td>
+                            <td colspan="{{ rapportMoisCmd.x_axis|length }}" style="text-align:center; font-size: 18px;font-size:25px 0px">{{CA_MOIS}}€</td>
                         </tr>
                  </tbody>
              </table>
@@ -215,6 +229,7 @@
                      </tr>
                  </thead>
                  <tbody>
+                    {% set CA_ANNEE = 0  %}
                         <tr>
                            <td>Nbr Commande</td>
                            {% for item in rapportAnneeCmd.nbr_commande %}
@@ -225,6 +240,7 @@
                            <td>Montant Commande €</td>
                            {% for item in rapportAnneeCmd.vente %}
                               <th>{{item}}</th>
+                              {% set CA_ANNEE = CA_ANNEE + item  %}
                            {% endfor %}
                         </tr>
                         <tr>
@@ -237,7 +253,12 @@
                            <td>Montant Abonnement €</td>
                            {% for item in rapportAnneeAbon.vente %}
                               <th>{{item}}</th>
+                              {% set CA_ANNEE = CA_ANNEE + item  %}
                            {% endfor %}
+                        </tr>
+                        <tr style="font-weight: 900;"> 
+                            <td>CHIFFRE D'AFFAIRE</td>
+                            <td colspan="{{ rapportAnneeCmd.x_axis|length }}" style="text-align:center; font-size: 18px;font-size:25px 0px">{{CA_ANNEE}}€</td>
                         </tr>
                  </tbody>
              </table>
