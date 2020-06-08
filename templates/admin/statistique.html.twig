@@ -72,6 +72,38 @@
    </div>
 
    <div class="row layout-top-spacing">
+      <div class="col-md-6 col-sm-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Taux d'achat pour les visiteurs</h5>
+                 <ul class="tabs tab-pills" style="display: none;">
+                     <li><a href="javascript:void(0);" id="tb_1" class="tabmenu">Monthly</a></li>
+                 </ul>
+             </div>
+
+             <div class="widget-content">
+                  <div class="widget-content widget-content-area br-6">
+                      <div id="donut-chart-5"></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+
+      <div class="col-md-6 col-sm-12 col-12 layout-spacing">
+         <div class="widget widget-chart-three">
+             <div class="widget-heading">
+                 <h5 class="">Taux d'achats recurrents</h5>
+             </div>
+             <div class="widget-content">
+                 <div class="widget-content widget-content-area br-6">
+                      <div id="donut-chart-6"></div>
+                  </div>
+             </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="row layout-top-spacing">
       <div class="col-sm-12 layout-spacing">
          <div class="widget widget-chart-three">
              <div class="widget-heading">
@@ -329,10 +361,28 @@
         donutChart4
     );
 
+    var donutChart5 = donutChart;
+    donutChart5.series = [parseInt("{{countVisiteurPaid}}"), (parseInt("{{countVisiteur}}") - parseInt("{{countVisiteurPaid}}"))];
+    donutChart5.labels = ['Ayant acheté', 'Aucun achat'];
+    var donut5 = new ApexCharts(
+        document.querySelector("#donut-chart-5"),
+        donutChart5
+    );
+
+    var donutChart6 = donutChart;
+    donutChart6.series = [parseInt("{{countRecurrentPaid}}"), (parseInt("{{countVisiteurPaid}}") - parseInt("{{countRecurrentPaid}}"))];
+    donutChart6.labels = ['Achat recurrents', 'Achat unique'];
+    var donut6 = new ApexCharts(
+        document.querySelector("#donut-chart-6"),
+        donutChart6
+    );
+
     donut.render();
     donut2.render();
     donut3.render();
     donut4.render();
+    donut5.render();
+    donut6.render();
 
 
 

@@ -9,17 +9,20 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Repository\PanierRepository;
 use App\Repository\AbonnementRepository;
 use App\Repository\CommandeRepository;
+use App\Repository\VisiteurRepository;
 
 class StatController extends AbstractController
 {
 	private $panierRepository;
 	private $abonnementRepository;
 	private $commandeRepository;
+    private $visiteurRepository;
 
-    public function __construct(PanierRepository $panierRepository, CommandeRepository $commandeRepository, AbonnementRepository $abonnementRepository){
+    public function __construct(PanierRepository $panierRepository, CommandeRepository $commandeRepository, AbonnementRepository $abonnementRepository, VisiteurRepository $visiteurRepository){
         $this->panierRepository = $panierRepository; 
         $this->abonnementRepository = $abonnementRepository; 
         $this->commandeRepository = $commandeRepository; 
+        $this->visiteurRepository = $visiteurRepository; 
     }
 
     /**
@@ -43,7 +46,6 @@ class StatController extends AbstractController
     	$rapportMoisAbon = $this->getInfosCommandeByEcheance('mois', 'abonnement');
     	$rapportAnneeAbon = $this->getInfosCommandeByEcheance('annee', 'abonnement');
 
-
     	$rapportSemaineCmd = $this->buildDataCmd($rapportSemaineCmd, 'semaine');
     	$rapportMoisCmd = $this->buildDataCmd($rapportMoisCmd, 'mois');
     	$rapportAnneeCmd = $this->buildDataCmd($rapportAnneeCmd, 'annee');
@@ -51,6 +53,10 @@ class StatController extends AbstractController
     	$rapportSemaineAbon = $this->buildDataAbonnement($rapportSemaineAbon, 'semaine');
     	$rapportMoisAbon = $this->buildDataAbonnement($rapportMoisAbon, 'mois');
     	$rapportAnneeAbon = $this->buildDataAbonnement($rapportAnneeAbon, 'annee');
+
+        $countVisiteur = $this->visiteurRepository->countVisiteur();
+        $countVisiteurPaid = $this->visiteurRepository->countVisiteurPaid();
+        $countRecurrentPaid = $this->visiteurRepository->countRecurrentPaid();
 
     	//dd($rapportSemaineCmd);
         return $this->render('admin/statistique.html.twig', [
@@ -66,6 +72,9 @@ class StatController extends AbstractController
 	    	'rapportSemaineAbon'=> $rapportSemaineAbon,
 	    	'rapportMoisAbon'=> $rapportMoisAbon,
 	    	'rapportAnneeAbon'=> $rapportAnneeAbon,
+            'countVisiteur'=> $countVisiteur['count'],
+            'countVisiteurPaid'=> $countVisiteurPaid['count'],
+            'countRecurrentPaid'=> $countRecurrentPaid['count'],
         ]);
        
     }

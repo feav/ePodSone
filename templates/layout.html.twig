@@ -986,6 +986,24 @@
           localStorage.setItem('sound', !sound);
    }
 
+   function updateVisiteur(){
+    $.ajax({
+      url: $('body').data('base-url')+"create-visiteur",
+      type: "GET",
+      dataType: "json",
+      async: true,
+      data: {},
+      success: function(data, status) {
+        
+      },
+      error: function(xhr, responseText, errorThrown) {
+        
+      }
+    });
+  }
+
+  updateVisiteur();
+
    var LENGTH_CARD = 0;
    var prods = [];
 

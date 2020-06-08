@@ -9,7 +9,10 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Repository\UserRepository;
 use App\Repository\CommandeRepository;
 use App\Repository\ConfigRepository;
+use App\Repository\VisiteurRepository;
+
 use App\Entity\User;
+use App\Entity\Visiteur;
 use App\Entity\Config;
 use App\Entity\Commande;
 
@@ -23,11 +26,14 @@ class StripeService{
     private $userRepository;
     private $commandeRepository;
     private $configRepository;
+    private $visiteurRepository;
 
-    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ConfigRepository $configRepository, CommandeRepository $commandeRepository){
+
+    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ConfigRepository $configRepository, CommandeRepository $commandeRepository, VisiteurRepository $visiteurRepository){
         $this->userRepository = $userRepository;
         $this->commandeRepository = $commandeRepository;
         $this->configRepository = $configRepository;
+        $this->visiteurRepository = $visiteurRepository; 
         $this->em = $em;
         $this->stripeApiKey = !is_null($this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])) ? $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])->getValue() : "";
     }
@@ -67,7 +73,9 @@ class StripeService{
         $result = "";
         Stripe::setApiKey($this->stripeApiKey);
         try {
+            $this->updateVisiteur($user->getId());
             $chargeId = $this->paidByStripeCustom($user->getStripeCustomId(), $amount);
+            
 
         }catch(\Stripe\Error\Card $e) {
             // Since it's a decline, \Stripe\Error\Card will be caught
@@ -106,5 +114,52 @@ class StripeService{
         ]);
 
         return 1;
+    }
+
+    public function updateVisiteur($user_id){
+        $ip = $this->get_user_ip_address();
+        if(!empty($ip)){
+            $visiteur = $this->visiteurRepository->findOneBy(['ip'=>$ip]);
+            if(!is_null($visiteur)){
+                $visiteur->setNbAchat($visiteur->getNbAchat() +1);
+                $visiteur->setUserId($user_id);
+                $visiteur->setLastDataVisite(new \DateTime());
+                $this->em->flush();
+            }
+        }
+        
+        return 1;
+    }
+
+    public function get_user_ip_address($return_type=NULL){
+        $ip_addresses = array();
+        $ip_elements = array(
+            'HTTP_X_FORWARDED_FOR', 'HTTP_FORWARDED_FOR',
+            'HTTP_X_FORWARDED', 'HTTP_FORWARDED',
+            'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_CLUSTER_CLIENT_IP',
+            'HTTP_X_CLIENT_IP', 'HTTP_CLIENT_IP',
+            'REMOTE_ADDR'
+        );
+        foreach ( $ip_elements as $element ) {
+            if(isset($_SERVER[$element])) {
+                if ( !is_string($_SERVER[$element]) ) {
+                    // Log the value somehow, to improve the script!
+                    continue;
+                }
+                $address_list = explode(',', $_SERVER[$element]);
+                $address_list = array_map('trim', $address_list);
+                // Not using array_merge in order to preserve order
+                foreach ( $address_list as $x ) {
+                    $ip_addresses[] = $x;
+                }
+            }
+        }
+        if ( count($ip_addresses)==0 ) {
+            return FALSE;
+        } elseif ( $return_type==='array' ) {
+            return $ip_addresses;
+        } elseif ( $return_type==='single' || $return_type===NULL ) {
+            return $ip_addresses[0];
+        }
     }
 }
