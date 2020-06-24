@@ -80,6 +80,7 @@ class ApiPanierController extends AbstractController
                             'name' => $commande->getProduct()->getName(),
                             'product_price' => $commande->getPrice(),
                             'price' => $commande->getTotalPrice(),
+                            'price_old' => $commande->getQuantity()*$commande->getProduct()->getOldPrice(),
                             'quantity' => $commande->getQuantity(),
                             'id_product' => $commande->getProduct()->getId(),
                             'oldprice' => $commande->getProduct()->getOldPrice(),
@@ -120,7 +121,6 @@ class ApiPanierController extends AbstractController
                         'coupons' => $coupons,
                         'formules' => $formules,
                         'livraison' => $livraison,
-                        'total' => $total,
                         'total' => $total,
                         'livraison' => $livraison,
                         'reduction' => $reduction
