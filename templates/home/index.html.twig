@@ -18,6 +18,11 @@
       font-size: 22px;
       line-height: 31px;
    }
+   .vinp-pro-ttl{
+      text-align: center;
+      font-size: 35px;
+      line-height: 1.1em;
+   }
 </style>
 {% endblock %}
 {% block body_web %}
@@ -89,7 +94,10 @@
             <div class="row mb-md-5 mb-4">
               <div class="col">
                 <h2>Présentation des <span style=" color: #229b72; background:#f7f7f7">VinsPro</span> !</h2>
-                <div class="d-flex position-relative align-items-center justify-content-center rounded" >
+                <div class="d-flex position-relative align-items-center justify-content-center rounded" style="background: #f7f7f7;">
+                  <div class="vinp-pro-ttl">
+                     Pour un prix<br> exceptionnelle à <br>19.99
+                  </div>
                   <img class="rounded img-fluid" src="{{asset('assets/img/vinspro.jpeg')}}" alt="Video cover image" style="max-width: 302px;">
                   <a data-fancybox="" href="https://vinspro.fr/assets/video/video-present-pc.mp4" class="btn btn-lg btn-light rounded-circle position-absolute aos-init aos-animate" data-aos="zoom-in">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="injected-svg icon icon-lg bg-dark pl-1" data-src="/assets/img/icons/interface/icon-media-play.svg" xmlns:xlink="http://www.w3.org/1999/xlink">
