@@ -661,7 +661,7 @@
           <div class="card-list-formule">
           </div>
           <div class="clearfix"></div>
-          <div class="form-group form-coupon" style="margin-top: 17px">
+          <div class="form-group form-coupon" style="margin-top: 17px; display:none">
               <input type="text" name="code-promo" id="code-promo-input" class="form-control" placeholder="Code promo..." style="border-radius:0">
               <a href="javascript:void()" onclick ="addCouponToCard('#code-promo-input',1)" class="valide-coupon">je valide!</a>
             </div>
@@ -1083,7 +1083,7 @@
                 '</li>'+
                 '<li class="recap-item">'+
                   '<span class="recap-label">Livraison</span>'+
-                  '<span class="recap-value">{{livraison_montant}}€</span>'+
+                  '<span class="recap-value">Offerte</span>'+
                 '</li>'+
                 '<li class="recap-item">'+
                   '<span class="recap-label">Total</span>'+
@@ -1253,8 +1253,7 @@
          }else{
             console.log(data.message);
          }
-         if(show && !$(".cart-wrapper").hasClass("open"))
-               /*$(".cart-wrapper").addClass("open");*/
+         if(show && !$(".cart-wrapper").hasClass("open"));
         });
   }
   synch_card();
@@ -1351,8 +1350,7 @@
            }else{
               console.log(data.message);
            }
-           if(show && !$(".cart-wrapper").hasClass("open"))
-                 /*$(".cart-wrapper").addClass("open");*/
+           if(show && !$(".cart-wrapper").hasClass("open"));
           });
     }
   
