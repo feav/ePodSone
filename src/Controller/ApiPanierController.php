@@ -290,9 +290,6 @@ class ApiPanierController extends AbstractController
     }
 
 
-
-
-
     public function getCurrentCardNotConnected(): Response
     {
         $this->entityManager = $this->getDoctrine()->getManager();

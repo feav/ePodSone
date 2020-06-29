@@ -1066,7 +1066,7 @@
           '</div>';
    }
 
-    function itemRecap(products, total_amount, total_reduction, reduction){
+    function itemRecap(products, total_amount, total_reduction){
       $ELT = $('.cart-container .list-recap');
       var DATA_STRING = ""; 
       products.forEach(function(item, index){
@@ -1077,6 +1077,7 @@
                 '</li>';
         }
       });
+      var reduction = total_reduction-total_amount;
       DATA_STRING += '<li class="recap-item">'+
                   '<span class="recap-label">Réduction</span>'+
                   '<span class="recap-value">(-'+(total_amount?parseInt( (reduction*100)/ total_amount):0)+'%) -'+reduction.toFixed(2)+'€</span>'+
@@ -1087,7 +1088,7 @@
                 '</li>'+
                 '<li class="recap-item">'+
                   '<span class="recap-label">Total</span>'+
-                  '<span class="recap-value">'+total_reduction+'€</span>'+
+                  '<span class="recap-value">'+total_amount+'€</span>'+
                 '</li>';
       $ELT.html(DATA_STRING);
     }
@@ -1232,16 +1233,19 @@
           }
          if(data.status==200){
             $('.cart-btn > .nb-product-cart').text(data.panier.products.length);
-            var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+            var total = data.panier.total<0?0:data.panier.total;
             $(".cart-total-pay").html(total.toFixed(2));
-            $(".cart-total-reduction").html(data.panier.total.toFixed(2));
+            $(".cart-total-reduction").html( total.toFixed(2) );
             $(".card-list-product").html("");
 
-            itemRecap(data.panier.products, data.panier.total, total.toFixed(2), data.panier.reduction);
-            
+            var reductions = 0;
             data.panier.products.forEach(function(item, index){
-               $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, ((item.price*199)/item.product_price )));
-             }); 
+            $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, (item.quantity*item.oldprice )));
+                reductions += parseFloat(item.oldprice*item.quantity);
+            }); 
+            $(".cart-total-reduction").html( parseFloat(reductions));
+            itemRecap(data.panier.products, total.toFixed(2), reductions);
+
             $(".card-list-coupon").html("");
              data.panier.coupons.forEach(function(item, index){
                $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
@@ -1329,16 +1333,19 @@
             }
            if(data.status==200){
             $('.cart-btn > .nb-product-cart').text(data.panier.products.length);
-              var total = (data.panier.total-data.panier.reduction)<0?0:data.panier.total-data.panier.reduction;
+              var total = data.panier.total<0?0:data.panier.total;
               $(".cart-total-pay").html(total.toFixed(2));
-              $(".cart-total-reduction").html(((total*199)/19.99).toFixed(2));
+              $(".cart-total-reduction").html( total.toFixed(2) );
               $(".card-list-product").html("");
 
-              itemRecap(data.panier.products, data.panier.total, total.toFixed(2), data.panier.reduction);
-
+              var reductions = 0;
                data.panier.products.forEach(function(item, index){
-                 $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, ((item.price*199)/item.product_price ) ));
-               }); 
+                  $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, (item.quantity*item.oldprice )));
+                  reductions += parseFloat(item.oldprice*item.quantity);
+              }); 
+              $(".cart-total-reduction").html( parseFloat(reductions));
+              itemRecap(data.panier.products, total.toFixed(2), reductions);
+
               $(".card-list-coupon").html("");
                data.panier.coupons.forEach(function(item, index){
                  $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
@@ -1348,7 +1355,7 @@
                  $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
                });
            }else{
-              console.log(data.message);
+              /*console.log(data.message);*/
            }
            if(show && !$(".cart-wrapper").hasClass("open"));
           });
