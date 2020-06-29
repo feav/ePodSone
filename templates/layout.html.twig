@@ -1080,7 +1080,7 @@
       var reduction = total_reduction-total_amount;
       DATA_STRING += '<li class="recap-item">'+
                   '<span class="recap-label">Réduction</span>'+
-                  '<span class="recap-value">(-'+(total_amount?parseInt( (reduction*100)/ total_amount):0)+'%) -'+reduction.toFixed(2)+'€</span>'+
+                  '<span class="recap-value">(-'+(total_amount?( (reduction*100)/ total_amount).toFixed(2):0)+'%) -'+reduction.toFixed(2)+'€</span>'+
                 '</li>'+
                 '<li class="recap-item">'+
                   '<span class="recap-label">Livraison</span>'+
