@@ -98,12 +98,12 @@ class ProductController extends AbstractController
                 $newFilename = $this->saveImage($uploadedFile,'/public/assets/img/products/');
                 $product->setImage($newFilename);
             }
-            $product->setPrice(floatval($_POST['product']['price']));
+            $product->setPrice(floatval(str_replace(',', ".", $_POST['product']['price'])));
             $product->setName($_POST['product']['name']);
             $product->setDescription($_POST['product']['description']);
             $product->setType($_POST['product']['type']);
             $product->setQuantity($_POST['product']['quantity']);
-            $product->setOldPrice(floatval($_POST['product']['old_price']));
+            $product->setOldPrice(floatval(str_replace(',', '.', $_POST['product']['old_price'])));
 
             $entityManager->persist($product);
             $entityManager->flush();
