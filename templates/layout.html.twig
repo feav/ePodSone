@@ -1179,6 +1179,7 @@
             });
   }
   function addToCard_connected(id=-1,qty=-1,type="product"){
+      addAction = true;
       if(id == -1){
          id = $("#add-product-modal .product-id-input").val();
       }
@@ -1227,7 +1228,6 @@
         }
       })
       .done(function( data ) {
-        console.log(data);
           if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0) || !data.panier ){
             $('.cart-container').css('display', 'none');
             $('.empty-cart').css('display', 'block');
