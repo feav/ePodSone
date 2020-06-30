@@ -9,12 +9,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\StripeService;
 
 /**
  * @Route("/dashboard/formule")
  */
 class FormuleController extends AbstractController
 {
+    private $stripe_s;
+
+    public function __construct(StripeService $stripe_s){
+        $this->stripe_s = $stripe_s;
+    }
+
     /**
      * @Route("/", name="formule_index", methods={"GET"})
      */
@@ -31,10 +38,16 @@ class FormuleController extends AbstractController
     public function new(Request $request): Response
     {
         $formule = new Formule();
+        $stripeProducts =  $this->stripe_s->getAllProduct();
+        if(!count($stripeProducts)){
+            $stripeProducts = [$this->stripe_s->createProduct()];
+        }
+
         $form = $this->createForm(FormuleType::class, $formule);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $formule->setStripeProductId($request->request->get('stripe_product_id'));
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($formule);
             $entityManager->flush();
@@ -45,6 +58,7 @@ class FormuleController extends AbstractController
         return $this->render('formule/new.html.twig', [
             'formule' => $formule,
             'form' => $form->createView(),
+            'stripeProducts'=>$stripeProducts
         ]);
     }
 
@@ -63,10 +77,16 @@ class FormuleController extends AbstractController
      */
     public function edit(Request $request, Formule $formule): Response
     {
+        $stripeProducts =  $this->stripe_s->getAllProduct();
+        if(!count($stripeProducts)){
+            $stripeProducts = [$this->stripe_s->createProduct()];
+        }
+
         $form = $this->createForm(FormuleType::class, $formule);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $formule->setStripeProductId($request->request->get('stripe_product_id'));
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('formule_index');
@@ -75,6 +95,7 @@ class FormuleController extends AbstractController
         return $this->render('formule/edit.html.twig', [
             'formule' => $formule,
             'form' => $form->createView(),
+            'stripeProducts'=>$stripeProducts
         ]);
     }
 

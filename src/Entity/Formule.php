@@ -54,6 +54,11 @@ class Formule
      */
     private $try_days;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $stripe_product_id;
+
     public function __construct()
     {
         $this->abonnements = new ArrayCollection();
@@ -182,5 +187,17 @@ class Formule
 
     public function __toString (  ) : string{
         return $this->getName();
+    }
+
+    public function getStripeProductId(): ?string
+    {
+        return $this->stripe_product_id;
+    }
+
+    public function setStripeProductId(?string $stripe_product_id): self
+    {
+        $this->stripe_product_id = $stripe_product_id;
+
+        return $this;
     }
 }

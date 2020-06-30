@@ -131,6 +131,60 @@ class StripeService{
         return 1;
     }
 
+    /* abonnement avec definition du prix */
+    public function subscription($user, $abonnement){
+
+        if($abonnement->getFormule()->getMonth() == 1){
+            $interval = 'month';
+        }
+        elseif($abonnement->getFormule()->getMonth() == 12)
+            $interval = 'year';
+
+        \Stripe\Stripe::setApiKey($this->stripeApiKey);
+        $subscription = \Stripe\Subscription::create([
+          'customer' => $user->getStripeCustomId(),
+          'trial_period_days'=>(int)$abonnement->getFormule()->getTryDays(),
+          'items' => [[
+            'price_data' => [
+              'unit_amount' => 100*$abonnement->getFormule()->getPrice(),
+              'currency' => $this->stripeCurrency,
+              'product' => $abonnement->getFormule()->getStripeProductId(),
+              'recurring' => [
+                'interval' => $interval,
+              ],
+            ],
+          ]],
+          'metadata' => 
+            [
+                'abonnement_id' => $abonnement->getId()
+            ]
+        ]);
+        $this->updateAbonnement($subscription['id'], $abonnement);
+        return $subscription['id'];
+    }
+
+    public function updateAbonnement($subscription, $abonnement){
+        $abonnement->setSubscription($subscription);
+        $this->em->flush();
+    }
+
+
+    public function getAllProduct(){
+        \Stripe\Stripe::setApiKey($this->stripeApiKey);
+        $products = \Stripe\Product::all();
+        if(!(array)$products)
+            return [];
+        return $products['data'];
+    }
+
+    public function createProduct(){
+        \Stripe\Stripe::setApiKey($this->stripeApiKey);
+        $product = \Stripe\Product::create([
+          'name' => 'abonnement vitanatural',
+        ]);
+        return $product;
+    }
+
     public function get_user_ip_address($return_type=NULL){
         $ip_addresses = array();
         $ip_elements = array(

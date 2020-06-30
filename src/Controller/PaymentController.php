@@ -12,6 +12,8 @@ use App\Repository\UserRepository;
 use App\Repository\AbonnementRepository;
 use App\Repository\CommandeRepository;
 use App\Repository\PanierRepository;
+use App\Repository\FormuleRepository;
+use App\Repository\ConfigRepository;
 use App\Service\StripeService;
 use App\Service\UserService;
 use App\Service\GlobalService;
@@ -34,11 +36,13 @@ class PaymentController extends AbstractController
     private $userRepository;
     private $panierRepository;
     private $commandeRepository;
+    private $formuleRepository;
     private $entityManager;
     private $abonnementRepository;
     private $global_s;
+    private $configRepository;
 
-    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository, PanierRepository $panierRepository, CommandeRepository $commandeRepository, GlobalService $global_s){
+    public function __construct(ParameterBagInterface $params_dir, UserRepository $userRepository, UserService $user_s, StripeService $stripe_s, AbonnementRepository $abonnementRepository, PanierRepository $panierRepository, CommandeRepository $commandeRepository, GlobalService $global_s, FormuleRepository $formuleRepository, ConfigRepository $configRepository){
         $this->params_dir = $params_dir;
         $this->stripe_s = $stripe_s;
         $this->user_s = $user_s;
@@ -46,7 +50,10 @@ class PaymentController extends AbstractController
         $this->userRepository = $userRepository;
         $this->panierRepository = $panierRepository;
         $this->commandeRepository = $commandeRepository;
+        $this->formuleRepository = $formuleRepository;
+        $this->configRepository = $configRepository;
         $this->abonnementRepository = $abonnementRepository;
+        $this->stripeApiKey = !is_null($this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])) ? $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])->getValue() : "";
     }
 
     /**
@@ -117,8 +124,6 @@ class PaymentController extends AbstractController
                 $message = $preparePaid['message'];
                 if($preparePaid['paid']){
                     $amount = $preparePaid['amount'];
-                    if($this->global_s->isAbonnementValide($user->getId()))
-                        $amount = $preparePaid['amount'] + (int)$this->stripe_s->getValueByKey('LIVRAISON_AMOUNT');
                     $response = $this->stripe_s->proceedPayment($user, $amount);
                     $result = $response['message'];
                     $this->stripe_s->saveChargeToRefund($panier, $response['charge']);
@@ -129,8 +134,6 @@ class PaymentController extends AbstractController
                 $message = $preparePaid['message'];
                 if($preparePaid['paid']){
                     $amount = $preparePaid['amount'];
-                    if($this->global_s->isAbonnementValide($user->getId()))
-                        $amount = $preparePaid['amount'] + (int)$this->stripe_s->getValueByKey('LIVRAISON_AMOUNT');
                     $response = $this->stripe_s->proceedPayment($user, $amount);
                     $this->stripe_s->saveChargeToRefund($panier, $response['charge']);
                     $result = $response['message'];
@@ -145,6 +148,11 @@ class PaymentController extends AbstractController
             $panier->setStatus(1);
             $panier->setPaiementDate(new \Datetime());
             $this->entityManager->flush();
+
+            if(!count($panier->getAbonnements())){
+                if(!$this->global_s->isAbonnementValide($user->getId()))
+                    $this->createNewAbonnement();
+            }
 
             $assetFile = $this->params_dir->get('file_upload_dir');
             if (!file_exists($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile)) {
@@ -179,7 +187,7 @@ class PaymentController extends AbstractController
                     ->setFrom(array('alexngoumo.an@gmail.com' => 'VinsPro'))
                     ->setTo([$user->getEmail()=>$user->getName()])
                     ->setCc("alexngoumo.an@gmail.com")
-                    ->attach(\Swift_Attachment::fromPath($commande_pdf))
+                    //->attach(\Swift_Attachment::fromPath($commande_pdf))
                     ->setBody(
                         $this->renderView(
                             'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
@@ -250,8 +258,6 @@ class PaymentController extends AbstractController
         $message = $preparePaid['message'];
         if($preparePaid['paid']){
             $amount = $preparePaid['amount'];
-            if($this->global_s->isAbonnementValide($user->getId()))
-                $amount = $preparePaid['amount'] + (int)$this->stripe_s->getValueByKey('LIVRAISON_AMOUNT');
             $response = $this->stripe_s->proceedPayment($user, $amount);
             $this->stripe_s->saveChargeToRefund($panier, $response['charge']);
             $result = $response['message'];
@@ -261,6 +267,10 @@ class PaymentController extends AbstractController
             $panier->setStatus(1);
             $panier->setPaiementDate(new \Datetime());
             $this->entityManager->flush();
+            if(!count($panier->getAbonnements())){
+                if(!$this->global_s->isAbonnementValide($user->getId()))
+                    $this->createNewAbonnement();
+            }
 
             $assetFile = $this->params_dir->get('file_upload_dir');
             if (!file_exists($request->server->get('DOCUMENT_ROOT') .'/'. $assetFile)) {
@@ -284,93 +294,25 @@ class PaymentController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/abonnement/update-abonnement", name="update_abonnement")
-     */
-    public function updateAbonnements(Request $request, \Swift_Mailer $mailer){
+    public function createNewAbonnement(){
         $this->entityManager = $this->getDoctrine()->getManager();
-        $abonnements = $this->abonnementRepository->findBy(['active'=>1]);
-        foreach ($abonnements as $key => $value) {
-            $result = "";
-            $user = $value->getUser();
-            if($value->getActive() && $user->getStripeCustomId()){
-                $date = $value->getStart();
-                $date->add(new \DateInterval('P'.$value->getFormule()->getTryDays().'D'));
-                
-                if(!$value->getState() && (new \Datetime() >= $date )){
-                    $result = $this->stripe_s->proceedPayment($user, $value->getFormule()->getPrice());
-                    if($result == ""){
-                        $value->setState(1);
-                        $content = "<p>Vous etes arrivé à la fin de votre periode d'essaie pour l'abonnement ".$value->getFormule()->getMonth()." mois. vous avez été débité de ".$value->getFormule()->getPrice()."€ sur votre carte</p>";
-                        $url = $this->generateUrl('home');
-                        try {
-                            $mail = (new \Swift_Message('Abonnement Payé'))
-                                ->setFrom(array('alexngoumo.an@gmail.com' => 'VinsPro'))
-                                ->setTo([$user->getEmail()=>$user->getName()])
-                                ->setCc("alexngoumo.an@gmail.com")
-                                //->attach(\Swift_Attachment::fromPath($commande_pdf))
-                                ->setBody(
-                                    $this->renderView(
-                                        'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
-                                    ),
-                                    'text/html'
-                                );
-                            $mailer->send($mail);
-                        } catch (Exception $e) {
-                            print_r($e->getMessage());
-                        }
-                    }
-                }
-                if( (new \Datetime() >= $value->getEnd()) && !$value->getIsPaid() ){
-                    $result = $this->stripe_s->proceedPayment($user, $value->getFormule()->getPrice());
-                    if($result == ""){
-                        $value->setIsPaid(1);
-                        $value->setActive(0);
-                        $this->createNewAbonnement($value);
+        $formule = $this->formuleRepository->findOneBy([], ['id'=>'DESC'], 1);
+        $date = new \DateTime();
+        $date_start = new \DateTime();
+        $month = $formule->getMonth();
+        $trialDay = $formule->getTryDays();
+        $date->add(new \DateInterval('P0Y'.$month.'M'.$trialDay.'DT0H0M0S'));
 
-                        $content = "<p>Votre abonnement ".$value->getFormule()->getMonth()." Mois a été renouvellé et vous a couté ".$value->getFormule()->getPrice()."€</p>";
-                        $url = $this->generateUrl('home');
-                        try {
-                            $mail = (new \Swift_Message('Abonnement renouvellé'))
-                                ->setFrom(array('alexngoumo.an@gmail.com' => 'VinsPro'))
-                                ->setTo([$user->getEmail()=>$user->getName()])
-                                ->setCc("alexngoumo.an@gmail.com")
-                                //->attach(\Swift_Attachment::fromPath($commande_pdf))
-                                ->setBody(
-                                    $this->renderView(
-                                        'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
-                                    ),
-                                    'text/html'
-                                );
-                            $mailer->send($mail);
-                        } catch (Exception $e) {
-                            print_r($e->getMessage());
-                        }            
-                    }
-                } 
-                $this->entityManager->flush();
-            }
-        }
-
-        return new Response("renouvellé");
-    }
-    public function createNewAbonnement($abonnement){
-        $this->entityManager = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
         $entity = new Abonnement();
-        $month = $abonnement->getFormule()->getMonth();
-        //$trialDay = $abonnement->getFormule()->getTryDays();
-
-        $curDate = new \Datetime();
-        $entity->setStart(new \Datetime());
-        $curDate->add(new \DateInterval('P0Y'.$month.'M0DT0H0M0S'));
-        $entity->setEnd($curDate);
-        $entity->setState(1);
-        $entity->setFormule($abonnement->getFormule());
-        $entity->setPanier($abonnement->getPanier());
-        $entity->setUser($abonnement->getUser());
+        $entity->setFormule($formule);
+        $entity->setStart($date_start);
+        $entity->setEnd($date);
+        $entity->setUser($user);
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
+        $this->stripe_s->subscription($user, $entity);
         return 1;
     }
 
@@ -388,29 +330,148 @@ class PaymentController extends AbstractController
         return $dompdf;
     }
 
+    public function totalAmount($panier){
+        $amount = $panier->getTotalPrice();
+        if($panier->getTotalReduction() > 0)
+            $amount -= $panier->getTotalReduction();
+        return $amount;
+    }
     public function preparePaid($panier, $mailer){
-        $user = $this->getUser();
-        $amount = $panier->getTotalPrice() - $panier->getTotalReduction();
-        $amount = ( $amount <0 ) ? 0 : $amount;
-        $message = "Paiement Effectué avec Succèss";
-        if(count($panier->getAbonnements())){
-            $message = "Votre abonnement sera facturé apres la periode d'essaie";   
-        }
-        if(!count($panier->getCommandes())){
-            $this->entityManager = $this->getDoctrine()->getManager();
-            $panier->setPaiementDate(new \Datetime());
-            $this->entityManager->flush();
+        $amount = $panier->getTotalPrice();
+        if($panier->getTotalReduction() > 0)
+            $amount -= $panier->getTotalReduction();
             
-            $this->addFlash('success', "Votre abonnement sera facturé apres la periode d'essaie");
-            return ['paid'=>false, 'message'=>"Votre abonnement sera facturé apres la periode d'essaie", 'amount'=>0];
+        $this->addFlash('success', "Paiement Effectué avec Succèss");
+        $response = ['paid'=>true, 'message'=>"Paiement Effectué avec Succèss", 'amount'=>$amount];
+        
+        return $response;
+    }
+
+    /**
+     * @Route("/webhook-subscription-vinspro", name="webhook_subscription_vinspro")
+     */
+    public function subscriptionWebhook(Request $request, \Swift_Mailer $mailer){
+
+        \Stripe\Stripe::setApiKey($this->stripeApiKey);
+
+        $data = json_decode($request->getContent(), true);
+        if ($data === null) {
+            throw new \Exception('Bad JSON body from Stripe!');
         }
-        elseif(count($panier->getAbonnements())){
-            $message = "Paiement Effectué avec Succèss. Votre abonnement sera facturé apres la periode d'essaie";
-            $abonnement = $panier->getAbonnements()[0];
-            $abonnementAmount = $abonnement->getFormule()->getPrice();
-            $amount -= $abonnementAmount;
+        $event = \Stripe\Event::retrieve($data['id']);
+
+        $message ="";
+        // Handle the event
+        switch ($event->type) {
+            case 'customer.subscription.updated':
+                $subscription = $event->data->object; 
+                $message = "subscription.updated";
+                $this->updateSubscription('updated', $subscription, $mailer);
+                break;
+            case 'customer.subscription.created':
+                $subscription = $event->data->object;
+                $message = "subscription.created";
+                $this->updateSubscription('created', $subscription, $mailer);
+                break;
+            case 'customer.subscription.pending_update_expired':
+                $subscription = $event->data->object;
+                $message = "subscription.expired";
+                $this->updateSubscription('expired', $subscription, $mailer);
+                break;
+            case 'invoice.payment_succeeded':
+                $paymentMethod = $event->data->object; 
+                $subscription_id = $paymentMethod->lines->data[0]->subscription;
+                $abonnementId = $paymentMethod->lines->data[0]->metadata->abonnement_id;
+
+                if(!is_null($paymentMethod->billing_reason) && ($paymentMethod->billing_reason == "subscription_create" || $paymentMethod->billing_reason == "subscription_cycle" ) ){
+                    $customer_email = $paymentMethod->customer_email;
+                    $invoice_pdf = $paymentMethod->invoice_pdf;
+                    $message = '<p>Bonjour, cliquer sur le lien ci-dessous pour telecharger votre facture <br>'.$invoice_pdf.'</p>';
+                    $this->factureMail('Facture abonnement', $message, $customer_email, $mailer);
+                }
+                break;
+            case 'payment_intent.payment_failed':
+                $paymentIntent = $event->data->object; 
+                if( !is_null($paymentIntent->charges->data->description) && ($paymentIntent->charges->data->description == "Subscription creation" || $paymentIntent->charges->data->description == "Subscription update" ) ){
+                    $source_id = $paymentIntent->charges->data->source->id;
+                    //
+                }
+                break;
+            default:
+                return new Response('Evenement inconnu',400);
+                /*http_response_code(400);
+                exit();*/
         }
-        return ['paid'=>true, 'message'=>$message, 'amount'=>$amount];
+        //http_response_code(200);
+        return new Response('Evenement terminé avec success',200);
+    }
+
+    public function factureMail($objet, $message, $clientEmail, $mailer){
+        $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
+        try {
+                $mail = (new \Swift_Message($objet))
+                ->setFrom(array("alexngoumo.an@gmail.com" => 'VinsPro'))
+                ->setTo([$clientEmail=>$clientEmail])
+                ->setCc("alexngoumo.an@gmail.com")
+                ->setBody(
+                    $this->renderView(
+                        'emails/mail_template.html.twig',['content'=>$message, 'url'=>$url]
+                    ),
+                    'text/html'
+                );
+                $mailer->send($mail);
+            } catch (Exception $e) {
+                print_r($e->getMessage());
+        }
+        return 1;
+    }
+
+    public function updateSubscription($status, $subscription, $mailer){
+
+        $this->entityManager = $this->getDoctrine()->getManager();
+        $abonnement = $this->abonnementRepository->findOneBy(['subscription'=>$subscription->id]);
+
+        if(!is_null($abonnement)){
+            $user = $abonnement->getUser();
+            $message = "";
+            if( ($status == "created" || $status == "updated") && $subscription->status == "active"){
+                $abonnement->setActive(1);
+                $abonnement->setStart(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_start)));
+                $abonnement->setEnd(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_end)));
+                
+                $mois_annee = ($abonnement->getFormule()->getMonth() == 12) ? "ans" : $abonnement->getFormule()->getMonth()."mois";
+
+                if($status == "created"){
+                    $message = "<p>Bien joué ".$user->getName()."! Confirmation de votre essai de ".$abonnement->getFormule()->getTryDays()." jours à notre abonnement de Livraison Gratuite en  illimité pour ".$abonnement->getFormule()->getPrice()."€/".$mois_annee.". <br><br>Il vous reste ".$abonnement->getFormule()->getTryDays()." jours d’essais pour commander et obtenir la Livraison Gratuite en  illimité sur notre boutique au lieu de 10€.<br><br>Vous serez débité dans un delais de ".$abonnement->getFormule()->getTryDays()." à  partir de fin de votre essai.<br><br> Si vous souhaitez résilier veuillez vous connecter sur notre boutique et faire votre  demande de résiliation de manière automatique.<br><br>Vos informations de connexion vous ont été envoyés à cette email (<small>".$user->getEmail()."</small>) lors de votre tout premier achat";
+                }
+                else{
+                    $message = "<p> Bonjour, <br> nous vous confirmons que votre abonnement a été renouvellé avec succèss. </p>";
+                }
+                $message="<p> Bonjour, <br> nous vous confirmons que votre abonnement a été ".$msg2." avec succèss. </p>";
+            }
+            if($status == "expired"){
+                $abonnement->setActive(0);
+                $message="<p> Bonjour, <br> nous n'avons pas pu renouveller votre abonnement, il sera donc suspendu</p>";
+            }
+            $this->entityManager->flush();
+            $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
+            try {
+                $mail = (new \Swift_Message("Status abonnement"))
+                ->setFrom(array($user->getEmail() => 'VinsPro'))
+                ->setCc("alexngoumo.an@gmail.com")
+                ->setTo([$user->getEmail()=> $user->getEmail()])
+                ->setBody(
+                    $this->renderView(
+                        'emails/mail_template.html.twig',['content'=>$message, 'url'=>$url]
+                    ),
+                    'text/html'
+                );
+                $mailer->send($mail);
+            } catch (Exception $e) {
+                print_r($e->getMessage());
+            }
+        }
+        return 1;
     }
 
 }

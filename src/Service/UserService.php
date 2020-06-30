@@ -162,7 +162,7 @@ class UserService{
 
         $content = "<p> Bienvenue ".$user->getName().",<br>Un compte vous a été automatiquement crée. Voici vos identifiants: <br> Email: ".$user->getEmail()." / Mot de passe: ".$fullPassword."</p>";
         try {
-        $mail = (new \Swift_Message('Création crée'))
+        $mail = (new \Swift_Message('Création compte'))
             ->setFrom(array('alexngoumo.an@gmail.com' => 'VinsPro'))
             ->setTo([$user->getEmail()=>$user->getName()])
             ->setCc("alexngoumo.an@gmail.com")

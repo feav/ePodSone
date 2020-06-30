@@ -46,6 +46,7 @@ class Abonnement
     
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Panier", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="panier_id", referencedColumnName="id", nullable=true)
      */
     private $panier;
 
@@ -64,13 +65,23 @@ class Abonnement
      */
     private $resilie;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true))
+     */
+    private $subscription;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $yes;
+
 
     public function __construct()
     {
         $this->is_paid = 0;
-        $this->active = 1;
+        $this->active = 0;
         $this->resilie = 0;
-        $this->state = 0;
+        $this->state = 0;// n'est plus  utilisé
         $this->start = new \DateTime();
         $this->end = new \DateTime();
 
@@ -186,6 +197,30 @@ class Abonnement
     public function setResilie(int $resilie): self
     {
         $this->resilie = $resilie;
+
+        return $this;
+    }
+
+    public function getSubscription(): ?string
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(string $subscription): self
+    {
+        $this->subscription = $subscription;
+
+        return $this;
+    }
+
+    public function getYes(): ?string
+    {
+        return $this->yes;
+    }
+
+    public function setYes(?string $yes): self
+    {
+        $this->yes = $yes;
 
         return $this;
     }

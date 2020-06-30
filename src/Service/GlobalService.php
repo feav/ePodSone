@@ -19,10 +19,10 @@ class GlobalService{
 
 
     public function isAbonnementValide($user_id){
-        $abonnement = $this->abonnementRepository->findOneBy(['user'=>$user_id], ['id'=>'DESC'], 1);
-        if(is_null($abonnement) || !$abonnement->getActive() || ($abonnement->getEnd() > new \DateTime()) ){
-            return false;
+        $abonnement = $this->abonnementRepository->findBy(['user'=>$user_id, 'active'=>1]);
+        if(count($abonnement)){
+            return true;
         }
-        return true;
+        return false;
     }
 }

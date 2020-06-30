@@ -9,13 +9,23 @@
 
     <form>
         <div class="form-row mb-4">
-            <div class="form-group col-md-8">
+            <div class="form-group col-md-4">
                 <label for="inputEmail4">Nom de la formule</label>
                  {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder':'Nom'}}) }} 
             </div>
             <div class="form-group col-md-4">
                 <label for="inputCity">Cout de l'anonnement</label>
                 {{ form_widget(form.price, {'attr': {'class': 'form-control','type': 'decimal','required': false, 'placeholder':'Cout de la formule'}}) }} 
+            </div>  
+            <div class="form-group col-md-4">
+                <label for="inputCity">stripe product id</label>
+                <select name="stripe_product_id" class="form-control" required="true">
+                    {% for product in stripeProducts %}
+                        <option value="{{product.id}}" {% if formule.getStripeProductId == product.id %} selected="selected" {% endif %}>
+                            {{product.name}}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>  
         </div>
        
