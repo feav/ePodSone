@@ -449,7 +449,6 @@ class PaymentController extends AbstractController
                 else{
                     $message = "<p> Bonjour, <br> nous vous confirmons que votre abonnement a été renouvellé avec succèss. </p>";
                 }
-                $message="<p> Bonjour, <br> nous vous confirmons que votre abonnement a été ".$msg2." avec succèss. </p>";
             }
             if($status == "expired"){
                 $abonnement->setActive(0);
