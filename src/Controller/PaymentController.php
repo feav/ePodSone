@@ -182,7 +182,7 @@ class PaymentController extends AbstractController
         if(count($panier->getCommandes())){
             $content = "<p>Bonjour ".$user->getName().", <br> Vous avez fait des achat pour ".$panier->getTotalPrice()."€<br>
             Livraison Gratuite (Essai de 3 jours) pour un de nos abonnements</p>";
-            $url = $this->generateUrl('home');
+            $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
             try {
                 $mail = (new \Swift_Message('Confirmation commande'))
                     ->setFrom(array('alexngoumo.an@gmail.com' => 'VinsPro'))
@@ -388,7 +388,8 @@ class PaymentController extends AbstractController
                     $customer_email = $paymentMethod->customer_email;
                     $invoice_pdf = $paymentMethod->invoice_pdf;
                     $message = '<p>Bonjour, cliquer sur le lien ci-dessous pour telecharger votre facture <br>'.$invoice_pdf.'</p>';
-                    $this->factureMail('Facture abonnement', $message, $customer_email, $mailer);
+                    if($paymentMethod->amount_paid > 0)
+                        $this->factureMail('Facture abonnement', $message, $customer_email, $mailer);
                 }
                 break;
             case 'payment_intent.payment_failed':
@@ -435,7 +436,7 @@ class PaymentController extends AbstractController
         if(!is_null($abonnement)){
             $user = $abonnement->getUser();
             $message = "";
-            if( ($status == "created" || $status == "updated") && $subscription->status == "active"){
+            if( ($status == "created" || $status == "updated") && ($subscription->status == "active" || $subscription->status == "trialing" )){
                 $abonnement->setActive(1);
                 $abonnement->setStart(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_start)));
                 $abonnement->setEnd(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_end)));

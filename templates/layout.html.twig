@@ -1024,6 +1024,7 @@
 
    var LENGTH_CARD = 0;
    var prods = [];
+   var addAction = false;
 
    function addToCardForm(id,price,name,img){
       var modal = $("#add-product-modal");
@@ -1141,6 +1142,7 @@
    }
 
   function addToCard(id=-1,qty=-1,type="product"){
+    addAction = true;
     $.ajax({
          contentType: "application/json",
          dataType: "json",
@@ -1211,7 +1213,7 @@
             notification("Modification du Panier",data.message,"error");
          }
          $('.btn-add-to-card').css('pointer-events','auto');
-         $('.btn-add-to-card').text('Ajout au panier');
+         $('.btn-add-to-card').text('Ajouter au panier');
          $('#add-product-modal').modal('hide');
       });
   }
@@ -1260,7 +1262,9 @@
          }else{
             console.log(data.message);
          }
-         if(show && !$(".cart-wrapper").hasClass("open"));
+          if(show && !$(".cart-wrapper").hasClass("open") && addAction){
+            $(".cart-wrapper").addClass("open");
+          }
         });
   }
   synch_card();
@@ -1268,101 +1272,103 @@
   /**
   ** USER NOT CONNECTED
   **/
-    function addToCard_not_connected(id=-1,qty=-1,type="product"){
-        if(id == -1){
-           id = $("#add-product-modal .product-id-input").val();
-        }
-        if(qty == -1){
-           qty = $("#add-product-modal .product-quantity-input").val();
-        }
+  function addToCard_not_connected(id=-1,qty=-1,type="product"){
+      if(id == -1){
+         id = $("#add-product-modal .product-id-input").val();
+      }
+      if(qty == -1){
+         qty = $("#add-product-modal .product-quantity-input").val();
+      }
 
-        var x = window.localStorage.getItem('panier');
-        var prods = [];
-        if(x){
-           prods = JSON.parse(x);
-        }
-        
-        $.ajax({
-             contentType: "application/json",
-             dataType: "json",
-             data:{
-                 product:id,
-                 quantity:qty,
-                 type:type,
-                 products:prods
-             },
-             url: "{{ path('commande_add_to_card_not_connected') }}",
-             beforeSend: function( xhr ) {}
-           })
-        .done(function( data ) {
-           if(data.status==200){
-              window.localStorage.setItem('panier', JSON.stringify(data.panier) );
-              refreshCard(true);
-
-              notification("Modification du Panier",data.message,"success");
-           }else{
-              notification("Modification du Panier",data.message,"error");
-              $('#modal-payment button.submit').text('Valider');
-           }
-           $('.btn-add-to-card').css('pointer-events','auto');
-           $('.btn-add-to-card').text('Ajout au panier');
-           $('#add-product-modal').modal('hide');
-        });
-    }
-    function refreshCard_not_connected(show){
-        var x = window.localStorage.getItem('panier');
-        var prods = [];
-        if(x){
-           prods = JSON.parse(x);
-        }
-        $.ajax({
-          contentType: "application/json",
+      var x = window.localStorage.getItem('panier');
+      var prods = [];
+      if(x){
+         prods = JSON.parse(x);
+      }
+      
+      $.ajax({
+           contentType: "application/json",
            dataType: "json",
-           data:{ products:prods },
-          url: "{{ path('commande_get_card_not_connected') }}",
-          beforeSend: function( xhr ) {
-            
+           data:{
+               product:id,
+               quantity:qty,
+               type:type,
+               products:prods
+           },
+           url: "{{ path('commande_add_to_card_not_connected') }}",
+           beforeSend: function( xhr ) {}
+         })
+      .done(function( data ) {
+         if(data.status==200){
+            window.localStorage.setItem('panier', JSON.stringify(data.panier) );
+            refreshCard(true);
+
+            notification("Modification du Panier",data.message,"success");
+         }else{
+            notification("Modification du Panier",data.message,"error");
+            $('#modal-payment button.submit').text('Valider');
+         }
+         $('.btn-add-to-card').css('pointer-events','auto');
+         $('.btn-add-to-card').text('Ajouter au panier');
+         $('#add-product-modal').modal('hide');
+      });
+  }
+  function refreshCard_not_connected(show){
+      var x = window.localStorage.getItem('panier');
+      var prods = [];
+      if(x){
+         prods = JSON.parse(x);
+      }
+      $.ajax({
+        contentType: "application/json",
+         dataType: "json",
+         data:{ products:prods },
+        url: "{{ path('commande_get_card_not_connected') }}",
+        beforeSend: function( xhr ) {
+          
+        }
+      })
+      .done(function( data ) {
+        console.log(data);
+        if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0)|| !data.panier){
+            $('.cart-container').css('display', 'none');
+            $('.empty-cart').css('display', 'block');
           }
-        })
-        .done(function( data ) {
-          console.log(data);
-          if((data.panier && data.panier.coupons.length == 0 && data.panier.formules.length == 0 && data.panier.products.length==0)|| !data.panier){
-              $('.cart-container').css('display', 'none');
-              $('.empty-cart').css('display', 'block');
-            }
-            else{
-              $('.cart-container').css('display', 'block');
-              $('.empty-cart').css('display', 'none');
-            }
-           if(data.status==200){
-            $('.cart-btn > .nb-product-cart').text(data.panier.products.length);
-              var total = data.panier.total<0?0:data.panier.total;
-              $(".cart-total-pay").html(total.toFixed(2));
-              $(".cart-total-reduction").html( total.toFixed(2) );
-              $(".card-list-product").html("");
+          else{
+            $('.cart-container').css('display', 'block');
+            $('.empty-cart').css('display', 'none');
+          }
+         if(data.status==200){
+          $('.cart-btn > .nb-product-cart').text(data.panier.products.length);
+            var total = data.panier.total<0?0:data.panier.total;
+            $(".cart-total-pay").html(total.toFixed(2));
+            $(".cart-total-reduction").html( total.toFixed(2) );
+            $(".card-list-product").html("");
 
-              var reductions = 0;
-               data.panier.products.forEach(function(item, index){
-                  $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, (item.quantity*item.oldprice )));
-                  reductions += parseFloat(item.oldprice*item.quantity);
-              }); 
-              $(".cart-total-reduction").html( parseFloat(reductions));
-              itemRecap(data.panier.products, total.toFixed(2), reductions);
+            var reductions = 0;
+             data.panier.products.forEach(function(item, index){
+                $(".card-list-product").append(itemProduct(item.id_product,item.img, item.name, item.quantity, item.price, (item.quantity*item.oldprice )));
+                reductions += parseFloat(item.oldprice*item.quantity);
+            }); 
+            $(".cart-total-reduction").html( parseFloat(reductions));
+            itemRecap(data.panier.products, total.toFixed(2), reductions);
 
-              $(".card-list-coupon").html("");
-               data.panier.coupons.forEach(function(item, index){
-                 $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
-               });
-              $(".card-list-formule").html("");
-               data.panier.formules.forEach(function(item, index){
-                 $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
-               });
-           }else{
-              /*console.log(data.message);*/
-           }
-           if(show && !$(".cart-wrapper").hasClass("open"));
-          });
-    }
+            $(".card-list-coupon").html("");
+             data.panier.coupons.forEach(function(item, index){
+               $(".card-list-coupon").append( itemCoupon(item.id,item.code, item.value));
+             });
+            $(".card-list-formule").html("");
+             data.panier.formules.forEach(function(item, index){
+               $(".card-list-formule").append( itemFormule(item.id,item.name,item.month,item.price));
+             });
+         }else{
+            /*console.log(data.message);*/
+         }
+         if(show && !$(".cart-wrapper").hasClass("open") && addAction){
+            $(".cart-wrapper").addClass("open");
+          }
+        });
+  }
   
 </script>
 <script type="text/javascript">
