@@ -75,6 +75,11 @@ class Abonnement
      */
     private $yes;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $price;
+
 
     public function __construct()
     {
@@ -221,6 +226,18 @@ class Abonnement
     public function setYes(?string $yes): self
     {
         $this->yes = $yes;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?float $price): self
+    {
+        $this->price = $price;
 
         return $this;
     }

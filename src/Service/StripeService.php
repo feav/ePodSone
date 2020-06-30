@@ -168,7 +168,6 @@ class StripeService{
         $this->em->flush();
     }
 
-
     public function getAllProduct(){
         \Stripe\Stripe::setApiKey($this->stripeApiKey);
         $products = \Stripe\Product::all();
@@ -183,6 +182,21 @@ class StripeService{
           'name' => 'abonnement vitanatural',
         ]);
         return $product;
+    }
+
+    public function subscriptionCancel($subscription_id){
+        \Stripe\Stripe::setApiKey($this->stripeApiKey);
+        /*$subscription = \Stripe\Subscription::update(
+          $subscription_id,
+          [
+            'cancel_at_period_end' => true,
+          ]
+        );*/
+        
+        $subscription = \Stripe\Subscription::retrieve($subscription_id);
+        $subscription->cancel();//resili imediatement 
+        
+        return $subscription['id'];
     }
 
     public function get_user_ip_address($return_type=NULL){

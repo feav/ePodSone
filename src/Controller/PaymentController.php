@@ -307,6 +307,7 @@ class PaymentController extends AbstractController
         $user = $this->getUser();
         $entity = new Abonnement();
         $entity->setFormule($formule);
+        $entity->setPrice($formule->getPrice());
         $entity->setStart($date_start);
         $entity->setEnd($date);
         $entity->setUser($user);
@@ -475,4 +476,46 @@ class PaymentController extends AbstractController
         return 1;
     }
 
+    /**
+     * @Route("/resiliation-abonnement/{id}", name="abonnement_resilie", methods={"GET"})
+     */
+    public function resile(Request $request, $id, \Swift_Mailer $mailer)
+    {   
+        $user = $this->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        $abonnement = $this->abonnementRepository->find($id);
+
+        $subscription = $this->stripe_s->subscriptionCancel($abonnement->getSubscription());
+        if($subscription == $abonnement->getSubscription()){
+            $abonnement->setActive(0);
+            $abonnement->setResilie(1);
+            $entityManager->flush();
+
+            $content = "<p>Votre abonnement a bien été resilié</p>";
+            $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
+            try {
+                $mail = (new \Swift_Message("Résiliation d'abonnement"))
+                    ->setFrom(array('alexngoumo.an@gmail.com' => 'VinsPro'))
+                    ->setTo([$user->getEmail()=>$user->getName()])
+                    ->setCc("alexngoumo.an@gmail.com")
+                    ->setBody(
+                        $this->renderView(
+                            'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
+                        ),
+                        'text/html'
+                    );
+                $mailer->send($mail);
+            } catch (Exception $e) {
+                print_r($e->getMessage());
+            }            
+            $flashBag = $this->get('session')->getFlashBag()->clear();
+            $this->addFlash('success', "Abonnement resilié");
+            return $this->redirectToRoute('account');
+        }
+        else{
+            $flashBag = $this->get('session')->getFlashBag()->clear();
+            $this->addFlash('error', "Echec resiliation");
+            return $this->redirectToRoute('account');
+        }
+    }
 }

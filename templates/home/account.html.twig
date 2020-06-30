@@ -124,7 +124,6 @@
                 <div class="form-group">
                   <label for="phone">Numero de Telephone</label>
                   <input type="text" id="phone" name="user[phone]" class="form-control" value="{{ app.user.phone }}">
-                  <small>Ceci sera le nom visible sur votre profil.</small>
                 </div>
                 <div class="form-group">
                   <label for="email">Adresse Email</label>
@@ -144,28 +143,28 @@
             <div class="col-auto">
               <h3 class="mb-sm-0">Abonnements</h3>
             </div>
-            <div class="col-auto">
+            <div class="col-auto" style="display:none">
               <button class="btn btn-success btn-sm">Soucrire a un abonnement</button>
             </div>
           </div>
         </div>
         <form class="container">
           <div class="row">
-             {% for abonnements in app.user.abonnements %}
+             {% for abonnements in app.user.abonnements|reverse(true)|slice(0,50) %}
             <div class="col-sm-6 col-lg-4 mb-3 mb-md-4">
               <div class="border rounded bg-white px-4 pb-4 pt-2">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                  <img src="assets/img/logos/payment/mastercard.svg" alt="Mastercard">
+                  <i class="fa fa-credit-card"></i>
                   <div>
-                  {% if (abonnements.resilie is not null) and abonnements.active and abonnements.state and (date(abonnements.start) < date() and date(abonnements.end) > date()) %}
-                    <a class="btn btn-sm btn-primary" type="button" href="{{path('abonnement_resilie', {'id':abonnements.id})}}">Revoquer</a>
+                  {% if (abonnements.resilie is not null) and abonnements.active and abonnements.subscription %}
+                    <a class="btn btn-sm btn-primary" type="button" href="{{path('abonnement_resilie', {'id':abonnements.id})}}">Resilier</a>
                   {% endif %}
                   {% if abonnements.resilie %}
                     <a href="javascript:void()" style="cursor: text;">Resilié</a>
                   {% endif %}
                   
                   {% if abonnements.panier %}
-                    <a href="{{path('billing',{id:abonnements.panier.id})}}" target="_blank" title="telecharger la facture" style="margin-left: 10px;color: #009b72;"><i class="fa fa-download"></i>
+                    <a href="{{path('billing',{id:abonnements.panier.id})}}" target="_blank" title="telecharger la facture" style="margin-left: 10px;color: #009b72;display:none"><i class="fa fa-download"></i>
                       </a>
                   {% endif %}
                   </div>
@@ -174,26 +173,19 @@
                 <div class="d-flex justify-content-between align-items-end">
                   <div>
                     <div class="h6 mb-2">{{abonnements.formule.name}}</div>
-                    <div class="text-muted">{{abonnements.formule.price}}€ / {{abonnements.formule.month}} mois</div>
-                    <div class="text-muted">Livraison : {{abonnements.formule.getPriceShipping()}}€</div>
+                    <div class="text-muted">{{abonnements.price is null ? abonnements.formule.price : abonnements.price}}€</div>
+                    {#<div class="text-muted">Livraison : {{abonnements.formule.getPriceShipping()}}€</div>#}
                      <div>
-                         {% if abonnements.state %}
-
-                           {% if (date(abonnements.start) < date() and date(abonnements.start)|date_modify("+3 day") > date()) %}
-                              <span class="badge badge-info badge-pill">Periode d'Essaie encours</span>
-                           {% endif %}
-
-                           {% if (date(abonnements.start)|date_modify("+3 day") < date() and date(abonnements.end) > date()) %}
-                              <span class="badge badge-success badge-pill">encours</span>
-
-                           {% else %}
-                              <span class="badge badge-info badge-pill">Abonnement expire</span>
-                           {% endif %}
-                        {% else %}
-                           <span class="badge badge-danger badge-pill">Impayee</span>
-                        {% endif %}
+                          {% if date(abonnements.end) < date() %}
+                            <span class="badge badge-warning badge-pill">Abonnement Expiré</span><br>
+                          {% endif %}
+                          {% if abonnements.active and date(abonnements.end) > date() %}
+                            <span class="badge badge-info badge-pill">Actif</span><br>
+                          {% else %}
+                            <span class="badge badge-danger badge-pill">Desactivé</span>
+                          {% endif %}
                      </div>
-                    <div class="text-muted">Validite : <a class="badge badge-info badge-pill">{{abonnements.start|date('d/m/Y')}}</a> - <a class="badge badge-danger badge-pill">{{abonnements.end|date('d/m/Y')}}</a> </div>
+                    <div class="text-muted">Validite : <a class="badge badge-pill">{{abonnements.start|date('d/m/Y')}}</a> - <a class="badge badge-pill">{{abonnements.end|date('d/m/Y')}}</a> </div>
                   </div>
                 </div>
               </div>
@@ -218,7 +210,7 @@
             </div>
           </div>
            <div class="row">
-             {% for panier  in app.user.paniers %}
+             {% for panier  in app.user.paniers|reverse(true)|slice(0,50) %}
             <div class="col-sm-6 col-lg-4 mb-3 mb-md-4">
               <div class="border rounded bg-white px-4 pb-4 pt-2">
                 <div class="d-flex justify-content-between align-items-center mb-1">
