@@ -451,6 +451,9 @@
 {% block javascripts %}
 {{parent()}}
 <script type="text/javascript">
+   $('.btn-add-to-card').click(function(){
+      $(".cart-wrapper").addClass("open");
+   })
    window.addEventListener("load",function(){
       if(mobileCheck()){
          $('#videoHeader').html('<source src="assets/video/video-bg-mobile.mp4" type="video/mp4">');
