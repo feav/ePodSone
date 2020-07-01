@@ -10,6 +10,7 @@ use App\Repository\UserRepository;
 use App\Repository\CommandeRepository;
 use App\Repository\ConfigRepository;
 use App\Repository\VisiteurRepository;
+use App\Repository\AbonnementRepository;
 
 use App\Entity\User;
 use App\Entity\Visiteur;
@@ -27,13 +28,15 @@ class StripeService{
     private $commandeRepository;
     private $configRepository;
     private $visiteurRepository;
+    private $abonnementRepository;
 
 
-    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ConfigRepository $configRepository, CommandeRepository $commandeRepository, VisiteurRepository $visiteurRepository){
+    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ConfigRepository $configRepository, CommandeRepository $commandeRepository, VisiteurRepository $visiteurRepository, AbonnementRepository $abonnementRepository){
         $this->userRepository = $userRepository;
         $this->commandeRepository = $commandeRepository;
         $this->configRepository = $configRepository;
         $this->visiteurRepository = $visiteurRepository; 
+        $this->abonnementRepository = $abonnementRepository; 
         $this->em = $em;
         $this->stripeApiKey = !is_null($this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])) ? $this->configRepository->findOneBy(['mkey'=>'STRIPE_PRIVATE_KEY'])->getValue() : "";
     }
@@ -185,16 +188,24 @@ class StripeService{
     }
 
     public function subscriptionCancel($subscription_id){
+        $abonnement = $this->abonnementRepository->findOneBy(['subscription'=>$subscription_id])
         \Stripe\Stripe::setApiKey($this->stripeApiKey);
-        /*$subscription = \Stripe\Subscription::update(
-          $subscription_id,
-          [
-            'cancel_at_period_end' => true,
-          ]
-        );*/
-        
-        $subscription = \Stripe\Subscription::retrieve($subscription_id);
-        $subscription->cancel();//resili imediatement 
+
+        $endTryDay = new \DateTime();
+        $trialDay = $abonnement->getFormule()->getTryDays();
+        $endTryDay->add(new \DateInterval('P0Y0M'.$trialDay.'DT0H0M0S'));
+        if($endTryDay < new \DateTime()){
+            $subscription = \Stripe\Subscription::retrieve($subscription_id);
+            $subscription->cancel();//resili imediatement 
+        }
+        else{
+            $subscription = \Stripe\Subscription::update(
+              $subscription_id,
+              [
+                'cancel_at_period_end' => true,
+              ]
+            );
+        }
         
         return $subscription['id'];
     }
