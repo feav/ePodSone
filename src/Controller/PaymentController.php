@@ -397,7 +397,7 @@ class PaymentController extends AbstractController
                 $paymentIntent = $event->data->object; 
                 if( $paymentIntent->status == "requires_payment_method" || $paymentIntent->status == "requires_action" ){
 
-                    $message = "<p>Bonjour, <br>La carte utilisée neccessite une authentification 3D sécure</p>"
+                    $message = "<p>Bonjour, <br>La carte utilisée neccessite une authentification 3D sécure</p>";
                     if(!is_null($paymentIntent->next_action)){
                         $urlAuth= $paymentIntent->next_action->redirect_to_url->url;
                         $message .= ", cliquez sur le lien sous dessous afin de completer votre paiement.<br>".$urlAuth;
