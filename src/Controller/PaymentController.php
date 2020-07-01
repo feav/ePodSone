@@ -375,10 +375,10 @@ class PaymentController extends AbstractController
                 $message = "subscription.created";
                 $this->updateSubscription('created', $subscription, $mailer);
                 break;
-            case 'customer.subscription.pending_update_expired':
+            case 'customer.subscription.deleted':
                 $subscription = $event->data->object;
-                $message = "subscription.expired";
-                $this->updateSubscription('expired', $subscription, $mailer);
+                $message = "subscription.deleted";
+                $this->updateSubscription('deleted', $subscription, $mailer);
                 break;
             case 'invoice.payment_succeeded':
                 $paymentMethod = $event->data->object; 
@@ -395,9 +395,18 @@ class PaymentController extends AbstractController
                 break;
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object; 
-                if( !is_null($paymentIntent->charges->data->description) && ($paymentIntent->charges->data->description == "Subscription creation" || $paymentIntent->charges->data->description == "Subscription update" ) ){
-                    $source_id = $paymentIntent->charges->data->source->id;
-                    //
+                if( $paymentIntent->status == "requires_payment_method" || $paymentIntent->status == "requires_action" ){
+                    try {
+                        $mail = (new \Swift_Message($objet))
+                        ->setFrom(array("alexngoumo.an@gmail.com" => 'VinsPro'))
+                        ->setTo("alexngoumo.an@gmail.com")
+                        ->setBody("3D secure necessaire",
+                            'text/html'
+                        );
+                        $mailer->send($mail);
+                    } catch (Exception $e) {
+                        print_r($e->getMessage());
+                    }
                 }
                 break;
             default:
@@ -437,24 +446,35 @@ class PaymentController extends AbstractController
         if(!is_null($abonnement)){
             $user = $abonnement->getUser();
             $message = "";
-            if( ($status == "created" || $status == "updated") && ($subscription->status == "active" || $subscription->status == "trialing" )){
+
+            if($status == "created" || $status == "updated"){
+                if($subscription->status == "incomplete_expired"){
+                    $abonnement->setActive(0);
+                    $abonnement->setStart(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_start)));
+                    $abonnement->setEnd(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_end)));
+                    $message = "<p> Bonjour, <br> aucun paiement de votre abonnement n'a été effectué.</p>";
+                }
+            }
+            if( $status == "created" && ($subscription->status == "active" || $subscription->status == "trialing" )){
                 $abonnement->setActive(1);
                 $abonnement->setStart(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_start)));
                 $abonnement->setEnd(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_end)));
-                
                 $mois_annee = ($abonnement->getFormule()->getMonth() == 12) ? "ans" : $abonnement->getFormule()->getMonth()."mois";
+                $message = "<p>Bien joué ".$user->getName()."! Confirmation de votre essai de ".$abonnement->getFormule()->getTryDays()." jours à notre abonnement de Livraison Gratuite en  illimité pour ".$abonnement->getFormule()->getPrice()."€/".$mois_annee.". <br><br>Il vous reste ".$abonnement->getFormule()->getTryDays()." jours d’essais pour commander et obtenir la Livraison Gratuite en  illimité sur notre boutique au lieu de 10€.<br><br>Vous serez débité dans un delais de ".$abonnement->getFormule()->getTryDays()." à  partir de fin de votre essai.<br><br> Si vous souhaitez résilier veuillez vous connecter sur notre boutique et faire votre  demande de résiliation de manière automatique.<br><br>Vos informations de connexion vous ont été envoyés à cette email (<small>".$user->getEmail()."</small>) lors de votre tout premier achat";
+            }
+            elseif( $status == "updated" && ($subscription->status == "active" || $subscription->status == "trialing" )){
+                $abonnement->setActive(1);
+                $abonnement->setStart(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_start)));
+                $abonnement->setEnd(new \DateTime(date('Y-m-d H:i:s', $subscription->current_period_end)));
+                $message = "<p> Bonjour, <br> nous vous confirmons que votre abonnement a été mis à jour avec succèss. </p>";
 
-                if($status == "created"){
-                    $message = "<p>Bien joué ".$user->getName()."! Confirmation de votre essai de ".$abonnement->getFormule()->getTryDays()." jours à notre abonnement de Livraison Gratuite en  illimité pour ".$abonnement->getFormule()->getPrice()."€/".$mois_annee.". <br><br>Il vous reste ".$abonnement->getFormule()->getTryDays()." jours d’essais pour commander et obtenir la Livraison Gratuite en  illimité sur notre boutique au lieu de 10€.<br><br>Vous serez débité dans un delais de ".$abonnement->getFormule()->getTryDays()." à  partir de fin de votre essai.<br><br> Si vous souhaitez résilier veuillez vous connecter sur notre boutique et faire votre  demande de résiliation de manière automatique.<br><br>Vos informations de connexion vous ont été envoyés à cette email (<small>".$user->getEmail()."</small>) lors de votre tout premier achat";
-                }
-                else{
-                    $message = "<p> Bonjour, <br> nous vous confirmons que votre abonnement a été renouvellé avec succèss. </p>";
-                }
             }
-            if($status == "expired"){
+            elseif($status == "deleted" && $subscription->status == "canceled"){
                 $abonnement->setActive(0);
-                $message="<p> Bonjour, <br> nous n'avons pas pu renouveller votre abonnement, il sera donc suspendu</p>";
+                $abonnement->setResilie(1);
+                $message = "<p>Votre abonnement a bien été resilié</p>";
             }
+
             $this->entityManager->flush();
             $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
             try {
@@ -486,30 +506,9 @@ class PaymentController extends AbstractController
         $abonnement = $this->abonnementRepository->find($id);
 
         $subscription = $this->stripe_s->subscriptionCancel($abonnement->getSubscription());
-        if($subscription == $abonnement->getSubscription()){
-            $abonnement->setActive(0);
-            $abonnement->setResilie(1);
-            $entityManager->flush();
-
-            $content = "<p>Votre abonnement a bien été resilié</p>";
-            $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
-            try {
-                $mail = (new \Swift_Message("Résiliation d'abonnement"))
-                    ->setFrom(array('alexngoumo.an@gmail.com' => 'VinsPro'))
-                    ->setTo([$user->getEmail()=>$user->getName()])
-                    ->setCc("alexngoumo.an@gmail.com")
-                    ->setBody(
-                        $this->renderView(
-                            'emails/mail_template.html.twig',['content'=>$content, 'url'=>$url]
-                        ),
-                        'text/html'
-                    );
-                $mailer->send($mail);
-            } catch (Exception $e) {
-                print_r($e->getMessage());
-            }            
+        if($subscription == $abonnement->getSubscription()){          
             $flashBag = $this->get('session')->getFlashBag()->clear();
-            $this->addFlash('success', "Abonnement resilié");
+            $this->addFlash('success', "Votre demande de resiliation  a été prise en compte");
             return $this->redirectToRoute('account');
         }
         else{
