@@ -188,7 +188,7 @@ class StripeService{
     }
 
     public function subscriptionCancel($subscription_id){
-        $abonnement = $this->abonnementRepository->findOneBy(['subscription'=>$subscription_id])
+        $abonnement = $this->abonnementRepository->findOneBy(['subscription'=>$subscription_id]);
         \Stripe\Stripe::setApiKey($this->stripeApiKey);
 
         $endTryDay = new \DateTime();
