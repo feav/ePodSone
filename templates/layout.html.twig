@@ -1507,25 +1507,27 @@
 
         function proceedPayment2(){
           $('.btn-next').text('Initialisation paiement...');
-            var form = document.getElementById('form-stripe');
-            oData = new FormData(form);
-            var oReq = new XMLHttpRequest();
-            oReq.open("POST", $('#form-stripe').attr('action'), true);
-            oReq.onload = function(oEvent) {
-                if (oReq.status == 200) {
-                    $(".success-checkmark").show().delay(3000).fadeOut();
-                    $(".check-icon").show().show().delay(3000).fadeOut();
-                    notification("Paiement commande",oReq.response,"success");
-                    card.clear();
-                    submitting('reset');
-                    window.localStorage.removeItem('panier');
-                    window.location.href = "{{path('success_payment')}}";
-                }else {
-                    notification("Paiement commande",oReq.response,"error");
-                    submitting('reset');
-                }
-            };
-            oReq.send(oData);  
+          var form = document.getElementById('form-stripe');
+          oData = new FormData(form);
+          var oReq = new XMLHttpRequest();
+          oReq.open("POST", $('#form-stripe').attr('action'), true);
+          oReq.onload = function(oEvent) {
+            if (oReq.status == 200) {
+                $(".success-checkmark").show().delay(3000).fadeOut();
+                $(".check-icon").show().show().delay(3000).fadeOut();
+                notification("Paiement commande",oReq.response,"success");
+                card.clear();
+                window.localStorage.removeItem('panier');
+                window.location.href = "{{path('success_payment')}}";
+            }else if(oReq.status == 300) {
+              notification("Paiement commande",oReq.response,"error");
+            }
+            else{
+              notification("Paiement commande","Une erreur s'est produit lors du paiement","error");
+            }
+            submitting('reset');
+          };
+          oReq.send(oData);  
         }
 
         function proceedPayment(){

@@ -85,10 +85,10 @@ class PaymentController extends AbstractController
         if(!is_null($panier)){
             $amount = $panier->getTotalPrice();
             if(!$amount)
-                return new Response("le montant de votre commande est null", 500);
+                return new Response("le montant de votre commande est null", 300);
         }
         else
-            return new Response("Vous n'avez aucun panier en attente de paiement", 500);
+            return new Response("Vous n'avez aucun panier en attente de paiement", 300);
         
         if(is_null($user)){
             $email = $request->request->get('email');
@@ -142,7 +142,7 @@ class PaymentController extends AbstractController
                 }
             }
             else
-                return new Response("Vous n'avez entré aucune carte", 500);
+                return new Response("Vous n'avez entré aucune carte",300);
         }
 
         if($result == ""){
@@ -172,9 +172,10 @@ class PaymentController extends AbstractController
             
             return new Response($message, 200);
         }
-        else
-            return new Response('Erreur : ' . $errorMessage , 500);
-        return new Response(json_encode(['ok'=>true]));
+        else{
+            return new Response("Une erreur s'est produite", 300);
+        }
+        return new Response("aucune action Effectuée", 300);
     }
 
     public function sendMail($mailer, $user, $panier, $commande_pdf, $amount){
@@ -310,7 +311,7 @@ class PaymentController extends AbstractController
         $entity->setPrice($formule->getPrice());
         $entity->setStart($date_start);
         $entity->setEnd($date);
-        $entity->setStripeCustomId($user->setStripeCustomId());
+        $entity->setStripeCustomId($user->getStripeCustomId());
         $entity->setUser($user);
 
         $this->entityManager->persist($entity);
