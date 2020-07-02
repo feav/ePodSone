@@ -194,7 +194,7 @@ class StripeService{
         $endTryDay = new \DateTime();
         $trialDay = $abonnement->getFormule()->getTryDays();
         $endTryDay->add(new \DateInterval('P0Y0M'.$trialDay.'DT0H0M0S'));
-        if($endTryDay < new \DateTime()){
+        if($endTryDay <= new \DateTime()){
             $subscription = \Stripe\Subscription::retrieve($subscription_id);
             $subscription->cancel();//resili imediatement 
         }

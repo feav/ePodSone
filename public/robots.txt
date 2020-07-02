@@ -1,0 +1,3 @@
+# bloque l'indexation du dashboard et de ses dossiers/fichiers pour les robots
+User-agent: *
+Disallow: /assets/doc
