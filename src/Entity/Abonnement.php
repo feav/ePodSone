@@ -80,6 +80,11 @@ class Abonnement
      */
     private $price;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $stripe_custom_id;
+
 
     public function __construct()
     {
@@ -238,6 +243,18 @@ class Abonnement
     public function setPrice(?float $price): self
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getStripeCustomId(): ?string
+    {
+        return $this->stripe_custom_id;
+    }
+
+    public function setStripeCustomId(?string $stripe_custom_id): self
+    {
+        $this->stripe_custom_id = $stripe_custom_id;
 
         return $this;
     }

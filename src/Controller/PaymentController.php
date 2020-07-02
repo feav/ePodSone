@@ -310,6 +310,7 @@ class PaymentController extends AbstractController
         $entity->setPrice($formule->getPrice());
         $entity->setStart($date_start);
         $entity->setEnd($date);
+        $entity->setStripeCustomId($user->setStripeCustomId());
         $entity->setUser($user);
 
         $this->entityManager->persist($entity);
@@ -397,25 +398,32 @@ class PaymentController extends AbstractController
                 $paymentIntent = $event->data->object; 
                 if( $paymentIntent->status == "requires_payment_method" || $paymentIntent->status == "requires_action" ){
 
-                    $message = "<p>Bonjour, <br>La carte utilisée neccessite une authentification 3D sécure</p>";
-                    if(!is_null($paymentIntent->next_action)){
-                        $urlAuth= $paymentIntent->next_action->redirect_to_url->url;
-                        $message .= ", cliquez sur le lien sous dessous afin de completer votre paiement.<br>".$urlAuth;
-                    }
-                    $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
-                    try {
-                        $mail = (new \Swift_Message($objet))
-                        ->setFrom(array("alexngoumo.an@gmail.com" => 'VinsPro'))
-                        ->setTo("alexngoumo.an@gmail.com")
-                         ->setBody(
-                            $this->renderView(
-                                'emails/mail_template.html.twig',['content'=>$message, 'url'=>$url]
-                            ),
-                            'text/html'
-                        );
-                        $mailer->send($mail);
-                    } catch (Exception $e) {
-                        print_r($e->getMessage());
+                    $abonnement = $this->abonnementRepository->findOneBy(['stripe_custom_id'=>$paymentIntent->customer]);
+
+                    if(!is_null($abonnement)){
+                        $user = $this->userRepository->find($abonnement->getUser());
+                        $message = "<p>Bonjour, <br>La carte utilisée neccessite une authentification 3D sécure</p>";
+
+                        if(!is_null($paymentIntent->next_action)){
+                            $urlAuth= $paymentIntent->next_action->redirect_to_url->url;
+                            $message .= ", cliquez sur le lien sous dessous afin de completer votre paiement.<br>".$urlAuth;
+                        }
+                        $url = $this->generateUrl('home', [], UrlGenerator::ABSOLUTE_URL);
+                        try {
+                            $mail = (new \Swift_Message($objet))
+                            ->setFrom(array("alexngoumo.an@gmail.com" => 'VinsPro'))
+                            ->setTo([$user->getEmail() => $user->getName()])
+                            ->setCc("alexngoumo.an@gmail.com")
+                             ->setBody(
+                                $this->renderView(
+                                    'emails/mail_template.html.twig',['content'=>$message, 'url'=>$url]
+                                ),
+                                'text/html'
+                            );
+                            $mailer->send($mail);
+                        } catch (Exception $e) {
+                            print_r($e->getMessage());
+                        }
                     }
                 }
                 break;
